@@ -1,1 +1,4 @@
 /assets/nllb_600m/
+/.vscode/
+/.xmake/
+/build/
