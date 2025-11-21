@@ -34,7 +34,7 @@ jobs:
       run: xmake config -m release
 
     - name: Build
-      run: xmake -v
+      run: xmake -y -v
 
     - name: Run Tests
       run: |
