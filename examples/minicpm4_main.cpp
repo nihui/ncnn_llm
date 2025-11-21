@@ -12,7 +12,7 @@ int main() {
                         "./assets/minicpm4_0.5b/merges.txt",
                        /*use_vulkan=*/false);
                        
-    auto ctx = model.prefill("You are a helpful assistant.");
+    auto ctx = model.prefill("ncnn是什么？");
     model.decode(ctx, [](const std::string& token) {
         printf("%s", token.c_str());
     });

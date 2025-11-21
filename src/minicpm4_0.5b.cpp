@@ -1,5 +1,6 @@
 #include "minicpm4_0.5b.h"
 
+#include <cstdio>
 #include <memory>
 #include <ncnn/mat.h>
 #include <ncnn/net.h>
@@ -120,9 +121,9 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache(token_ids.size(), 32, 0, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 128, 0, cos_cache, sin_cache);
 
-    ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data());
+    ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
     {
         ncnn::Extractor ex = impl_->embed_net.create_extractor();
@@ -137,7 +138,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     ncnn::Mat sin_cache(32, cur-seqlen);
     */
 
-    ncnn::Mat mask(token_ids.size(), token_ids.size());
+    ncnn::Mat mask((int)token_ids.size(), (int)token_ids.size());
     mask.fill(0.0f);
     for (int i = 0; i < (int)token_ids.size(); i++)
     {
@@ -163,12 +164,14 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
             ncnn::Mat k_cache, v_cache;
             ex.extract(name_k_out, k_cache);
             ex.extract(name_v_out, v_cache);
+
+            printf("%f %f\n", k_cache[0], v_cache[0]);
             kv_cache.emplace_back(std::move(k_cache), std::move(v_cache));
         }
     }
 
     // full process last token
-    ncnn::Mat last_token_mat = ncnn::Mat(1, 1, (void*)&last_token_id);
+    ncnn::Mat last_token_mat = ncnn::Mat(1, 1, (void*)&last_token_id).clone();
     ncnn::Mat last_token_embed;
     {
         ncnn::Extractor ex = impl_->embed_net.create_extractor();
@@ -177,8 +180,8 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     }
     ncnn::Mat last_cos_cache;
     ncnn::Mat last_sin_cache;
-    generate_rope_embed_cache(1, 32, token_ids.size(), last_cos_cache, last_sin_cache);
-    ncnn::Mat last_mask(1, token_ids.size() + 1);
+    generate_rope_embed_cache(1, 128, (int)token_ids.size(), last_cos_cache, last_sin_cache);
+    ncnn::Mat last_mask((int)token_ids.size() + 1, 1);
     last_mask.fill(0.0f);
 
     {
@@ -248,7 +251,7 @@ bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
     while (ctx->cur_token != impl_->bpe.special_ids().eos_id) {
         callback(impl_->bpe.id_to_token()[ctx->cur_token]);
 
-        ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token);
+        ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
         ncnn::Mat cur_token_embed;
         {
             ncnn::Extractor ex = impl_->embed_net.create_extractor();
@@ -257,8 +260,8 @@ bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
         }
         ncnn::Mat cos_cache;
         ncnn::Mat sin_cache;
-        generate_rope_embed_cache(1, 32, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
-        ncnn::Mat mask(1, ctx->kv_cache[0].first.h + 1);
+        generate_rope_embed_cache(1, 128, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
+        ncnn::Mat mask(ctx->kv_cache[0].first.h + 1, 1);
         mask.fill(0.0f);
 
         ncnn::Mat decode_out;
@@ -302,7 +305,7 @@ bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
             const float* p = logits;
             int max_idx = 0;
             float max_val = p[0];
-            for (int i = 1; i < logits.w; ++i) {
+            for (int i = 1; i < impl_->bpe.vocab_size(); ++i) {
                 if (p[i] > max_val) {
                     max_val = p[i];
                     max_idx = i;
