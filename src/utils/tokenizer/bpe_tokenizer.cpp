@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
-#include <map>
 
 // ---------------- I/O helpers ----------------
 static std::string Trim(const std::string& s) {
@@ -127,18 +126,17 @@ std::vector<std::string> BpeTokenizer::Utf8Chars(const std::string& s) {
     return chars;
 }
 
-// ---------------- Byte Encoder/Decoder Logic ----------------
+// ---------------- Byte Encoder/Decoder (New Logic) ----------------
 
 void BpeTokenizer::InitByteMaps() {
     byte_encoder_.resize(256, 0);
     byte_decoder_.clear();
 
-    // Logic from byte_converter.cpp: generate_byte_encoder
-    // "printable" chars map to themselves, others map to 256+
+    // Logic based on GPT-2 byte encoder (map printable chars to themselves, others to 256+)
     auto is_printable = [](int b) {
-        return (b >= '!' && b <= '~')
-            || (b >= 161 && b <= 172)
-            || (b >= 174 && b <= 255);
+        return (b >= '!' && b <= '~')     // '!' to '~'
+                || (b >= 161 && b <= 172)  // '¡' to '¬'
+                || (b >= 174 && b <= 255); // '®' to 'ÿ'
     };
 
     int n = 0;
@@ -149,19 +147,18 @@ void BpeTokenizer::InitByteMaps() {
             byte_encoder_[b] = static_cast<uint32_t>(256 + n);
             n++;
         }
+        // Build decoder map
         byte_decoder_[byte_encoder_[b]] = static_cast<uint8_t>(b);
     }
 }
 
 std::string BpeTokenizer::ByteEncode(const std::string& text) const {
-    // Convert raw byte stream -> sequence of Mapped Codepoints -> UTF-8 string
     std::string out;
-    out.reserve(text.size() * 2); // conservative reserve
+    out.reserve(text.size() * 2);
 
     for (unsigned char b : text) {
         uint32_t cp = byte_encoder_[b];
-
-        // Append codepoint as UTF-8
+        // Append cp as UTF-8
         if (cp < 0x80) {
             out += static_cast<char>(cp);
         } else if (cp < 0x800) {
@@ -182,25 +179,20 @@ std::string BpeTokenizer::ByteEncode(const std::string& text) const {
 }
 
 std::string BpeTokenizer::ByteDecode(const std::string& text) const {
-    // Convert UTF-8 string -> sequence of Mapped Codepoints -> raw byte stream
     std::string out;
     out.reserve(text.size());
-
     size_t i = 0;
     uint32_t cp; size_t len;
     while (i < text.size()) {
-        if (!NextUtf8(text, i, cp, len)) break; // Should check return logic
+        if (!NextUtf8(text, i, cp, len)) break;
 
         auto it = byte_decoder_.find(cp);
         if (it != byte_decoder_.end()) {
             out += static_cast<char>(it->second);
         } else {
-            // If a codepoint is not in our map (e.g. some special token artifacts),
-            // we might decide to keep it or ignore it.
-            // Usually, strict BPE output should only contain mapped chars + special tokens.
-            // We can try to output as is if it's ascii, or ignore.
-            // For now, let's fallback to standard UTF-8 bytes of the codepoint if not found?
-            // Or strictly skip. Let's strictly skip or handle 0x00 replacement.
+            // If codepoint is not in byte map, usually we ignore it or keep it
+            // if it's part of a special token that wasn't filtered.
+            // Here we ignore unmapped chars to ensure pure byte restoration.
         }
     }
     return out;
@@ -312,13 +304,13 @@ BpeTokenizer::BpeTokenizer(BpeTokenizer&& other) noexcept
       merges_rank_(std::move(other.merges_rank_)),
       special_ids_(other.special_ids_),
       fallback_to_chars_(other.fallback_to_chars_),
-      use_byte_encoder_(other.use_byte_encoder_),
-      byte_encoder_(std::move(other.byte_encoder_)),
-      byte_decoder_(std::move(other.byte_decoder_)),
       additional_special_tokens_(std::move(other.additional_special_tokens_)),
       additional_special_token_ids_(std::move(other.additional_special_token_ids_)),
       additional_special_token_to_id_(std::move(other.additional_special_token_to_id_)),
-      additional_special_id_set_(std::move(other.additional_special_id_set_)) {
+      additional_special_id_set_(std::move(other.additional_special_id_set_)),
+      use_byte_encoder_(other.use_byte_encoder_),
+      byte_encoder_(std::move(other.byte_encoder_)),
+      byte_decoder_(std::move(other.byte_decoder_)) {
     // 迁移缓存（为安全起见加锁）
     std::lock_guard<std::mutex> lk(other.cache_mu_);
     bpe_cache_ = std::move(other.bpe_cache_);
@@ -334,13 +326,13 @@ BpeTokenizer& BpeTokenizer::operator=(BpeTokenizer&& other) noexcept {
         merges_rank_ = std::move(other.merges_rank_);
         special_ids_ = other.special_ids_;
         fallback_to_chars_ = other.fallback_to_chars_;
-        use_byte_encoder_ = other.use_byte_encoder_;
-        byte_encoder_ = std::move(other.byte_encoder_);
-        byte_decoder_ = std::move(other.byte_decoder_);
         additional_special_tokens_ = std::move(other.additional_special_tokens_);
         additional_special_token_ids_ = std::move(other.additional_special_token_ids_);
         additional_special_token_to_id_ = std::move(other.additional_special_token_to_id_);
         additional_special_id_set_ = std::move(other.additional_special_id_set_);
+        use_byte_encoder_ = other.use_byte_encoder_;
+        byte_encoder_ = std::move(other.byte_encoder_);
+        byte_decoder_ = std::move(other.byte_decoder_);
         bpe_cache_ = std::move(other.bpe_cache_);
         // cache_mu_ 仍为当前对象自己的 mutex
     }
@@ -462,24 +454,19 @@ std::vector<int> BpeTokenizer::encode(const std::string& text,
         if (buffer.empty()) return;
 
         if (use_byte_encoder_) {
-            // New Logic: Byte-Level BPE
-            // 1. 将整个文本进行 ByteEncode (Raw Bytes -> Unicode Chars)
-            std::string encoded_text = ByteEncode(buffer);
-
-            // 2. 直接进行 BPE (通常不需要再次 split by space，除非模仿 GPT-2 的 regex split)
-            // 简单起见，这里暂不引入复杂的 Regex split，直接对转码后的整串做 BPE
-            // 如果需要完全复刻 GPT-2，需要在 ByteEncode 前先做 Regex split
-            const auto& toks = BpeForPieceCached(encoded_text);
+            // Mode 2: Byte-Level Encoding
+            // Encode raw bytes to mapped unicode chars
+            std::string encoded_s = ByteEncode(buffer);
+            // Perform BPE on the entire encoded string
+            const auto& toks = BpeForPieceCached(encoded_s);
             TokensToIds(toks, ids);
         } else {
-            // Original Logic: SentencePiece-like Pretokenization
             auto pieces = PretokenizeSentencePiece(buffer);
             for (const auto& p : pieces) {
                 const auto& toks = BpeForPieceCached(p);
                 TokensToIds(toks, ids);
             }
         }
-
         buffer.clear();
     };
 
@@ -540,15 +527,11 @@ std::string BpeTokenizer::decode(const std::vector<int>& ids, bool skip_special_
         s += tok;
     }
 
-    if (use_byte_encoder_) {
-        // New Logic: Convert Unicode Chars back to Raw Bytes
-        if (!s.empty()) {
+    if (!s.empty()) {
+        // Branch based on encoding mode
+        if (use_byte_encoder_) {
             return ByteDecode(s);
-        }
-        return s;
-    } else {
-        // Original Logic: Handle 0x2581 space marker
-        if (!s.empty()) {
+        } else {
             std::string out;
             out.reserve(s.size());
             size_t i = 0;

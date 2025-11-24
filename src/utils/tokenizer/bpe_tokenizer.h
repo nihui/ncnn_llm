@@ -90,27 +90,20 @@ private:
     static bool NextUtf8(const std::string& s, size_t& i, uint32_t& cp, size_t& cp_len);
     static std::vector<std::string> Utf8Chars(const std::string& s);
 
+    // New Byte-Level helpers
+    void InitByteMaps();
+    std::string ByteEncode(const std::string& text) const;
+    std::string ByteDecode(const std::string& text) const;
+
     static std::string PairKey(const std::string& a, const std::string& b);
 
 private:
-    // New byte mapping tables
-    std::vector<uint32_t> byte_encoder_; // Maps raw byte (0-255) -> Unicode codepoint
-    std::map<uint32_t, uint8_t> byte_decoder_; // Maps Unicode codepoint -> raw byte
-
-    // Helper to initialize tables
-    void InitByteMaps();
-
-    // Helpers for byte conversion
-    std::string ByteEncode(const std::string& text) const; // text -> unicode-mapped string
-    std::string ByteDecode(const std::string& text) const; // unicode-mapped string -> text
-
     std::vector<std::string> id_to_token_;
     std::unordered_map<std::string, int> token_to_id_;
     std::unordered_map<std::string, int> merges_rank_;
 
     SpecialTokenIds special_ids_;
     bool fallback_to_chars_ = true;
-    bool use_byte_encoder_ = false;
 
     // additional_special_tokens（在 encode/decode 中优先级最高）
     // 1) encode 时，先在原始字符串中按子串匹配这些 token，匹配后直接映射到 id，
@@ -120,6 +113,11 @@ private:
     std::vector<int> additional_special_token_ids_;
     std::unordered_map<std::string, int> additional_special_token_to_id_;
     std::unordered_set<int> additional_special_id_set_;
+
+    // Byte Encoder support
+    bool use_byte_encoder_ = false;
+    std::vector<uint32_t> byte_encoder_;
+    std::map<uint32_t, uint8_t> byte_decoder_;
 
     mutable std::unordered_map<std::string, std::vector<std::string>> bpe_cache_;
     mutable std::mutex cache_mu_;
