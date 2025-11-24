@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
+#include <map>
 
 // ---------------- I/O helpers ----------------
 static std::string Trim(const std::string& s) {
@@ -121,6 +122,85 @@ std::vector<std::string> BpeTokenizer::Utf8Chars(const std::string& s) {
     return chars;
 }
 
+// ---------------- Byte Encoder/Decoder Logic ----------------
+
+void BpeTokenizer::InitByteMaps() {
+    byte_encoder_.resize(256, 0);
+    byte_decoder_.clear();
+
+    // Logic from byte_converter.cpp: generate_byte_encoder
+    // "printable" chars map to themselves, others map to 256+
+    auto is_printable = [](int b) {
+        return (b >= '!' && b <= '~')
+            || (b >= 161 && b <= 172)
+            || (b >= 174 && b <= 255);
+    };
+
+    int n = 0;
+    for (int b = 0; b < 256; ++b) {
+        if (is_printable(b)) {
+            byte_encoder_[b] = static_cast<uint32_t>(b);
+        } else {
+            byte_encoder_[b] = static_cast<uint32_t>(256 + n);
+            n++;
+        }
+        byte_decoder_[byte_encoder_[b]] = static_cast<uint8_t>(b);
+    }
+}
+
+std::string BpeTokenizer::ByteEncode(const std::string& text) const {
+    // Convert raw byte stream -> sequence of Mapped Codepoints -> UTF-8 string
+    std::string out;
+    out.reserve(text.size() * 2); // conservative reserve
+
+    for (unsigned char b : text) {
+        uint32_t cp = byte_encoder_[b];
+
+        // Append codepoint as UTF-8
+        if (cp < 0x80) {
+            out += static_cast<char>(cp);
+        } else if (cp < 0x800) {
+            out += static_cast<char>((cp >> 6) | 0xC0);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        } else if (cp < 0x10000) {
+            out += static_cast<char>((cp >> 12) | 0xE0);
+            out += static_cast<char>(((cp >> 6) & 0x3F) | 0x80);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        } else {
+            out += static_cast<char>((cp >> 18) | 0xF0);
+            out += static_cast<char>(((cp >> 12) & 0x3F) | 0x80);
+            out += static_cast<char>(((cp >> 6) & 0x3F) | 0x80);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        }
+    }
+    return out;
+}
+
+std::string BpeTokenizer::ByteDecode(const std::string& text) const {
+    // Convert UTF-8 string -> sequence of Mapped Codepoints -> raw byte stream
+    std::string out;
+    out.reserve(text.size());
+
+    size_t i = 0;
+    uint32_t cp; size_t len;
+    while (i < text.size()) {
+        if (!NextUtf8(text, i, cp, len)) break; // Should check return logic
+
+        auto it = byte_decoder_.find(cp);
+        if (it != byte_decoder_.end()) {
+            out += static_cast<char>(it->second);
+        } else {
+            // If a codepoint is not in our map (e.g. some special token artifacts),
+            // we might decide to keep it or ignore it.
+            // Usually, strict BPE output should only contain mapped chars + special tokens.
+            // We can try to output as is if it's ascii, or ignore.
+            // For now, let's fallback to standard UTF-8 bytes of the codepoint if not found?
+            // Or strictly skip. Let's strictly skip or handle 0x00 replacement.
+        }
+    }
+    return out;
+}
+
 // ---------------- Pretokenizer ----------------
 std::vector<std::string> BpeTokenizer::PretokenizeSentencePiece(const std::string& text) {
     static const std::string ws_mark = "▁";
@@ -228,7 +308,11 @@ BpeTokenizer::BpeTokenizer(BpeTokenizer&& other) noexcept
       token_to_id_(std::move(other.token_to_id_)),
       merges_rank_(std::move(other.merges_rank_)),
       special_ids_(other.special_ids_),
-      fallback_to_chars_(other.fallback_to_chars_) {
+      fallback_to_chars_(other.fallback_to_chars_),
+      use_byte_encoder_(other.use_byte_encoder_),
+      byte_encoder_(std::move(other.byte_encoder_)),
+      byte_decoder_(std::move(other.byte_decoder_))
+{
     // 迁移缓存（为安全起见加锁）
     std::lock_guard<std::mutex> lk(other.cache_mu_);
     bpe_cache_ = std::move(other.bpe_cache_);
@@ -244,6 +328,9 @@ BpeTokenizer& BpeTokenizer::operator=(BpeTokenizer&& other) noexcept {
         merges_rank_ = std::move(other.merges_rank_);
         special_ids_ = other.special_ids_;
         fallback_to_chars_ = other.fallback_to_chars_;
+        use_byte_encoder_ = other.use_byte_encoder_;
+        byte_encoder_ = std::move(other.byte_encoder_);
+        byte_decoder_ = std::move(other.byte_decoder_);
         bpe_cache_ = std::move(other.bpe_cache_);
         // cache_mu_ 仍为当前对象自己的 mutex
     }
@@ -255,7 +342,8 @@ BpeTokenizer BpeTokenizer::LoadFromFiles(const std::string& vocab_path,
                                          const std::string& merges_path,
                                          const SpecialTokensConfig& spec,
                                          bool add_special_if_missing,
-                                         bool fallback_to_chars) {
+                                         bool fallback_to_chars,
+                                         bool use_byte_encoder) {
     BpeTokenizer tok;
     tok.id_to_token_ = LoadVocab(vocab_path);
     if (tok.id_to_token_.empty()) {
@@ -264,6 +352,11 @@ BpeTokenizer BpeTokenizer::LoadFromFiles(const std::string& vocab_path,
     tok.token_to_id_ = BuildTokenToId(tok.id_to_token_);
     tok.merges_rank_ = LoadMergesRank(merges_path);
     tok.fallback_to_chars_ = fallback_to_chars;
+    tok.use_byte_encoder_ = use_byte_encoder;
+
+    if (tok.use_byte_encoder_) {
+        tok.InitByteMaps();
+    }
 
     tok.EnsureSpecialTokens(spec, add_special_if_missing);
     // 显式移动，避免 MSVC 尝试拷贝
@@ -307,10 +400,24 @@ std::vector<int> BpeTokenizer::encode(const std::string& text,
     if (add_cls && special_ids_.cls_id >= 0) ids.push_back(special_ids_.cls_id);
     if (add_bos && special_ids_.bos_id >= 0) ids.push_back(special_ids_.bos_id);
 
-    auto pieces = PretokenizeSentencePiece(text);
-    for (const auto& p : pieces) {
-        const auto& toks = BpeForPieceCached(p);
+    if (use_byte_encoder_) {
+        // New Logic: Byte-Level BPE
+        // 1. 将整个文本进行 ByteEncode (Raw Bytes -> Unicode Chars)
+        std::string encoded_text = ByteEncode(text);
+
+        // 2. 直接进行 BPE (通常不需要再次 split by space，除非模仿 GPT-2 的 regex split)
+        // 简单起见，这里暂不引入复杂的 Regex split，直接对转码后的整串做 BPE
+        // 如果需要完全复刻 GPT-2，需要在 ByteEncode 前先做 Regex split
+        const auto& toks = BpeForPieceCached(encoded_text);
         TokensToIds(toks, ids);
+
+    } else {
+        // Original Logic: SentencePiece-like Pretokenization
+        auto pieces = PretokenizeSentencePiece(text);
+        for (const auto& p : pieces) {
+            const auto& toks = BpeForPieceCached(p);
+            TokensToIds(toks, ids);
+        }
     }
 
     if (add_sep && special_ids_.sep_id >= 0) ids.push_back(special_ids_.sep_id);
@@ -336,23 +443,32 @@ std::string BpeTokenizer::decode(const std::vector<int>& ids, bool skip_special_
         s += tok;
     }
 
-    if (!s.empty()) {
-        std::string out;
-        out.reserve(s.size());
-        size_t i = 0;
-        while (i < s.size()) {
-            uint32_t cp; size_t len;
-            if (!NextUtf8(s, i, cp, len)) break;
-            if (cp == 0x2581) {
-                out.push_back(' ');
-            } else {
-                out.append(s, i - len, len);
-            }
+    if (use_byte_encoder_) {
+        // New Logic: Convert Unicode Chars back to Raw Bytes
+        if (!s.empty()) {
+            return ByteDecode(s);
         }
-        size_t b = 0;
-        while (b < out.size() && out[b] == ' ') ++b;
-        if (b > 0) out.erase(0, b);
-        return out;
+        return s;
+    } else {
+        // Original Logic: Handle 0x2581 space marker
+        if (!s.empty()) {
+            std::string out;
+            out.reserve(s.size());
+            size_t i = 0;
+            while (i < s.size()) {
+                uint32_t cp; size_t len;
+                if (!NextUtf8(s, i, cp, len)) break;
+                if (cp == 0x2581) {
+                    out.push_back(' ');
+                } else {
+                    out.append(s, i - len, len);
+                }
+            }
+            size_t b = 0;
+            while (b < out.size() && out[b] == ' ') ++b;
+            if (b > 0) out.erase(0, b);
+            return out;
+        }
     }
     return s;
 }

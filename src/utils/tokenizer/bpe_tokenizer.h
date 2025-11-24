@@ -8,6 +8,7 @@
 #include <utility>
 #include <limits>
 #include <mutex>
+#include <map>
 
 struct SpecialTokensConfig {
     std::optional<std::string> bos_token;
@@ -35,7 +36,8 @@ public:
                                       const std::string& merges_path,
                                       const SpecialTokensConfig& spec,
                                       bool add_special_if_missing = true,
-                                      bool fallback_to_chars = true);
+                                      bool fallback_to_chars = true,
+                                      bool use_byte_encoder = false);
 
     std::vector<int> encode(const std::string& text,
                             bool add_bos = false,
@@ -79,12 +81,24 @@ private:
     static std::string PairKey(const std::string& a, const std::string& b);
 
 private:
+    // New byte mapping tables
+    std::vector<uint32_t> byte_encoder_; // Maps raw byte (0-255) -> Unicode codepoint
+    std::map<uint32_t, uint8_t> byte_decoder_; // Maps Unicode codepoint -> raw byte
+
+    // Helper to initialize tables
+    void InitByteMaps();
+
+    // Helpers for byte conversion
+    std::string ByteEncode(const std::string& text) const; // text -> unicode-mapped string
+    std::string ByteDecode(const std::string& text) const; // unicode-mapped string -> text
+
     std::vector<std::string> id_to_token_;
     std::unordered_map<std::string, int> token_to_id_;
     std::unordered_map<std::string, int> merges_rank_;
 
     SpecialTokenIds special_ids_;
     bool fallback_to_chars_ = true;
+    bool use_byte_encoder_ = false;
 
     mutable std::unordered_map<std::string, std::vector<std::string>> bpe_cache_;
     mutable std::mutex cache_mu_;
