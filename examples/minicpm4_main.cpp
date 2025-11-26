@@ -1,5 +1,6 @@
 #include "minicpm4_0.5b.h"
 #include <cstdio>
+#include <iostream>
 
 
 int main() {
@@ -12,26 +13,49 @@ int main() {
                         "./assets/minicpm4_0.5b/vocab.txt",
                         "./assets/minicpm4_0.5b/merges.txt",
                        /*use_vulkan=*/false);
-                    
 
-    auto ctx = model.prefill("<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nonnx是什么？<|im_end|>\n<|im_start|>assistant\n");
-    model.decode(ctx, [](const std::string& token) {
-        std::string output = token;
+    std::cout << "Chat with MiniCPM4-0.5B! Type 'exit' or 'quit' to end the conversation.\n";
 
-        // replace /to /n with actual characters
-        for (size_t pos = 0; (pos = output.find("\\n", pos)) != std::string::npos; pos += 1) {
-            output.replace(pos, 2, "\n");
-        }
-        for (size_t pos = 0; (pos = output.find("\\t", pos)) != std::string::npos; pos += 1) {
-            output.replace(pos, 2, "\t");
-        }
-        // replace ▁ with space
-        for (size_t pos = 0; (pos = output.find("▁", pos)) != std::string::npos; pos += 1) {
-            output.replace(pos, 3, " ");
-        }
+    std::string prompt = "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n";
 
-        printf("%s", output.c_str());
-    });
+    auto ctx = model.prefill(prompt);
+
+    while (true) {
+        std::string input;
+        std::cout << "User: ";
+        std::getline(std::cin, input);
+        if (input == "exit" || input == "quit") {
+            break;
+        }
+        std::string user_message = "<|im_start|>user\n" + input + "<|im_end|>\n<|im_start|>assistant\n";
+        ctx = model.prefill(user_message, ctx);
+        
+        std::cout << "Assistant: ";
+        model.decode(ctx, [](const std::string& token) {
+            std::string token_str = token;
+            // replace /t/n with actual newline
+            size_t pos = 0;
+            while ((pos = token_str.find("\\n", pos)) != std::string::npos) {
+                token_str.replace(pos, 2, "\n");
+                pos += 1;
+            }
+            pos = 0;
+            while ((pos = token_str.find("\\t", pos)) != std::string::npos) {
+                token_str.replace(pos, 2, "\t");
+                pos += 1;
+            }
+
+            // replace ▁ with space
+            pos = 0;
+            while ((pos = token_str.find("▁", pos)) != std::string::npos) {
+                token_str.replace(pos, 3, " ");
+                pos += 1;
+            }
+
+            std::cout << token_str << std::flush;
+        });
+        std::cout << std::endl;
+    }
 
     return 0;
 }
