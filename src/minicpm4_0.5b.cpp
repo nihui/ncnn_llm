@@ -11,6 +11,28 @@
 
 const static int attn_cnt = 24;
 
+std::string make_chat_prompt(const std::vector<Message>& messages, bool add_generation_prompt)
+{
+    std::string prompt;
+    for (const auto& msg : messages) {
+        switch (msg.role) {
+            case Message::Role::System:
+                prompt += "<|im_start|>system\n" + msg.content + "<|im_end|>\n";
+                break;
+            case Message::Role::User:
+                prompt += "<|im_start|>user\n" + msg.content + "<|im_end|>\n";
+                break;
+            case Message::Role::Assistant:
+                prompt += "<|im_start|>assistant\n" + msg.content + "<|im_end|>\n";
+                break;
+        }
+    }
+    if (add_generation_prompt) {
+        prompt += "<|im_start|>assistant\n";
+    }
+    return prompt;
+}
+
 struct minicpm4_0_5b_ctx {
     std::vector<std::pair<ncnn::Mat, ncnn::Mat>> kv_cache;
 
@@ -80,25 +102,11 @@ static const float ROPE_BASE = 10000.0f;
 
 // 来自配置的 short_factor 与 long_factor（长度应为 head_dim/2，MiniCPM4-0.5B head_dim=64 => 32）
 static const float SHORT_FACTOR[32] = {
-    1.00043606758f, 1.06684434414f, 1.16314256191f, 1.30257427692f,
-    1.50402057171f, 1.79415059090f, 2.21012210846f, 2.80266666412f,
-    3.63899707794f, 4.80419254303f, 6.39855432510f, 8.52714824677f,
-    11.27754211426f, 14.68499851227f, 18.69317054749f, 23.13019371033f,
-    27.72362518311f, 32.16065597534f, 36.16882705688f, 39.57627868652f,
-    42.32667541504f, 44.45526885986f, 46.04962921143f, 47.21482849121f,
-    48.05115509033f, 48.64370346069f, 49.05967712402f, 49.34980392456f,
-    49.55124664307f, 49.69068145752f, 49.78697967529f, 49.85338592529f
+1.0004360675811768, 1.0668443441390991, 1.1631425619125366, 1.3025742769241333, 1.5040205717086792, 1.7941505908966064, 2.2101221084594727, 2.802666664123535, 3.6389970779418945, 4.804192543029785, 6.39855432510376, 8.527148246765137, 11.277542114257812, 14.684998512268066, 18.69317054748535, 23.13019371032715, 27.72362518310547, 32.1606559753418, 36.168827056884766, 39.57627868652344, 42.32667541503906, 44.45526885986328, 46.04962921142578, 47.21482849121094, 48.05115509033203, 48.64370346069336, 49.05967712402344, 49.34980392456055, 49.551246643066406, 49.69068145751953, 49.78697967529297, 49.85338592529297
 };
 
 static const float LONG_FACTOR[32] = {
-    1.00043606758f, 1.06684434414f, 1.16314256191f, 1.30257427692f,
-    1.50402057171f, 1.79415059090f, 2.21012210846f, 2.80266666412f,
-    3.63899707794f, 4.80419254303f, 6.39855432510f, 8.52714824677f,
-    11.27754211426f, 14.68499851227f, 18.69317054749f, 23.13019371033f,
-    27.72362518311f, 32.16065597534f, 36.16882705688f, 39.57627868652f,
-    42.32667541504f, 44.45526885986f, 46.04962921143f, 47.21482849121f,
-    48.05115509033f, 48.64370346069f, 49.05967712402f, 49.34980392456f,
-    49.55124664307f, 49.69068145752f, 49.78697967529f, 49.85338592529f
+1.0004360675811768, 1.0668443441390991, 1.1631425619125366, 1.3025742769241333, 1.5040205717086792, 1.7941505908966064, 2.2101221084594727, 2.802666664123535, 3.6389970779418945, 4.804192543029785, 6.39855432510376, 8.527148246765137, 11.277542114257812, 14.684998512268066, 18.69317054748535, 23.13019371032715, 27.72362518310547, 32.1606559753418, 36.168827056884766, 39.57627868652344, 42.32667541503906, 44.45526885986328, 46.04962921142578, 47.21482849121094, 48.05115509033203, 48.64370346069336, 49.05967712402344, 49.34980392456055, 49.551246643066406, 49.69068145751953, 49.78697967529297, 49.85338592529297
 };
 
 // 可选：如果 max_position_embeddings 与 original 不同，需要动态计算 scaling_factor
@@ -205,7 +213,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache(token_ids.size(), 128, 0, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 64, 0, cos_cache, sin_cache);
 
     ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
@@ -263,7 +271,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     }
     ncnn::Mat last_cos_cache;
     ncnn::Mat last_sin_cache;
-    generate_rope_embed_cache(1, 128, (int)token_ids.size(), last_cos_cache, last_sin_cache);
+    generate_rope_embed_cache(1, 64, (int)token_ids.size(), last_cos_cache, last_sin_cache);
     ncnn::Mat last_mask((int)token_ids.size() + 1, 1);
     last_mask.fill(0.0f);
 
@@ -325,13 +333,13 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 
 std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& input_text,
                                                  const std::shared_ptr<minicpm4_0_5b_ctx> ctx) {
-    auto token_ids = impl_->bpe.encode(input_text, true, false);
+    auto token_ids = impl_->bpe.encode(input_text, false, false);
     int last_token_id = token_ids.back();
     token_ids.pop_back();
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache(token_ids.size(), 64, 0, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 64, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
     ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
     {
@@ -387,7 +395,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     ncnn::Mat last_cos_cache;
     ncnn::Mat last_sin_cache;
 
-    generate_rope_embed_cache(1, 64, (int)token_ids.size(), last_cos_cache, last_sin_cache);
+    generate_rope_embed_cache(1, 64, (int)token_ids.size() + ctx->kv_cache[0].first.h, last_cos_cache, last_sin_cache);
     ncnn::Mat last_mask(ctx->kv_cache[0].first.h + 1, 1);
     last_mask.fill(0.0f);
 
@@ -444,7 +452,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
                             std::function<void(const std::string&)> callback) {
 
-    while (ctx->cur_token != impl_->im_end_id || impl_->im_end_id == impl_->bpe.special_ids().eos_id) {
+    while (ctx->cur_token != impl_->im_end_id && ctx->cur_token != impl_->bpe.special_ids().eos_id) {
         callback(impl_->bpe.id_to_token()[ctx->cur_token]);
 
         ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
