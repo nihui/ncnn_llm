@@ -126,6 +126,78 @@ std::vector<std::string> BpeTokenizer::Utf8Chars(const std::string& s) {
     return chars;
 }
 
+// ---------------- Byte Encoder/Decoder (New Logic) ----------------
+
+void BpeTokenizer::InitByteMaps() {
+    byte_encoder_.resize(256, 0);
+    byte_decoder_.clear();
+
+    // Logic based on GPT-2 byte encoder (map printable chars to themselves, others to 256+)
+    auto is_printable = [](int b) {
+        return (b >= '!' && b <= '~')     // '!' to '~'
+                || (b >= 161 && b <= 172)  // '¡' to '¬'
+                || (b >= 174 && b <= 255); // '®' to 'ÿ'
+    };
+
+    int n = 0;
+    for (int b = 0; b < 256; ++b) {
+        if (is_printable(b)) {
+            byte_encoder_[b] = static_cast<uint32_t>(b);
+        } else {
+            byte_encoder_[b] = static_cast<uint32_t>(256 + n);
+            n++;
+        }
+        // Build decoder map
+        byte_decoder_[byte_encoder_[b]] = static_cast<uint8_t>(b);
+    }
+}
+
+std::string BpeTokenizer::ByteEncode(const std::string& text) const {
+    std::string out;
+    out.reserve(text.size() * 2);
+
+    for (unsigned char b : text) {
+        uint32_t cp = byte_encoder_[b];
+        // Append cp as UTF-8
+        if (cp < 0x80) {
+            out += static_cast<char>(cp);
+        } else if (cp < 0x800) {
+            out += static_cast<char>((cp >> 6) | 0xC0);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        } else if (cp < 0x10000) {
+            out += static_cast<char>((cp >> 12) | 0xE0);
+            out += static_cast<char>(((cp >> 6) & 0x3F) | 0x80);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        } else {
+            out += static_cast<char>((cp >> 18) | 0xF0);
+            out += static_cast<char>(((cp >> 12) & 0x3F) | 0x80);
+            out += static_cast<char>(((cp >> 6) & 0x3F) | 0x80);
+            out += static_cast<char>((cp & 0x3F) | 0x80);
+        }
+    }
+    return out;
+}
+
+std::string BpeTokenizer::ByteDecode(const std::string& text) const {
+    std::string out;
+    out.reserve(text.size());
+    size_t i = 0;
+    uint32_t cp; size_t len;
+    while (i < text.size()) {
+        if (!NextUtf8(text, i, cp, len)) break;
+
+        auto it = byte_decoder_.find(cp);
+        if (it != byte_decoder_.end()) {
+            out += static_cast<char>(it->second);
+        } else {
+            // If codepoint is not in byte map, usually we ignore it or keep it
+            // if it's part of a special token that wasn't filtered.
+            // Here we ignore unmapped chars to ensure pure byte restoration.
+        }
+    }
+    return out;
+}
+
 // ---------------- Pretokenizer ----------------
 std::vector<std::string> BpeTokenizer::PretokenizeSentencePiece(const std::string& text) {
     static const std::string ws_mark = "▁";
@@ -235,7 +307,10 @@ BpeTokenizer::BpeTokenizer(BpeTokenizer&& other) noexcept
       additional_special_tokens_(std::move(other.additional_special_tokens_)),
       additional_special_token_ids_(std::move(other.additional_special_token_ids_)),
       additional_special_token_to_id_(std::move(other.additional_special_token_to_id_)),
-      additional_special_id_set_(std::move(other.additional_special_id_set_)) {
+      additional_special_id_set_(std::move(other.additional_special_id_set_)),
+      use_byte_encoder_(other.use_byte_encoder_),
+      byte_encoder_(std::move(other.byte_encoder_)),
+      byte_decoder_(std::move(other.byte_decoder_)) {
     // 迁移缓存（为安全起见加锁）
     std::lock_guard<std::mutex> lk(other.cache_mu_);
     bpe_cache_ = std::move(other.bpe_cache_);
@@ -255,6 +330,9 @@ BpeTokenizer& BpeTokenizer::operator=(BpeTokenizer&& other) noexcept {
         additional_special_token_ids_ = std::move(other.additional_special_token_ids_);
         additional_special_token_to_id_ = std::move(other.additional_special_token_to_id_);
         additional_special_id_set_ = std::move(other.additional_special_id_set_);
+        use_byte_encoder_ = other.use_byte_encoder_;
+        byte_encoder_ = std::move(other.byte_encoder_);
+        byte_decoder_ = std::move(other.byte_decoder_);
         bpe_cache_ = std::move(other.bpe_cache_);
         // cache_mu_ 仍为当前对象自己的 mutex
     }
@@ -266,7 +344,8 @@ BpeTokenizer BpeTokenizer::LoadFromFiles(const std::string& vocab_path,
                                          const std::string& merges_path,
                                          const SpecialTokensConfig& spec,
                                          bool add_special_if_missing,
-                                         bool fallback_to_chars) {
+                                         bool fallback_to_chars,
+                                         bool use_byte_encoder) {
     BpeTokenizer tok;
     tok.id_to_token_ = LoadVocab(vocab_path);
     if (tok.id_to_token_.empty()) {
@@ -275,6 +354,11 @@ BpeTokenizer BpeTokenizer::LoadFromFiles(const std::string& vocab_path,
     tok.token_to_id_ = BuildTokenToId(tok.id_to_token_);
     tok.merges_rank_ = LoadMergesRank(merges_path);
     tok.fallback_to_chars_ = fallback_to_chars;
+    tok.use_byte_encoder_ = use_byte_encoder;
+
+    if (tok.use_byte_encoder_) {
+        tok.InitByteMaps();
+    }
 
     tok.EnsureSpecialTokens(spec, add_special_if_missing);
     // 显式移动，避免 MSVC 尝试拷贝
@@ -368,10 +452,20 @@ std::vector<int> BpeTokenizer::encode(const std::string& text,
 
     auto flush_buffer = [&]() {
         if (buffer.empty()) return;
-        auto pieces = PretokenizeSentencePiece(buffer);
-        for (const auto& p : pieces) {
-            const auto& toks = BpeForPieceCached(p);
+
+        if (use_byte_encoder_) {
+            // Mode 2: Byte-Level Encoding
+            // Encode raw bytes to mapped unicode chars
+            std::string encoded_s = ByteEncode(buffer);
+            // Perform BPE on the entire encoded string
+            const auto& toks = BpeForPieceCached(encoded_s);
             TokensToIds(toks, ids);
+        } else {
+            auto pieces = PretokenizeSentencePiece(buffer);
+            for (const auto& p : pieces) {
+                const auto& toks = BpeForPieceCached(p);
+                TokensToIds(toks, ids);
+            }
         }
         buffer.clear();
     };
@@ -434,22 +528,27 @@ std::string BpeTokenizer::decode(const std::vector<int>& ids, bool skip_special_
     }
 
     if (!s.empty()) {
-        std::string out;
-        out.reserve(s.size());
-        size_t i = 0;
-        while (i < s.size()) {
-            uint32_t cp; size_t len;
-            if (!NextUtf8(s, i, cp, len)) break;
-            if (cp == 0x2581) {
-                out.push_back(' ');
-            } else {
-                out.append(s, i - len, len);
+        // Branch based on encoding mode
+        if (use_byte_encoder_) {
+            return ByteDecode(s);
+        } else {
+            std::string out;
+            out.reserve(s.size());
+            size_t i = 0;
+            while (i < s.size()) {
+                uint32_t cp; size_t len;
+                if (!NextUtf8(s, i, cp, len)) break;
+                if (cp == 0x2581) {
+                    out.push_back(' ');
+                } else {
+                    out.append(s, i - len, len);
+                }
             }
+            size_t b = 0;
+            while (b < out.size() && out[b] == ' ') ++b;
+            if (b > 0) out.erase(0, b);
+            return out;
         }
-        size_t b = 0;
-        while (b < out.size() && out[b] == ' ') ++b;
-        if (b > 0) out.erase(0, b);
-        return out;
     }
     return s;
 }
