@@ -36,8 +36,9 @@ int main() {
         cfg.top_k = 40;
         cfg.top_p = 0.9;
         cfg.temperature = 0.7;
+        cfg.do_sample = false;
 
-        model.generate(ctx, cfg, [](const std::string& token){
+        ctx = model.generate(ctx, cfg, [](const std::string& token){
             std::string token_str = token;
             // replace /t/n with actual newline
             size_t pos = 0;
