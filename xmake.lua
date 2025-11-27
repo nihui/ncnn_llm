@@ -43,3 +43,12 @@ end
 
 add_example("nllb_main")
 add_example("minicpm4_main")
+
+target("benchllm")
+    set_kind("binary")
+    add_files("benchmark/benchllm.cpp")
+
+    add_deps("ncnn_llm")
+    add_packages("ncnn", "opencv-mobile")
+
+    set_rundir("$(projectdir)/assets/minicpm4_0.5b/")
