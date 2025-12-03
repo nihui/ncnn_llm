@@ -39,6 +39,11 @@ jobs:
     - name: Build Project
       run: xmake -y -v
 
+    - name: Run Tests (Skipped for missing target)
+      shell: bash
+      run: |
+        echo "Skipping 'xmake run tests' as the target 'tests' is not defined."
+
     - name: Package Binaries (Linux/macOS)
       if: runner.os != 'Windows'
       id: package_unix
@@ -48,9 +53,14 @@ jobs:
           echo "Error: Could not find release directory in 'build/'."
           exit 1
         fi
-
+        
+        echo "--- Debug: Contents of Release Directory ($RELEASE_DIR) ---"
+        ls -lR "$RELEASE_DIR"
+        echo "---------------------------------------------------------"
+        
         ARCHIVE_NAME="ncnn_llm_${{ runner.os }}.zip"
         echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
+        
         zip -jrq "$ARCHIVE_NAME" "$RELEASE_DIR/"*
 
     - name: Package Binaries (Windows)
@@ -63,9 +73,14 @@ jobs:
             Write-Error "Could not find release directory in 'build/'."
             exit 1
         }
-
-        $ARCHIVE_NAME = "ncnn_llm_windows.zip"
+        
+        Write-Host "--- Debug: Contents of Release Directory ($RELEASE_DIR) ---"
+        Get-ChildItem -Recurse -Path $RELEASE_DIR | Format-Table Name, Length -AutoSize
+        Write-Host "---------------------------------------------------------"
+        
+        $ARCHIVE_NAME = "ncnn_llm_Windows.zip"
         echo "archive_name=$ARCHIVE_NAME" >> $env:GITHUB_OUTPUT
+        
         Compress-Archive -Path "$RELEASE_DIR\*" -DestinationPath $ARCHIVE_NAME -Force
 
     - name: Upload Packaged Artifact
@@ -79,7 +94,7 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
-
+    
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
