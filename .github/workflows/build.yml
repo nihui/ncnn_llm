@@ -37,6 +37,7 @@ jobs:
       run: xmake -y -v
 
     - name: Run Tests
+      shell: bash
       run: |
         if xmake --help | grep -q "tests"; then
           xmake run tests || true
