@@ -2,6 +2,8 @@ name: xmake-build
 
 on:
   push:
+    branches: [ main, ci_test ]
+    tags: [ 'v*' ]  # git tag e.g. v1.0.0
   pull_request:
   workflow_dispatch:
 
@@ -49,3 +51,27 @@ jobs:
         name: ${{ matrix.os }}-binaries
         path: |
           build/*
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
