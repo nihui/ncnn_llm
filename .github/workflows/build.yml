@@ -48,40 +48,43 @@ jobs:
       if: runner.os != 'Windows'
       id: package_unix
       run: |
-        RELEASE_DIR=$(find build -type d -name "release" | head -n 1)
-        if [[ -z "$RELEASE_DIR" ]]; then
-          echo "Error: Could not find release directory in 'build/'."
+        OUTPUT_DIR=$(xmake show buildir -m release) 
+
+        if [[ -z "$OUTPUT_DIR" || ! -d "$OUTPUT_DIR" ]]; then
+          echo "Error: Could not determine or find the xmake output directory."
           exit 1
         fi
-        
-        echo "--- Debug: Contents of Release Directory ($RELEASE_DIR) ---"
-        ls -lR "$RELEASE_DIR"
+
+        echo "--- Debug: Contents of Final Output Directory ($OUTPUT_DIR) ---"
+        # Display files and sizes from the correct output location
+        ls -lR "$OUTPUT_DIR"
         echo "---------------------------------------------------------"
-        
+
         ARCHIVE_NAME="ncnn_llm_${{ runner.os }}.zip"
         echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
-        
-        zip -jrq "$ARCHIVE_NAME" "$RELEASE_DIR/"*
+
+        zip -r "$ARCHIVE_NAME" "$OUTPUT_DIR/"*
 
     - name: Package Binaries (Windows)
       if: runner.os == 'Windows'
       id: package_windows
       shell: powershell
       run: |
-        $RELEASE_DIR = Get-ChildItem -Path 'build' -Directory -Recurse | Where-Object { $_.Name -eq 'release' } | Select-Object -ExpandProperty FullName -First 1
-        if ([string]::IsNullOrEmpty($RELEASE_DIR)) {
-            Write-Error "Could not find release directory in 'build/'."
+        $OUTPUT_DIR = (xmake show buildir -m release)
+        
+        if ([string]::IsNullOrEmpty($OUTPUT_DIR) -or -not (Test-Path $OUTPUT_DIR)) {
+            Write-Error "Could not determine or find the xmake output directory."
             exit 1
         }
-        
-        Write-Host "--- Debug: Contents of Release Directory ($RELEASE_DIR) ---"
-        Get-ChildItem -Recurse -Path $RELEASE_DIR | Format-Table Name, Length -AutoSize
+
+        Write-Host "--- Debug: Contents of Final Output Directory ($OUTPUT_DIR) ---"
+        Get-ChildItem -Recurse -Path $OUTPUT_DIR | Format-Table Name, Length -AutoSize
         Write-Host "---------------------------------------------------------"
-        
+
         $ARCHIVE_NAME = "ncnn_llm_Windows.zip"
         echo "archive_name=$ARCHIVE_NAME" >> $env:GITHUB_OUTPUT
-        
-        Compress-Archive -Path "$RELEASE_DIR\*" -DestinationPath $ARCHIVE_NAME -Force
+
+        Compress-Archive -Path "$OUTPUT_DIR\*" -DestinationPath $ARCHIVE_NAME -Force
 
     - name: Upload Packaged Artifact
       uses: actions/upload-artifact@v4
@@ -89,7 +92,7 @@ jobs:
         name: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
         path: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
         retention-days: 90
-          
+
   release:
     name: Create GitHub Release
     needs: build
