@@ -12,6 +12,10 @@ end
 add_requires("ncnn master", {
     configs = {
         vulkan = true,
+        simple_vulkan = true,
+        with_examples = false,
+        with_tests = false,
+        with_tools = false
     }
 })
 
