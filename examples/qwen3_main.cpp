@@ -1,21 +1,21 @@
-#include "minicpm4_0.5b.h"
+#include "qwen3_0.6b.h"
 #include "utils/prompt.h"
 #include <cstdio>
 #include <iostream>
 
 
 int main() {
-    
-    minicpm4_0_5b model("./assets/minicpm4_0.5b/minicpm4_embed_token.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_embed_token.ncnn.bin",
-                        "./assets/minicpm4_0.5b/minicpm4_proj_out.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_decoder.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_decoder.ncnn.bin",
-                        "./assets/minicpm4_0.5b/vocab.txt",
-                        "./assets/minicpm4_0.5b/merges.txt",
+    qwen3_0_6b model(
+                        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.param",
+                        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.bin",
+                        "./assets/qwen3_0.6b/qwen3_proj_out.ncnn.param",
+                        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.param",
+                        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.bin",
+                        "./assets/qwen3_0.6b/vocab.txt",
+                        "./assets/qwen3_0.6b/merges.txt",
                        /*use_vulkan=*/false);
 
-    std::cout << "Chat with MiniCPM4-0.5B! Type 'exit' or 'quit' to end the conversation.\n";
+    std::cout << "Chat with Qwen3-0.6B! Type 'exit' or 'quit' to end the conversation.\n";
 
     std::string prompt = apply_chat_template({
         {"system", "You are a helpful assistant."},
@@ -33,12 +33,11 @@ int main() {
         std::string user_message = apply_chat_template({
             {"user", input}
         }, {}, true, false);
-
         ctx = model.prefill(user_message, ctx);
         
         std::cout << "Assistant: ";
         GenerateConfig cfg;
-        cfg.beam_size = 2;
+        cfg.beam_size = 1;
         cfg.top_k = 40;
         cfg.top_p = 0.9;
         cfg.temperature = 0.7;
@@ -47,7 +46,7 @@ int main() {
         ctx = model.generate(ctx, cfg, [](const std::string& token){
             std::cout << token << std::flush;
         });
-        std::cout << std::endl;
+        std::cout << "\n";
     }
 
     return 0;

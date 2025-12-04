@@ -16,7 +16,7 @@ add_requires("ncnn master", {
 })
 
 add_requires("opencv-mobile")
-
+add_requires("nlohmann_json")
 
 add_includedirs("src/")
 
@@ -27,8 +27,9 @@ target("ncnn_tokenizer")
 target("ncnn_llm")
     set_kind("static")
     add_files("src/*.cpp")
+    add_files("src/utils/*.cpp")
     add_deps("ncnn_tokenizer")
-    add_packages("ncnn", "opencv-mobile")
+    add_packages("ncnn", "opencv-mobile", "nlohmann_json")
 
 function add_example(repo)
     target(repo)
@@ -36,13 +37,14 @@ function add_example(repo)
         add_includedirs("examples/")
         add_files("examples/" .. repo .. ".cpp")
         add_deps("ncnn_llm")
-        add_packages("ncnn", "opencv-mobile")
+        add_packages("ncnn", "opencv-mobile", "nlohmann_json")
 
         set_rundir("$(projectdir)/")
 end
 
 add_example("nllb_main")
 add_example("minicpm4_main")
+add_example("qwen3_main")
 add_example("bytelevelbpe_main")
 
 target("benchllm")

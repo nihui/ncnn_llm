@@ -16,11 +16,11 @@ struct GenerateConfig {
     int do_sample = 1;
 };
 
-struct minicpm4_0_5b_ctx;
+struct qwen3_0_6b_ctx;
 
-class minicpm4_0_5b {
+class qwen3_0_6b {
 public:
-    minicpm4_0_5b(std::string embed_param,
+    qwen3_0_6b(std::string embed_param,
               std::string embed_bin,
               std::string proj_out_param,
               std::string decoder_param,
@@ -29,16 +29,16 @@ public:
               std::string merges_file,
               bool use_vulkan);
 
-    ~minicpm4_0_5b();
+    ~qwen3_0_6b();
 
-    std::shared_ptr<minicpm4_0_5b_ctx> prefill(const std::string& input_text);
+    std::shared_ptr<qwen3_0_6b_ctx> prefill(const std::string& input_text);
 
-    std::shared_ptr<minicpm4_0_5b_ctx> prefill(const std::string& input_text,
-                                         const std::shared_ptr<minicpm4_0_5b_ctx> ctx);
+    std::shared_ptr<qwen3_0_6b_ctx> prefill(const std::string& input_text,
+                                         const std::shared_ptr<qwen3_0_6b_ctx> ctx);
 
-    std::shared_ptr<minicpm4_0_5b_ctx> generate(const std::shared_ptr<minicpm4_0_5b_ctx>& ctx, const GenerateConfig& cfg, std::function<void(const std::string&)> callback);
+    std::shared_ptr<qwen3_0_6b_ctx> generate(const std::shared_ptr<qwen3_0_6b_ctx>& ctx, const GenerateConfig& cfg, std::function<void(const std::string&)> callback);
 
-    bool decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
+    bool decode(std::shared_ptr<qwen3_0_6b_ctx> ctx,
                 std::function<void(const std::string&)> callback);
 
 private:

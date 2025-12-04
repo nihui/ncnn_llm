@@ -1,4 +1,4 @@
-#include "minicpm4_0.5b.h"
+#include "qwen3_0.6b.h"
 
 #include <cstdio>
 #include <memory>
@@ -13,9 +13,9 @@
 
 static std::mt19937 rng(std::random_device{}());
 
-const static int attn_cnt = 24;
+const static int attn_cnt = 28;
 
-struct minicpm4_0_5b_ctx {
+struct qwen3_0_6b_ctx {
     std::vector<std::pair<ncnn::Mat, ncnn::Mat>> kv_cache;
 
     int cur_token = 0;
@@ -78,16 +78,16 @@ static int sample_from_probs(const std::vector<float>& probs) {
 //                     Beam 状态结构
 // ===============================================================
 struct Beam {
-    std::shared_ptr<minicpm4_0_5b_ctx> ctx;
+    std::shared_ptr<qwen3_0_6b_ctx> ctx;
     float score = 0.f;
     bool finished = false;
     std::vector<int> tokens;
 };
 
 // 深拷贝 KV Cache
-static std::shared_ptr<minicpm4_0_5b_ctx>
-clone_ctx(const std::shared_ptr<minicpm4_0_5b_ctx>& src) {
-    auto dst = std::make_shared<minicpm4_0_5b_ctx>();
+static std::shared_ptr<qwen3_0_6b_ctx>
+clone_ctx(const std::shared_ptr<qwen3_0_6b_ctx>& src) {
+    auto dst = std::make_shared<qwen3_0_6b_ctx>();
     dst->cur_token = src->cur_token;
     dst->kv_cache.resize(src->kv_cache.size());
     for (size_t i = 0; i < src->kv_cache.size(); ++i) {
@@ -97,8 +97,7 @@ clone_ctx(const std::shared_ptr<minicpm4_0_5b_ctx>& src) {
     return dst;
 }
 
-
-class minicpm4_0_5b::Impl {
+class qwen3_0_6b::Impl {
 public:
     ncnn::Net embed_net;
     ncnn::Net proj_out_net;
@@ -119,14 +118,11 @@ public:
         : bpe(BpeTokenizer::LoadFromFiles(
               vocab_file,
               merges_file,
-              SpecialTokensConfig{
-                  .bos_token = "<s>",
-                  .eos_token = "</s>",
-                  .unk_token = "<unk>",
-                  .sep_token = "<SEP>",
-                  .cls_token = "<CLS>",
-                  .mask_token = "<mask>",
-              })) {
+              SpecialTokensConfig{},
+            false,
+            true,
+            true
+            )) {
         if (use_vulkan) {
             embed_net.opt.use_vulkan_compute = true;
             proj_out_net.opt.use_vulkan_compute = true;
@@ -139,15 +135,34 @@ public:
         decoder_net.load_param(decoder_param.c_str());
         decoder_net.load_model(decoder_bin.c_str());
 
-        bpe.AddAdditionalSpecialToken("<|im_end|>");
+        bpe.AddAdditionalSpecialToken("<|endoftext|>");
         bpe.AddAdditionalSpecialToken("<|im_start|>");
-        bpe.AddAdditionalSpecialToken("<|tool_call|>");
-        bpe.AddAdditionalSpecialToken("<|execute_start|>");
-        bpe.AddAdditionalSpecialToken("<|execute_end|>");
+        bpe.AddAdditionalSpecialToken("<|im_end|>");
+        bpe.AddAdditionalSpecialToken("<|object_ref_start|>");
+        bpe.AddAdditionalSpecialToken("<|object_ref_end|>");
+        bpe.AddAdditionalSpecialToken("<|box_start|>");
+        bpe.AddAdditionalSpecialToken("<|box_end|>");
+        bpe.AddAdditionalSpecialToken("<|quad_start|>");
+        bpe.AddAdditionalSpecialToken("<|quad_end|>");
+        bpe.AddAdditionalSpecialToken("<|vision_start|>");
+        bpe.AddAdditionalSpecialToken("<|vision_end|>");
+        bpe.AddAdditionalSpecialToken("<|vision_pad|>");
+        bpe.AddAdditionalSpecialToken("<|image_pad|>");
+        bpe.AddAdditionalSpecialToken("<|video_pad|>");
+        bpe.AddAdditionalSpecialToken("<tool_call>");
+        bpe.AddAdditionalSpecialToken("</tool_call>");
         bpe.AddAdditionalSpecialToken("<|fim_prefix|>");
         bpe.AddAdditionalSpecialToken("<|fim_middle|>");
         bpe.AddAdditionalSpecialToken("<|fim_suffix|>");
+        bpe.AddAdditionalSpecialToken("<|fim_pad|>");
+        bpe.AddAdditionalSpecialToken("<|repo_name|>");
+        bpe.AddAdditionalSpecialToken("<|file_sep|>");
+        bpe.AddAdditionalSpecialToken("<tool_response>");
+        bpe.AddAdditionalSpecialToken("</tool_response>");
+        bpe.AddAdditionalSpecialToken("<think>");
+        bpe.AddAdditionalSpecialToken("</think>");
 
+        
         auto it = bpe.token_to_id().find("<|im_end|>");
         if (it != bpe.token_to_id().end()) {
             im_end_id = it->second;
@@ -155,7 +170,7 @@ public:
     }
 };
 
-minicpm4_0_5b::minicpm4_0_5b(std::string embed_param,
+qwen3_0_6b::qwen3_0_6b(std::string embed_param,
                                  std::string embed_bin,
                                  std::string proj_out_param,
                                  std::string decoder_param,
@@ -174,16 +189,16 @@ minicpm4_0_5b::minicpm4_0_5b(std::string embed_param,
     
 }
 
-minicpm4_0_5b::~minicpm4_0_5b() = default;
+qwen3_0_6b::~qwen3_0_6b() = default;
 
-std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& input_text) {
+std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_text) {
     auto token_ids = impl_->bpe.encode(input_text, false, false);
     int last_token_id = token_ids.back();
     token_ids.pop_back();
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache_LongRoPE(token_ids.size(), 64, 0, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 128, 0, cos_cache, sin_cache);
 
     ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
@@ -196,8 +211,8 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     /*
     ncnn::Mat token_embed(1024, src-seqlen);
     ncnn::Mat mask(cur-seqlen, src-seqlen);
-    ncnn::Mat cos_cache(32, cur-seqlen);
-    ncnn::Mat sin_cache(32, cur-seqlen);
+    ncnn::Mat cos_cache(64, cur-seqlen);
+    ncnn::Mat sin_cache(64, cur-seqlen);
     */
 
     ncnn::Mat mask((int)token_ids.size(), (int)token_ids.size());
@@ -241,7 +256,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     }
     ncnn::Mat last_cos_cache;
     ncnn::Mat last_sin_cache;
-    generate_rope_embed_cache(1, 64, (int)token_ids.size(), last_cos_cache, last_sin_cache);
+    generate_rope_embed_cache(1, 128, (int)token_ids.size(), last_cos_cache, last_sin_cache);
     ncnn::Mat last_mask((int)token_ids.size() + 1, 1);
     last_mask.fill(0.0f);
 
@@ -294,16 +309,16 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
         next_token_id = max_idx;
     }
 
-    auto ctx = std::make_shared<minicpm4_0_5b_ctx>();
+    auto ctx = std::make_shared<qwen3_0_6b_ctx>();
     ctx->kv_cache = std::move(kv_cache);
     ctx->cur_token = next_token_id;
 
     return ctx;
 }
 
-std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& input_text,
-                                                 const std::shared_ptr<minicpm4_0_5b_ctx> ctx) {
-    std::shared_ptr<minicpm4_0_5b_ctx> new_ctx = clone_ctx(ctx);
+std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_text,
+                                                 const std::shared_ptr<qwen3_0_6b_ctx> ctx) {
+    std::shared_ptr<qwen3_0_6b_ctx> new_ctx = clone_ctx(ctx);
 
     auto token_ids = impl_->bpe.encode(input_text, false, false);
     int last_token_id = token_ids.back();
@@ -311,7 +326,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache(token_ids.size(), 64, new_ctx->kv_cache[0].first.h, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 128, new_ctx->kv_cache[0].first.h, cos_cache, sin_cache);
     ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
     {
@@ -367,7 +382,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     ncnn::Mat last_cos_cache;
     ncnn::Mat last_sin_cache;
 
-    generate_rope_embed_cache(1, 64, new_ctx->kv_cache[0].first.h, last_cos_cache, last_sin_cache);
+    generate_rope_embed_cache(1, 128, new_ctx->kv_cache[0].first.h, last_cos_cache, last_sin_cache);
     ncnn::Mat last_mask(new_ctx->kv_cache[0].first.h + 1, 1);
     last_mask.fill(0.0f);
 
@@ -421,11 +436,11 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
     return new_ctx;
 }
 
-bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
+bool qwen3_0_6b::decode(std::shared_ptr<qwen3_0_6b_ctx> ctx,
                             std::function<void(const std::string&)> callback) {
 
     while (ctx->cur_token != impl_->im_end_id && ctx->cur_token != impl_->bpe.special_ids().eos_id) {
-        callback(impl_->bpe.decode({ctx->cur_token}));
+        callback(impl_->bpe.decode({ctx->cur_token}, false));
 
         ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
         ncnn::Mat cur_token_embed;
@@ -436,7 +451,7 @@ bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
         }
         ncnn::Mat cos_cache;
         ncnn::Mat sin_cache;
-        generate_rope_embed_cache(1, 64, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
+        generate_rope_embed_cache(1, 128, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
         ncnn::Mat mask(ctx->kv_cache[0].first.h + 1, 1);
         mask.fill(0.0f);
 
@@ -496,8 +511,8 @@ bool minicpm4_0_5b::decode(std::shared_ptr<minicpm4_0_5b_ctx> ctx,
 }
 
 
-std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
-    const std::shared_ptr<minicpm4_0_5b_ctx>& ctx_in,
+std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
+    const std::shared_ptr<qwen3_0_6b_ctx>& ctx_in,
     const GenerateConfig& cfg,
     std::function<void(const std::string&)> callback)
 {
@@ -517,7 +532,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
                 break;
             }
 
-            callback(impl_->bpe.decode({ctx->cur_token}));
+            callback(impl_->bpe.decode({ctx->cur_token}, false));
 
             ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
             ncnn::Mat cur_embed;
@@ -528,7 +543,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
             }
 
             ncnn::Mat cos_cache, sin_cache;
-            generate_rope_embed_cache(1, 64, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
+            generate_rope_embed_cache(1, 128, ctx->kv_cache[0].first.h, cos_cache, sin_cache);
 
             ncnn::Mat mask(ctx->kv_cache[0].first.h + 1, 1);
             mask.fill(0.f);
@@ -597,7 +612,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
 
     // ---------- Beam Search ----------
 
-    callback(impl_->bpe.decode({ctx_in->cur_token}));
+    callback(impl_->bpe.decode({ctx_in->cur_token}, false));
 
     auto base_ctx = clone_ctx(ctx_in);
     std::vector<Beam> beams;
@@ -628,7 +643,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
             }
 
             ncnn::Mat cos_cache, sin_cache;
-            generate_rope_embed_cache(1, 64, bctx.kv_cache[0].first.h, cos_cache, sin_cache);
+            generate_rope_embed_cache(1, 128, bctx.kv_cache[0].first.h, cos_cache, sin_cache);
 
             ncnn::Mat mask(bctx.kv_cache[0].first.h + 1, 1);
             mask.fill(0.f);
@@ -717,7 +732,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
         if (tok == eos || tok == im_end || best.finished) {
             break;
         }
-        callback(impl_->bpe.decode({tok}));
+        callback(impl_->bpe.decode({tok}, false));
 
         bool all_finished = true;
         for (auto& b : beams) {
