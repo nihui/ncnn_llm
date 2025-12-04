@@ -2,11 +2,14 @@ name: xmake-build
 
 on:
   push:
+    branches: [ main, ci_test ]
+    tags: [ 'v*' ] # git tag e.g. v1.0.0
   pull_request:
   workflow_dispatch:
 
 jobs:
   build:
+    name: Build (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -15,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout
+    - name: Checkout Code
       uses: actions/checkout@v4
 
     - name: Setup xmake
@@ -30,21 +33,86 @@ jobs:
         path: ~/.xmake
         key: xmake-${{ runner.os }}-${{ hashFiles('xmake.lua') }}
 
-    - name: Configure
+    - name: Configure Project
       run: xmake config -y -m release
 
-    - name: Build
+    - name: Build Project
       run: xmake -y -v
 
-    - name: Run Tests
+    - name: Install to Distribution Directory
+      run: xmake install -o dist -y
+
+    - name: Run Tests (Skipped for missing target)
+      shell: bash
       run: |
-        if xmake --help | grep -q "tests"; then
-          xmake run tests || true
+        echo "Skipping 'xmake run tests' as the target 'tests' is not defined."
+
+    - name: Package Binaries (Linux/macOS)
+      if: runner.os != 'Windows'
+      id: package_unix
+      run: |
+        if [ ! -d "dist" ]; then
+          echo "Error: dist directory not found. Did xmake install fail?"
+          exit 1
         fi
 
-    - name: Upload binaries
+        echo "--- Debug: Contents of Dist Directory ---"
+        ls -lR dist
+        echo "-----------------------------------------"
+
+        ARCHIVE_NAME="ncnn_llm_${{ runner.os }}.zip"
+
+        cd dist
+        zip -r "../$ARCHIVE_NAME" .
+        cd ..
+
+        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
+
+    - name: Package Binaries (Windows)
+      if: runner.os == 'Windows'
+      id: package_windows
+      shell: powershell
+      run: |
+        if (-not (Test-Path "dist")) {
+            Write-Error "dist directory not found."
+            exit 1
+        }
+
+        Write-Host "--- Debug: Contents of Dist Directory ---"
+        Get-ChildItem -Recurse -Path dist | Format-Table Name, Length -AutoSize
+        Write-Host "-----------------------------------------"
+
+        $ARCHIVE_NAME = "ncnn_llm_Windows.zip"
+        
+        Compress-Archive -Path "dist\*" -DestinationPath $ARCHIVE_NAME -Force
+        
+        echo "archive_name=$ARCHIVE_NAME" >> $env:GITHUB_OUTPUT
+
+    - name: Upload Packaged Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.os }}-binaries
-        path: |
-          build/*
+        name: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
+        path: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
+        retention-days: 90
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts 
+          
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
