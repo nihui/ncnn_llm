@@ -177,7 +177,7 @@ minicpm4_0_5b::minicpm4_0_5b(std::string embed_param,
 minicpm4_0_5b::~minicpm4_0_5b() = default;
 
 std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& input_text) {
-    auto token_ids = impl_->bpe.encode(input_text, false, false);
+    auto token_ids = impl_->bpe.encode(input_text, true, false);
     int last_token_id = token_ids.back();
     token_ids.pop_back();
 
