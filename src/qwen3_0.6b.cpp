@@ -91,8 +91,8 @@ clone_ctx(const std::shared_ptr<qwen3_0_6b_ctx>& src) {
     dst->cur_token = src->cur_token;
     dst->kv_cache.resize(src->kv_cache.size());
     for (size_t i = 0; i < src->kv_cache.size(); ++i) {
-        dst->kv_cache[i].first = src->kv_cache[i].first.clone();
-        dst->kv_cache[i].second = src->kv_cache[i].second.clone();
+        dst->kv_cache[i].first = src->kv_cache[i].first;
+        dst->kv_cache[i].second = src->kv_cache[i].second;
     }
     return dst;
 }
