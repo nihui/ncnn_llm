@@ -1,16 +1,18 @@
 #include "qwen3_0.6b.h"
 
+#include <array>
 #include <cstdio>
 #include <memory>
 #include <ncnn/mat.h>
 #include <ncnn/net.h>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
-#include <random>
 
 #include "utils/tokenizer/bpe_tokenizer.h"
 #include "utils/rope_embed.h"
+#include "utils/prompt.h"   // 补充的头文件
 
 #include "nlohmann/json.hpp"
 
@@ -62,7 +64,6 @@ static void apply_top_p(std::vector<float>& probs, float p) {
             break;
         }
     }
-    // 把在 cumulative p 以外的全部置 0
     std::vector<char> keep(probs.size(), 0);
     for (size_t i = 0; i < cutoff; ++i) {
         keep[v[i].second] = 1;
@@ -77,17 +78,15 @@ static int sample_from_probs(const std::vector<float>& probs) {
     return dist(rng);
 }
 
-// ===============================================================
-//                     Beam 状态结构
-// ===============================================================
 struct Beam {
     std::shared_ptr<qwen3_0_6b_ctx> ctx;
     float score = 0.f;
     bool finished = false;
+    bool in_tool_call = false;
+    std::string tool_buffer;
     std::vector<int> tokens;
 };
 
-// 深拷贝 KV Cache
 static std::shared_ptr<qwen3_0_6b_ctx>
 clone_ctx(const std::shared_ptr<qwen3_0_6b_ctx>& src) {
     auto dst = std::make_shared<qwen3_0_6b_ctx>();
@@ -111,6 +110,8 @@ public:
     int im_end_id = -1;
     int tool_call_id = -1;
     int tool_call_end_id = -1;
+
+    std::vector<nlohmann::json> tools;
 
     Impl(std::string embed_param,
          std::string embed_bin,
@@ -206,6 +207,20 @@ qwen3_0_6b::qwen3_0_6b(std::string embed_param,
 
 qwen3_0_6b::~qwen3_0_6b() = default;
 
+std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::define_tools(
+    const std::shared_ptr<qwen3_0_6b_ctx>& ctx,
+    const std::vector<nlohmann::json>& tools,
+    const std::string& system_prompt) {
+
+    impl_->tools = tools;
+    std::string tool_prompt = apply_chat_template({
+        {"system", system_prompt}
+    }, tools, false, false);
+
+    if (ctx) return prefill(tool_prompt, ctx);
+    return prefill(tool_prompt);
+}
+
 std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_text) {
     auto token_ids = impl_->bpe.encode(input_text, false, false);
     int last_token_id = token_ids.back();
@@ -222,13 +237,6 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_tex
         ex.input("in0", input_ids_mat);
         ex.extract("out0", token_embed);
     }
-
-    /*
-    ncnn::Mat token_embed(1024, src-seqlen);
-    ncnn::Mat mask(cur-seqlen, src-seqlen);
-    ncnn::Mat cos_cache(64, cur-seqlen);
-    ncnn::Mat sin_cache(64, cur-seqlen);
-    */
 
     ncnn::Mat mask((int)token_ids.size(), (int)token_ids.size());
     mask.fill(0.0f);
@@ -261,7 +269,6 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_tex
         }
     }
 
-    // full process last token
     ncnn::Mat last_token_mat = ncnn::Mat(1, 1, (void*)&last_token_id).clone();
     ncnn::Mat last_token_embed;
     {
@@ -386,7 +393,6 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_tex
         }
     }
 
-    // full process last token
     ncnn::Mat last_token_mat = ncnn::Mat(1, 1, (void*)&last_token_id).clone();
     ncnn::Mat last_token_embed;
     {
@@ -525,7 +531,6 @@ bool qwen3_0_6b::decode(std::shared_ptr<qwen3_0_6b_ctx> ctx,
     return true;
 }
 
-
 std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     const std::shared_ptr<qwen3_0_6b_ctx>& ctx_in,
     const GenerateConfig& cfg,
@@ -535,8 +540,44 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     const int eos     = impl_->bpe.special_ids().eos_id;
     const int im_end  = impl_->im_end_id;
 
-    bool flag_in_tool_call = false;
-    std::string tool_call_content;
+    auto handle_tool = [&](const std::string& tool_call_text,
+                           std::shared_ptr<qwen3_0_6b_ctx>& ctx_ref) {
+        if (cfg.debug) {
+            fprintf(stderr, "\n[Debug] Raw tool_call text: %s\n", tool_call_text.c_str());
+        }
+
+        nlohmann::json tool_call_json;
+        try {
+            tool_call_json = nlohmann::json::parse(tool_call_text);
+        } catch (const std::exception& e) {
+            fprintf(stderr, "\n[Error] Failed to parse tool call JSON: %s\n", e.what());
+            tool_call_json = nlohmann::json::object();
+        }
+
+        if (cfg.debug) {
+            fprintf(stderr, "[Debug] Parsed tool_call JSON:\n%s\n", tool_call_json.dump(2).c_str());
+        }
+
+        nlohmann::json tool_resp;
+        if (cfg.tool_callback) {
+            tool_resp = cfg.tool_callback(tool_call_json);
+        } else {
+            tool_resp = nlohmann::json{{"tool_call", tool_call_json}};
+        }
+
+        if (cfg.debug) {
+            fprintf(stderr, "[Debug] Tool callback response:\n%s\n", tool_resp.dump(2).c_str());
+        }
+
+        std::string tool_response_pre = "<|im_end|>\n<|im_start|>user\n<tool_response>\n\n";
+        std::string tool_response_post = "\n\n</tool_response><|im_end|>\n<|im_start|>assistant\n<think>\n</think>\n\n";
+
+        ctx_ref = prefill(tool_response_pre + tool_resp.dump() + tool_response_post, ctx_ref);
+
+        if (cfg.debug) {
+            fprintf(stderr, "[Debug] Tool response injected, continue decoding.\n");
+        }
+    };
 
     // ---------- Do Sample or Greedy ----------
     if (cfg.do_sample == 1 || cfg.beam_size <= 1) {
@@ -544,42 +585,30 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
         std::vector<int> history;
         history.push_back(ctx->cur_token);
 
+        bool flag_in_tool_call = false;
+        std::string tool_call_content;
+
         for (int step = 0; step < cfg.max_new_tokens; ++step) {
-            // Stop
             if (ctx->cur_token == eos || ctx->cur_token == im_end) {
                 break;
             }
 
             if (ctx->cur_token == impl_->tool_call_id) {
                 flag_in_tool_call = true;
-                fprintf(stderr,"\n[Debug] Entering tool call mode.\n");
+                if (cfg.debug) fprintf(stderr, "[Debug] Enter tool_call mode (greedy).\n");
             } else if (ctx->cur_token == impl_->tool_call_end_id) {
                 flag_in_tool_call = false;
-                
-                nlohmann::json tool_call_json;
-                try {
-                    tool_call_json = nlohmann::json::parse(tool_call_content);
-                } catch (const std::exception& e) {
-                    fprintf(stderr, "\n[Error] Failed to parse tool call JSON: %s\n", e.what());
-                    tool_call_json = nlohmann::json::object();
-                }
-                // print json with indentation
-                fprintf(stderr, "\n[Tool Call] %s\n", tool_call_json.dump(4).c_str());
-
-                std::string tool_response_pre = "<|im_end|>\n<|im_start|>user\n<tool_response>\n\n";
-                std::string tool_response_post = "\n\n</tool_response><|im_end|>\n<|im_start|>assistant\n<think>\n</think>\n\n";
-
-                ctx = prefill(tool_response_pre + "{\"result\": 114514}" + tool_response_post, ctx);
-
-                fprintf(stderr,"\n[Debug] Exiting tool call mode.\n");
-
+                if (cfg.debug) fprintf(stderr, "[Debug] Exit tool_call mode, handling call.\n");
+                handle_tool(tool_call_content, ctx);
+                tool_call_content.clear();
+                history.clear();
+                history.push_back(ctx->cur_token);
                 continue;
             } else if (flag_in_tool_call) {
-                fprintf(stderr, "%s", impl_->bpe.decode({ctx->cur_token}, false).c_str());
                 tool_call_content += impl_->bpe.decode({ctx->cur_token}, false);
-            }
-            else 
+            } else {
                 callback(impl_->bpe.decode({ctx->cur_token}, false));
+            }
 
             ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
             ncnn::Mat cur_embed;
@@ -634,7 +663,6 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             std::vector<float> logits(vocab_size);
             memcpy(logits.data(), logits_mat.data, sizeof(float) * vocab_size);
 
-            // repetition_penalty
             for (int t : history) {
                 logits[t] /= cfg.repetition_penalty;
             }
@@ -654,12 +682,10 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             history.push_back(next_id);
         }
 
-        return ctx;  // Update
+        return ctx;
     }
 
     // ---------- Beam Search ----------
-
-    callback(impl_->bpe.decode({ctx_in->cur_token}, false));
 
     auto base_ctx = clone_ctx(ctx_in);
     std::vector<Beam> beams;
@@ -669,6 +695,18 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     b0.ctx = base_ctx;
     b0.tokens.push_back(base_ctx->cur_token);
     beams.push_back(std::move(b0));
+
+    auto maybe_emit = [&](const Beam& best){
+        if (!best.in_tool_call
+            && best.ctx->cur_token != eos
+            && best.ctx->cur_token != im_end
+            && best.ctx->cur_token != impl_->tool_call_id
+            && best.ctx->cur_token != impl_->tool_call_end_id) {
+            callback(impl_->bpe.decode({best.ctx->cur_token}, false));
+        }
+    };
+
+    maybe_emit(beams[0]);
 
     for (int step = 0; step < cfg.max_new_tokens; ++step) {
         std::vector<Beam> candidates;
@@ -734,12 +772,10 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             std::vector<float> logits(vocab_size);
             memcpy(logits.data(), logits_mat.data, sizeof(float) * vocab_size);
 
-            // repetition_penalty
             for (int t : beam.tokens) {
                 logits[t] /= cfg.repetition_penalty;
             }
 
-            // softmax
             softmax_vec(logits, cfg.temperature);
 
             int K = std::min(cfg.beam_size, vocab_size);
@@ -754,6 +790,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             for (int i = 0; i < K; ++i) {
                 int tok = top[i].second;
                 float p  = top[i].first;
+
                 Beam nb;
                 nb.ctx = clone_ctx(beam.ctx);
                 nb.ctx->cur_token = tok;
@@ -761,6 +798,24 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                 nb.tokens.push_back(tok);
                 nb.score  = beam.score + std::log(p + 1e-9f);
                 nb.finished = (tok == eos || tok == im_end);
+                nb.in_tool_call = beam.in_tool_call;
+                nb.tool_buffer = beam.tool_buffer;
+
+                if (tok == impl_->tool_call_id) {
+                    nb.in_tool_call = true;
+                    if (cfg.debug) fprintf(stderr, "[Debug] Beam enter tool_call mode.\n");
+                } else if (tok == impl_->tool_call_end_id && nb.in_tool_call) {
+                    nb.in_tool_call = false;
+                    if (cfg.debug) fprintf(stderr, "[Debug] Beam exit tool_call, handling call.\n");
+                    handle_tool(nb.tool_buffer, nb.ctx);
+                    nb.tool_buffer.clear();
+                    nb.tokens.clear();
+                    nb.tokens.push_back(nb.ctx->cur_token);
+                    nb.finished = (nb.ctx->cur_token == eos || nb.ctx->cur_token == im_end);
+                } else if (nb.in_tool_call) {
+                    nb.tool_buffer += impl_->bpe.decode({tok}, false);
+                }
+
                 candidates.push_back(std::move(nb));
             }
         }
@@ -779,7 +834,8 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
         if (tok == eos || tok == im_end || best.finished) {
             break;
         }
-        callback(impl_->bpe.decode({tok}, false));
+
+        maybe_emit(best);
 
         bool all_finished = true;
         for (auto& b : beams) {
