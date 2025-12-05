@@ -12,7 +12,7 @@
 
 #include "utils/tokenizer/bpe_tokenizer.h"
 #include "utils/rope_embed.h"
-#include "utils/prompt.h"   // 补充的头文件
+#include "utils/prompt.h"
 
 #include "nlohmann/json.hpp"
 
@@ -25,6 +25,8 @@ struct qwen3_0_6b_ctx {
 
     int cur_token = 0;
 };
+
+// ==== Sampling utilities ====
 
 static void softmax_vec(std::vector<float>& logits, float temperature) {
     float max_logit = *std::max_element(logits.begin(), logits.end());
@@ -78,6 +80,8 @@ static int sample_from_probs(const std::vector<float>& probs) {
     return dist(rng);
 }
 
+// ==== Beam state structure ====
+
 struct Beam {
     std::shared_ptr<qwen3_0_6b_ctx> ctx;
     float score = 0.f;
@@ -98,6 +102,8 @@ clone_ctx(const std::shared_ptr<qwen3_0_6b_ctx>& src) {
     }
     return dst;
 }
+
+// ==== Qwen3_0_6b Implementation ====
 
 class qwen3_0_6b::Impl {
 public:
@@ -207,6 +213,8 @@ qwen3_0_6b::qwen3_0_6b(std::string embed_param,
 
 qwen3_0_6b::~qwen3_0_6b() = default;
 
+// ==== Helper functions ====
+
 std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::define_tools(
     const std::shared_ptr<qwen3_0_6b_ctx>& ctx,
     const std::vector<nlohmann::json>& tools,
@@ -220,6 +228,8 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::define_tools(
     if (ctx) return prefill(tool_prompt, ctx);
     return prefill(tool_prompt);
 }
+
+// ==== Prefill implementation ====
 
 std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::prefill(const std::string& input_text) {
     auto token_ids = impl_->bpe.encode(input_text, false, false);
@@ -696,6 +706,12 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     b0.tokens.push_back(base_ctx->cur_token);
     beams.push_back(std::move(b0));
 
+    // Detect for init token
+    if (beams[0].ctx->cur_token == impl_->tool_call_id) {
+        beams[0].in_tool_call = true;
+        if (cfg.debug) fprintf(stderr, "[Debug] Initial token is <tool_call>, enter tool_call mode.\n");
+    }
+
     auto maybe_emit = [&](const Beam& best){
         if (!best.in_tool_call
             && best.ctx->cur_token != eos
@@ -706,10 +722,12 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
         }
     };
 
-    maybe_emit(beams[0]);
-
     for (int step = 0; step < cfg.max_new_tokens; ++step) {
         std::vector<Beam> candidates;
+        candidates.reserve(cfg.beam_size * 2);
+
+        Beam tool_completed;
+        bool has_tool_completed = false;
 
         for (auto& beam : beams) {
             auto& bctx = *beam.ctx;
@@ -812,6 +830,8 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                     nb.tokens.clear();
                     nb.tokens.push_back(nb.ctx->cur_token);
                     nb.finished = (nb.ctx->cur_token == eos || nb.ctx->cur_token == im_end);
+                    tool_completed = nb;
+                    has_tool_completed = true;
                 } else if (nb.in_tool_call) {
                     nb.tool_buffer += impl_->bpe.decode({tok}, false);
                 }
@@ -820,21 +840,68 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             }
         }
 
+        if (has_tool_completed) {
+            if (cfg.debug) fprintf(stderr, "[Debug] Tool_call beam completed; promote to sole beam.\n");
+            beams.clear();
+            beams.push_back(tool_completed);
+            auto& b = beams[0];
+            if (!b.in_tool_call &&
+                b.ctx->cur_token != eos && b.ctx->cur_token != im_end &&
+                b.ctx->cur_token != impl_->tool_call_id && b.ctx->cur_token != impl_->tool_call_end_id) {
+                callback(impl_->bpe.decode({b.ctx->cur_token}, false));
+            }
+            if (b.ctx->cur_token == eos || b.ctx->cur_token == im_end || b.finished) break;
+            continue;
+        }
+
+        // Select top beams
         std::sort(candidates.begin(), candidates.end(),
                   [](const Beam& a, const Beam& b) {
                       return a.score > b.score;
                   });
-        if ((int)candidates.size() > cfg.beam_size)
-            candidates.resize(cfg.beam_size);
 
-        beams = std::move(candidates);
+        int best_tool_idx = -1;
+        for (int i = 0; i < (int)candidates.size(); ++i) {
+            if (candidates[i].in_tool_call || !candidates[i].tool_buffer.empty()) {
+                best_tool_idx = i;
+                break;
+            }
+        }
+
+        std::vector<Beam> next_beams;
+        next_beams.reserve(cfg.beam_size);
+        for (int i = 0; i < (int)candidates.size() && (int)next_beams.size() < cfg.beam_size; ++i) {
+            next_beams.push_back(candidates[i]);
+        }
+
+        if (best_tool_idx >= 0 && best_tool_idx >= (int)next_beams.size()) {
+            if ((int)next_beams.size() < cfg.beam_size) {
+                next_beams.push_back(candidates[best_tool_idx]);
+            } else {
+                next_beams.back() = candidates[best_tool_idx];
+            }
+        }
+
+        int promote_idx = -1;
+        for (int i = 0; i < (int)next_beams.size(); ++i) {
+            if (next_beams[i].in_tool_call || !next_beams[i].tool_buffer.empty()) {
+                promote_idx = i;
+                break;
+            }
+        }
+        if (promote_idx > 0) {
+            std::swap(next_beams[0], next_beams[promote_idx]);
+            if (cfg.debug) fprintf(stderr, "[Debug] Promote tool_call beam from rank %d to rank 0.\n", promote_idx);
+        }
+
+        beams = std::move(next_beams);
 
         auto& best = beams[0];
-        int tok = best.ctx->cur_token;
-        if (tok == eos || tok == im_end || best.finished) {
+        if (best.ctx->cur_token == eos || best.ctx->cur_token == im_end || best.finished) {
             break;
         }
 
+        // Emit non-tool tokens only at the end of this round
         maybe_emit(best);
 
         bool all_finished = true;

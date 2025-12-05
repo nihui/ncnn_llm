@@ -71,14 +71,12 @@ int main() {
         
         std::cout << "Assistant: ";
         GenerateConfig cfg;
-        cfg.beam_size = 1;
+        cfg.beam_size = 2;          // 测试 beam 下的 tool call
         cfg.top_k = 40;
         cfg.top_p = 0.9;
         cfg.temperature = 0.7;
         cfg.do_sample = false;
-
-        // 打开调试开关以输出工具调用过程
-        cfg.debug = true;
+        cfg.debug = true;           // 打开调试输出
 
         // 将外部函数路由到 tool_callback
         cfg.tool_callback = [&](const nlohmann::json& call) {
