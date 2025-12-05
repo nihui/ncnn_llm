@@ -23,6 +23,28 @@ int main() {
 
     auto ctx = model.prefill(prompt);
 
+    json calc_function = {
+        {"type", "function"},
+        {"function", {
+            {"name", "random"},
+            {"description", "Generate a random number between two integers."},
+            {"parameters", {
+                {"type", "object"},
+                {"properties", {
+                    {"floor", {
+                        {"type", "int"},
+                        {"description", "The lower bound (inclusive)."}
+                    }},
+                    {"ceiling", {
+                        {"type", "int"},
+                        {"description", "The upper bound (inclusive)."}
+                    }}
+                }},
+                {"required", {"expression"}}
+            }}
+        }}
+    };
+
     while (true) {
         std::string input;
         std::cout << "User: ";
@@ -32,7 +54,7 @@ int main() {
         }
         std::string user_message = apply_chat_template({
             {"user", input}
-        }, {}, true, false);
+        }, {calc_function}, true, false);
         ctx = model.prefill(user_message, ctx);
         
         std::cout << "Assistant: ";

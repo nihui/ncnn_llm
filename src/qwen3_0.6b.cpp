@@ -4,12 +4,15 @@
 #include <memory>
 #include <ncnn/mat.h>
 #include <ncnn/net.h>
+#include <string>
 #include <utility>
 #include <vector>
 #include <random>
 
 #include "utils/tokenizer/bpe_tokenizer.h"
 #include "utils/rope_embed.h"
+
+#include "nlohmann/json.hpp"
 
 static std::mt19937 rng(std::random_device{}());
 
@@ -106,6 +109,8 @@ public:
     BpeTokenizer bpe;
 
     int im_end_id = -1;
+    int tool_call_id = -1;
+    int tool_call_end_id = -1;
 
     Impl(std::string embed_param,
          std::string embed_bin,
@@ -166,6 +171,16 @@ public:
         auto it = bpe.token_to_id().find("<|im_end|>");
         if (it != bpe.token_to_id().end()) {
             im_end_id = it->second;
+        }
+
+        it = bpe.token_to_id().find("<tool_call>");
+        if (it != bpe.token_to_id().end()) {
+            tool_call_id = it->second;
+        }
+
+        it = bpe.token_to_id().find("</tool_call>");
+        if (it != bpe.token_to_id().end()) {
+            tool_call_end_id = it->second;
         }
     }
 };
@@ -520,6 +535,9 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     const int eos     = impl_->bpe.special_ids().eos_id;
     const int im_end  = impl_->im_end_id;
 
+    bool flag_in_tool_call = false;
+    std::string tool_call_content;
+
     // ---------- Do Sample or Greedy ----------
     if (cfg.do_sample == 1 || cfg.beam_size <= 1) {
         auto ctx = clone_ctx(ctx_in);
@@ -532,7 +550,36 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                 break;
             }
 
-            callback(impl_->bpe.decode({ctx->cur_token}, false));
+            if (ctx->cur_token == impl_->tool_call_id) {
+                flag_in_tool_call = true;
+                fprintf(stderr,"\n[Debug] Entering tool call mode.\n");
+            } else if (ctx->cur_token == impl_->tool_call_end_id) {
+                flag_in_tool_call = false;
+                
+                nlohmann::json tool_call_json;
+                try {
+                    tool_call_json = nlohmann::json::parse(tool_call_content);
+                } catch (const std::exception& e) {
+                    fprintf(stderr, "\n[Error] Failed to parse tool call JSON: %s\n", e.what());
+                    tool_call_json = nlohmann::json::object();
+                }
+                // print json with indentation
+                fprintf(stderr, "\n[Tool Call] %s\n", tool_call_json.dump(4).c_str());
+
+                std::string tool_response_pre = "<|im_end|>\n<|im_start|>user\n<tool_response>\n\n";
+                std::string tool_response_post = "\n\n</tool_response><|im_end|>\n<|im_start|>assistant\n<think>\n</think>\n\n";
+
+                ctx = prefill(tool_response_pre + "{\"result\": 114514}" + tool_response_post, ctx);
+
+                fprintf(stderr,"\n[Debug] Exiting tool call mode.\n");
+
+                continue;
+            } else if (flag_in_tool_call) {
+                fprintf(stderr, "%s", impl_->bpe.decode({ctx->cur_token}, false).c_str());
+                tool_call_content += impl_->bpe.decode({ctx->cur_token}, false);
+            }
+            else 
+                callback(impl_->bpe.decode({ctx->cur_token}, false));
 
             ncnn::Mat cur_token_mat = ncnn::Mat(1, 1, (void*)&ctx->cur_token).clone();
             ncnn::Mat cur_embed;
