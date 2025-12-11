@@ -60,6 +60,34 @@ std::string make_response_id() {
     return ss.str();
 }
 
+// Replace malformed UTF-8 sequences with '?', to avoid nlohmann::json throwing.
+std::string sanitize_utf8(const std::string& s) {
+    std::string out;
+    out.reserve(s.size());
+    auto is_cont = [&](unsigned char c) { return (c & 0xC0) == 0x80; };
+    for (size_t i = 0; i < s.size();) {
+        unsigned char c = static_cast<unsigned char>(s[i]);
+        if (c < 0x80) { out.push_back(static_cast<char>(c)); ++i; continue; }
+        if ((c >> 5) == 0x6 && i + 1 < s.size() && is_cont(static_cast<unsigned char>(s[i+1]))) {
+            out.append(s, i, 2); i += 2; continue;
+        }
+        if ((c >> 4) == 0xE && i + 2 < s.size() &&
+            is_cont(static_cast<unsigned char>(s[i+1])) &&
+            is_cont(static_cast<unsigned char>(s[i+2]))) {
+            out.append(s, i, 3); i += 3; continue;
+        }
+        if ((c >> 3) == 0x1E && i + 3 < s.size() &&
+            is_cont(static_cast<unsigned char>(s[i+1])) &&
+            is_cont(static_cast<unsigned char>(s[i+2])) &&
+            is_cont(static_cast<unsigned char>(s[i+3]))) {
+            out.append(s, i, 4); i += 4; continue;
+        }
+        out.push_back('?'); // replace malformed byte
+        ++i;
+    }
+    return out;
+}
+
 json make_error(int status, const std::string& message) {
     json err;
     err["error"] = {{"type", "invalid_request_error"}, {"message", message}};
@@ -147,6 +175,7 @@ int main() {
 
                     auto ctx = model.prefill(prompt);
                     model.generate(ctx, cfg, [&](const std::string& token) {
+                        std::string safe_token = sanitize_utf8(token);
                         json chunk = {
                             {"id", resp_id},
                             {"object", "chat.completion.chunk"},
@@ -154,7 +183,7 @@ int main() {
                             {"choices", json::array({
                                 json{
                                     {"index", 0},
-                                    {"delta", {{"role", "assistant"}, {"content", token}}},
+                                    {"delta", {{"role", "assistant"}, {"content", safe_token}}},
                                     {"finish_reason", nullptr}
                                 }
                             })}
@@ -191,7 +220,7 @@ int main() {
             std::lock_guard<std::mutex> lock(model_mutex);
             auto ctx = model.prefill(prompt);
             model.generate(ctx, cfg, [&](const std::string& token) {
-                generated += token;
+                generated += sanitize_utf8(token);
             });
         }
 
