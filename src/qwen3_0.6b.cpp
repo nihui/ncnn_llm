@@ -7,6 +7,7 @@
 #include <ncnn/net.h>
 #include <random>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -88,7 +89,7 @@ struct Beam {
     bool finished = false;
     bool in_tool_call = false;
     std::string tool_buffer;
-    std::vector<int> tokens;
+    std::unordered_set<int> tokens;
 };
 
 static std::shared_ptr<qwen3_0_6b_ctx>
@@ -592,8 +593,8 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
     // ---------- Do Sample or Greedy ----------
     if (cfg.do_sample == 1 || cfg.beam_size <= 1) {
         auto ctx = clone_ctx(ctx_in);
-        std::vector<int> history;
-        history.push_back(ctx->cur_token);
+        std::unordered_set<int> history;
+        history.insert(ctx->cur_token);
 
         bool flag_in_tool_call = false;
         std::string tool_call_content;
@@ -612,7 +613,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                 handle_tool(tool_call_content, ctx);
                 tool_call_content.clear();
                 history.clear();
-                history.push_back(ctx->cur_token);
+                history.insert(ctx->cur_token);
                 continue;
             } else if (flag_in_tool_call) {
                 tool_call_content += impl_->bpe.decode({ctx->cur_token}, false);
@@ -674,7 +675,10 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             memcpy(logits.data(), logits_mat.data, sizeof(float) * vocab_size);
 
             for (int t : history) {
-                logits[t] /= cfg.repetition_penalty;
+                if (logits[t] < 0)
+                    logits[t] *= cfg.repetition_penalty;
+                else
+                    logits[t] /= cfg.repetition_penalty;
             }
 
             softmax_vec(logits, cfg.temperature);
@@ -689,7 +693,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             }
 
             ctx->cur_token = next_id;
-            history.push_back(next_id);
+            history.insert(next_id);
         }
 
         return ctx;
@@ -703,7 +707,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
 
     Beam b0;
     b0.ctx = base_ctx;
-    b0.tokens.push_back(base_ctx->cur_token);
+    b0.tokens.insert(base_ctx->cur_token);
     beams.push_back(std::move(b0));
 
     // Detect for init token
@@ -791,7 +795,10 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
             memcpy(logits.data(), logits_mat.data, sizeof(float) * vocab_size);
 
             for (int t : beam.tokens) {
-                logits[t] /= cfg.repetition_penalty;
+                if (logits[t] < 0)
+                    logits[t] *= cfg.repetition_penalty;
+                else
+                    logits[t] /= cfg.repetition_penalty;
             }
 
             softmax_vec(logits, cfg.temperature);
@@ -813,7 +820,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                 nb.ctx = clone_ctx(beam.ctx);
                 nb.ctx->cur_token = tok;
                 nb.tokens = beam.tokens;
-                nb.tokens.push_back(tok);
+                nb.tokens.insert(tok);
                 nb.score  = beam.score + std::log(p + 1e-9f);
                 nb.finished = (tok == eos || tok == im_end);
                 nb.in_tool_call = beam.in_tool_call;
@@ -828,7 +835,7 @@ std::shared_ptr<qwen3_0_6b_ctx> qwen3_0_6b::generate(
                     handle_tool(nb.tool_buffer, nb.ctx);
                     nb.tool_buffer.clear();
                     nb.tokens.clear();
-                    nb.tokens.push_back(nb.ctx->cur_token);
+                    nb.tokens.insert(nb.ctx->cur_token);
                     nb.finished = (nb.ctx->cur_token == eos || nb.ctx->cur_token == im_end);
                     tool_completed = nb;
                     has_tool_completed = true;
