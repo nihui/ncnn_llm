@@ -6,21 +6,19 @@
   <title>Qwen3 Chat API Demo</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --accent: #22d3ee;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --bubble-user: #1f2937;
-      --bubble-assistant: #0ea5e9;
+      --bg: #e5e5e5;
+      --panel: #ffffff;
+      --accent: #07c160;
+      --text: #111827;
+      --muted: #6b7280;
+      --bubble-user: #95ec69;
+      --bubble-assistant: #f5f5f5;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
-                  radial-gradient(circle at 80% 0%, rgba(14,165,233,0.12), transparent 40%),
-                  var(--bg);
+      font-family: "PingFang SC", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #f4f4f4 0%, #e5e5e5 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -29,11 +27,10 @@
     }
     .shell {
       width: min(960px, 100%);
-      background: rgba(17, 24, 39, 0.8);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.05);
+      background: var(--panel);
+      border: 1px solid #e5e7eb;
       border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -43,8 +40,8 @@
       align-items: center;
       gap: 12px;
       padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      background: linear-gradient(90deg, rgba(14,165,233,0.12), transparent);
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(90deg, rgba(7,193,96,0.12), transparent);
     }
     header h1 {
       margin: 0;
@@ -53,11 +50,11 @@
     }
     header .pill {
       font-size: 12px;
-      color: var(--muted);
+      color: #3f3f46;
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: #f5f5f5;
+      border: 1px solid #e5e7eb;
     }
     #log {
       flex: 1;
@@ -67,37 +64,36 @@
       flex-direction: column;
       gap: 12px;
       scroll-behavior: smooth;
-    }
+      }
     .msg {
-      display: grid;
-      grid-template-columns: 72px 1fr;
-      gap: 10px;
+      display: flex;
       align-items: start;
+      gap: 8px;
     }
+    .msg.assistant { justify-content: flex-start; }
+    .msg.user { justify-content: flex-end; }
     .msg .role {
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding-top: 6px;
+      display: none;
     }
     .bubble {
-      padding: 12px 14px;
-      border-radius: 12px;
+      max-width: 90%;
+      padding: 10px 14px;
+      border-radius: 10px;
       line-height: 1.6;
       background: var(--bubble-assistant);
-      color: #0b1120;
+      color: #1f2937;
+      border: 1px solid #ededed;
       white-space: pre-wrap;
     }
     .user .bubble {
       background: var(--bubble-user);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.08);
+      color: #0b3a11;
+      border: 1px solid #8bdc63;
     }
     form {
       padding: 14px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      background: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid #f0f0f0;
+      background: #fafafa;
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px;
@@ -108,32 +104,50 @@
       min-height: 64px;
       max-height: 160px;
       padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #111827;
       font-size: 15px;
       resize: vertical;
       outline: none;
     }
     textarea:focus {
-      border-color: rgba(34,211,238,0.6);
-      box-shadow: 0 0 0 1px rgba(34,211,238,0.3);
+      border-color: #07c160;
+      box-shadow: 0 0 0 1px rgba(7,193,96,0.2);
     }
     button {
       padding: 12px 16px;
       border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #0ea5e9, #22d3ee);
-      color: #0b1120;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #07c160, #12d670);
+      color: #0c2b11;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(14,165,233,0.35);
+      box-shadow: 0 8px 18px rgba(7,193,96,0.18);
       transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.2s ease;
       min-width: 96px;
     }
-    button:active { transform: translateY(1px); box-shadow: 0 4px 10px rgba(14,165,233,0.25); }
+    button:active { transform: translateY(1px); box-shadow: 0 4px 10px rgba(7,193,96,0.18); }
     button:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+    details.think {
+      margin-top: 10px;
+      background: #fffbe6;
+      border-radius: 8px;
+      border: 1px solid #f4e2a3;
+      padding: 8px 10px 10px;
+    }
+    details.think summary {
+      cursor: pointer;
+      color: #7c5b00;
+      outline: none;
+    }
+    details.think pre {
+      margin: 6px 0 0;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      color: #5a4b00;
+    }
     .bar {
       display: flex;
       align-items: center;
@@ -149,10 +163,9 @@
       cursor: pointer;
       user-select: none;
     }
-    .switch input { accent-color: #22d3ee; }
-    .tip { margin-left: auto; color: #cbd5e1; }
+    .switch input { accent-color: var(--accent); }
+    .tip { margin-left: auto; color: #6b7280; }
     @media (max-width: 640px) {
-      .msg { grid-template-columns: 64px 1fr; }
       form { grid-template-columns: 1fr; }
       button { width: 100%; }
     }
@@ -190,19 +203,55 @@
     const thinkBox = document.getElementById('think');
     const history = [];
 
-    function addMessage(role, text) {
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderAssistantStreaming(raw) {
+      if (!raw) return '';
+      let html = '';
+      let pos = 0;
+      while (pos < raw.length) {
+        const start = raw.indexOf('<think>', pos);
+        if (start === -1) {
+          html += escapeHtml(raw.slice(pos));
+          break;
+        }
+        html += escapeHtml(raw.slice(pos, start));
+        const close = raw.indexOf('</think>', start + 7);
+        if (close === -1) {
+          const thinkText = raw.slice(start + 7);
+          html += `<details class="think" open><summary>思考过程（生成中）</summary><pre>${escapeHtml(thinkText)}</pre></details>`;
+          pos = raw.length;
+          break;
+        } else {
+          const thinkText = raw.slice(start + 7, close);
+          html += `<details class="think"><summary>思考过程</summary><pre>${escapeHtml(thinkText)}</pre></details>`;
+          pos = close + 8;
+        }
+      }
+      return html || '&nbsp;';
+    }
+
+    function addMessage(role, text, allowHTML = false) {
       const wrap = document.createElement('div');
       wrap.className = 'msg ' + (role === 'user' ? 'user' : 'assistant');
       wrap.innerHTML = '<div class="role">' + role + '</div><div class="bubble"></div>';
-      wrap.querySelector('.bubble').textContent = text;
+      const bubble = wrap.querySelector('.bubble');
+      if (allowHTML) bubble.innerHTML = text;
+      else bubble.textContent = text;
       log.appendChild(wrap);
       log.scrollTop = log.scrollHeight;
     }
 
-    function updateLastAssistant(text) {
+    function updateLastAssistantHTML(html) {
       const bubbles = log.querySelectorAll('.msg.assistant .bubble');
       if (bubbles.length) {
-        bubbles[bubbles.length - 1].textContent = text;
+        bubbles[bubbles.length - 1].innerHTML = html;
         log.scrollTop = log.scrollHeight;
       }
     }
@@ -256,7 +305,7 @@
                 const j = JSON.parse(data);
                 const delta = j.choices?.[0]?.delta?.content || '';
                 assistantText += delta;
-                updateLastAssistant(assistantText);
+                updateLastAssistantHTML(renderAssistantStreaming(assistantText));
               } catch (err) {
                 console.warn('parse chunk failed', err);
               }
@@ -266,11 +315,11 @@
         } else {
           const j = await resp.json();
           assistantText = j.choices?.[0]?.message?.content || '';
-          updateLastAssistant(assistantText);
+          updateLastAssistantHTML(renderAssistantStreaming(assistantText));
         }
         history.push({ role: 'assistant', content: assistantText });
       } catch (err) {
-        updateLastAssistant('出错了：' + err.message);
+        updateLastAssistantHTML(escapeHtml('出错了：' + err.message));
       } finally {
         sendBtn.disabled = false;
       }
