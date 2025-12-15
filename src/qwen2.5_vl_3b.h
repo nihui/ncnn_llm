@@ -14,7 +14,7 @@
 
 #include <opencv2/core/core.hpp>
 
-#include "mat.h"
+#include <ncnn/mat.h>
 
 struct GenerateConfig {
     int max_new_tokens = 8192;

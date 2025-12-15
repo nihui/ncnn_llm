@@ -11,9 +11,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "mat.h"
-#include "net.h"
-
 int main(int argc, char** argv)
 {
     if (argc != 2)
