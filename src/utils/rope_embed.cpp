@@ -2,9 +2,8 @@
 #include <cmath>
 #include <vector>
 
-void generate_rope_embed_cache(int seqlen, int embed_dim, int position_id, ncnn::Mat& cos_cache, ncnn::Mat& sin_cache)
+void generate_rope_embed_cache(int seqlen, int embed_dim, int position_id, ncnn::Mat& cos_cache, ncnn::Mat& sin_cache, float rope_theta)
 {
-    const float rope_theta = 100000;
     const float attention_factor = 1.f;
 
     // prepare inv_freq
