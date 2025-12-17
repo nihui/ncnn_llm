@@ -132,7 +132,7 @@ curl http://localhost:8080/v1/chat/completions \
   }'
 ```
 
-![MCP绘图](assets/img/mcpimggen.png)
+![MCP绘图](img/mcpimggen.png)
 
 
 ## 效果测试
