@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <functional>
 #include <httplib.h>
 #include <iostream>
 #include <mutex>
@@ -31,6 +32,7 @@ bool looks_like_base64(std::string_view s) {
     for (char c : s) {
         if (c == '\r' || c == '\n' || c == ' ' || c == '\t') continue;
         ++n;
+        if (n > 8192) break;
         bool ok = (c >= 'A' && c <= 'Z') ||
                   (c >= 'a' && c <= 'z') ||
                   (c >= '0' && c <= '9') ||
@@ -40,6 +42,30 @@ bool looks_like_base64(std::string_view s) {
     }
     if (n < 1024) return false;
     return valid >= n * 98 / 100;
+}
+
+size_t base64_fingerprint(const std::string& s) {
+    constexpr size_t k = 1024;
+    std::hash<std::string_view> h;
+    if (s.size() <= k) {
+        return h(std::string_view(s)) ^ (s.size() << 1);
+    }
+    std::string_view prefix(s.data(), k);
+    std::string_view suffix(s.data() + (s.size() - k), k);
+    size_t hp = h(prefix);
+    size_t hs = h(suffix);
+    return hp ^ (hs << 1) ^ (s.size() << 2);
+}
+
+std::string image_artifact_key(const json& a) {
+    if (a.is_object() && a.contains("url") && a["url"].is_string()) {
+        return std::string("url:") + a["url"].get<std::string>();
+    }
+    if (a.is_object() && a.contains("data_base64") && a["data_base64"].is_string()) {
+        const std::string b64 = a["data_base64"].get<std::string>();
+        return "b64:" + std::to_string(b64.size()) + ":" + std::to_string(base64_fingerprint(b64));
+    }
+    return {};
 }
 
 struct Options {
@@ -664,9 +690,9 @@ json strip_image_payloads(json v) {
     return v;
 }
 
-void collect_mcp_image_artifacts(const json& v, std::vector<json>& out) {
+void collect_mcp_image_artifacts(const json& v, std::vector<json>& out, std::unordered_set<size_t>& seen_b64) {
     if (v.is_array()) {
-        for (const auto& el : v) collect_mcp_image_artifacts(el, out);
+        for (const auto& el : v) collect_mcp_image_artifacts(el, out, seen_b64);
         return;
     }
     if (!v.is_object()) return;
@@ -674,19 +700,26 @@ void collect_mcp_image_artifacts(const json& v, std::vector<json>& out) {
     if (v.value("type", "") == "image" && v.contains("data") && v["data"].is_string()) {
         std::string data = v["data"].get<std::string>();
         if (looks_like_base64(data)) {
-            std::string mime = v.value("mimeType", v.value("mime_type", std::string("image/png")));
-            out.push_back(json{{"kind", "image"}, {"mime_type", mime}, {"data_base64", data}});
+            size_t fp = base64_fingerprint(data);
+            if (seen_b64.insert(fp).second) {
+                std::string mime = v.value("mimeType", v.value("mime_type", std::string("image/png")));
+                out.push_back(json{{"kind", "image"}, {"mime_type", mime}, {"data_base64", data}});
+            }
         }
     }
 
     for (auto it = v.begin(); it != v.end(); ++it) {
+        if (v.value("type", "") == "image" && it.key() == "data") continue; // already handled above
         if (it.value().is_string()) {
             std::string s = it.value().get<std::string>();
             if (looks_like_base64(s)) {
-                out.push_back(json{{"kind", "image"}, {"mime_type", "image/png"}, {"data_base64", s}});
+                size_t fp = base64_fingerprint(s);
+                if (seen_b64.insert(fp).second) {
+                    out.push_back(json{{"kind", "image"}, {"mime_type", "image/png"}, {"data_base64", s}});
+                }
             }
         } else {
-            collect_mcp_image_artifacts(it.value(), out);
+            collect_mcp_image_artifacts(it.value(), out, seen_b64);
         }
     }
 }
@@ -882,6 +915,7 @@ int main(int argc, char** argv) {
         }
 
         auto artifacts_out = std::make_shared<std::vector<json>>();
+        auto artifacts_seen = std::make_shared<std::unordered_set<std::string>>();
         std::string mcp_image_delivery = body.value("mcp_image_delivery", std::string("base64")); // file|base64|both
         if (mcp_image_delivery != "file" && mcp_image_delivery != "base64" && mcp_image_delivery != "both") {
             mcp_image_delivery = "file";
@@ -891,7 +925,7 @@ int main(int argc, char** argv) {
             auto mcp = mcp_client;
             const size_t max_tool_string_bytes = opt.mcp_max_string_bytes_in_prompt;
             auto allowed = std::make_shared<std::unordered_set<std::string>>(mcp_tools_in_prompt);
-            cfg.tool_callback = [mcp, &mcp_mutex, allowed, max_tool_string_bytes, artifacts_out, mcp_image_delivery](
+            cfg.tool_callback = [mcp, &mcp_mutex, allowed, max_tool_string_bytes, artifacts_out, artifacts_seen, mcp_image_delivery](
                                     const nlohmann::json& call) -> nlohmann::json {
                 std::string name = call.value("name", "");
                 json args = call.value("arguments", json::object());
@@ -945,20 +979,27 @@ int main(int argc, char** argv) {
                               {"tool", name},
                               {"url", *forced_image_url}};
                     if (forced_image_path) a["path"] = *forced_image_path;
-                    artifacts_out->push_back(a);
-                    artifact_summaries.push_back(json{{"kind", "image"}, {"url", *forced_image_url}});
+                    std::string k = image_artifact_key(a);
+                    if (k.empty() || artifacts_seen->insert(k).second) {
+                        artifacts_out->push_back(a);
+                        artifact_summaries.push_back(json{{"kind", "image"}, {"url", *forced_image_url}});
+                    }
                 }
 
                 std::vector<json> images;
-                collect_mcp_image_artifacts(result, images);
+                std::unordered_set<size_t> seen_b64;
+                collect_mcp_image_artifacts(result, images, seen_b64);
                 for (auto& img : images) {
                     img["tool"] = name;
                     if (forced_image_url && !img.contains("url")) img["url"] = *forced_image_url;
-                    artifacts_out->push_back(img);
+                    std::string k = image_artifact_key(img);
+                    if (k.empty() || artifacts_seen->insert(k).second) {
+                        artifacts_out->push_back(img);
 
-                    json summary = {{"kind", "image"}};
-                    if (img.contains("url")) summary["url"] = img["url"];
-                    artifact_summaries.push_back(std::move(summary));
+                        json summary = {{"kind", "image"}};
+                        if (img.contains("url")) summary["url"] = img["url"];
+                        artifact_summaries.push_back(std::move(summary));
+                    }
                 }
 
                 // Strip base64 payloads before injecting into the prompt.

@@ -217,6 +217,7 @@
     const thinkBox = document.getElementById('think');
     const imgBase64Box = document.getElementById('imgBase64');
     const history = [];
+    const renderedArtifacts = new Set();
 
     function escapeHtml(str) {
       return str
@@ -282,6 +283,8 @@
         if (typeof a.url === 'string' && a.url) src = a.url;
         else if (typeof a.data_base64 === 'string' && a.data_base64) src = `data:${mime};base64,${a.data_base64}`;
         if (!src) continue;
+        if (renderedArtifacts.has(src)) continue;
+        renderedArtifacts.add(src);
         addMessage('assistant', `生成的图片：<img class="generated" src="${src}">`, true);
       }
     }
