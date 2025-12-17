@@ -5,18 +5,42 @@
 #include <climits>
 #include <cstdint>
 #include <cstdlib>
+#include <filesystem>
 #include <httplib.h>
 #include <iostream>
 #include <mutex>
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
 using nlohmann::json;
 
 namespace {
+
+int64_t now_ms_epoch() {
+    using namespace std::chrono;
+    return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+bool looks_like_base64(std::string_view s) {
+    size_t n = 0;
+    size_t valid = 0;
+    for (char c : s) {
+        if (c == '\r' || c == '\n' || c == ' ' || c == '\t') continue;
+        ++n;
+        bool ok = (c >= 'A' && c <= 'Z') ||
+                  (c >= 'a' && c <= 'z') ||
+                  (c >= '0' && c <= '9') ||
+                  c == '+' || c == '/' || c == '=';
+        if (ok) ++valid;
+        if (n > 4096 && valid < n * 98 / 100) return false;
+    }
+    if (n < 1024) return false;
+    return valid >= n * 98 / 100;
+}
 
 struct Options {
     int port = 8080;
@@ -25,6 +49,7 @@ struct Options {
     int mcp_timeout_ms = 15000;
     bool mcp_debug = false;
     std::string mcp_transport = "lsp"; // lsp|jsonl
+    size_t mcp_max_string_bytes_in_prompt = 4096;
 };
 
 void print_usage(const char* argv0) {
@@ -37,6 +62,7 @@ void print_usage(const char* argv0) {
         << "  --mcp-transport <mode>     MCP stdio framing: lsp|jsonl (default: lsp)\n"
         << "  --no-mcp-merge-tools       Do not merge MCP tools into request tools\n"
         << "  --mcp-timeout-ms <n>       MCP request timeout in ms (default: 15000)\n"
+        << "  --mcp-max-string-bytes <n> Truncate huge tool strings in prompt (default: 4096)\n"
         << "  --mcp-debug                Enable verbose MCP logs\n"
         << "  --help                     Show this help\n"
         << "\n"
@@ -107,6 +133,17 @@ Options parse_options(int argc, char** argv) {
                 std::exit(2);
             }
             opt.mcp_timeout_ms = *v;
+        } else if (a == "--mcp-max-string-bytes") {
+            if (i + 1 >= argc) {
+                std::cerr << "Missing value for --mcp-max-string-bytes\n";
+                std::exit(2);
+            }
+            auto v = parse_int(argv[++i]);
+            if (!v) {
+                std::cerr << "Invalid --mcp-max-string-bytes value\n";
+                std::exit(2);
+            }
+            opt.mcp_max_string_bytes_in_prompt = (size_t)*v;
         } else if (a == "--mcp-debug") {
             opt.mcp_debug = true;
         } else {
@@ -579,6 +616,81 @@ std::string make_response_id() {
     return ss.str();
 }
 
+json truncate_large_strings(json v, size_t max_bytes) {
+    if (max_bytes == 0) return v;
+    if (v.is_string()) {
+        const std::string s = v.get<std::string>();
+        if (s.size() <= max_bytes) return v;
+        std::string replaced = "<omitted " + std::to_string(s.size()) + " bytes>";
+        return replaced;
+    }
+    if (v.is_array()) {
+        for (auto& el : v) el = truncate_large_strings(el, max_bytes);
+        return v;
+    }
+    if (v.is_object()) {
+        for (auto it = v.begin(); it != v.end(); ++it) {
+            it.value() = truncate_large_strings(it.value(), max_bytes);
+        }
+        return v;
+    }
+    return v;
+}
+
+json strip_image_payloads(json v) {
+    if (v.is_array()) {
+        for (auto& el : v) el = strip_image_payloads(el);
+        return v;
+    }
+    if (v.is_object()) {
+        if (v.value("type", "") == "image") {
+            if (v.contains("data") && v["data"].is_string()) {
+                std::string s = v["data"].get<std::string>();
+                v["data"] = "<omitted " + std::to_string(s.size()) + " bytes>";
+            }
+        }
+        for (auto it = v.begin(); it != v.end(); ++it) {
+            if (it.value().is_string()) {
+                std::string s = it.value().get<std::string>();
+                if (looks_like_base64(s)) {
+                    it.value() = "<omitted " + std::to_string(s.size()) + " bytes>";
+                }
+            } else {
+                it.value() = strip_image_payloads(it.value());
+            }
+        }
+        return v;
+    }
+    return v;
+}
+
+void collect_mcp_image_artifacts(const json& v, std::vector<json>& out) {
+    if (v.is_array()) {
+        for (const auto& el : v) collect_mcp_image_artifacts(el, out);
+        return;
+    }
+    if (!v.is_object()) return;
+
+    if (v.value("type", "") == "image" && v.contains("data") && v["data"].is_string()) {
+        std::string data = v["data"].get<std::string>();
+        if (looks_like_base64(data)) {
+            std::string mime = v.value("mimeType", v.value("mime_type", std::string("image/png")));
+            out.push_back(json{{"kind", "image"}, {"mime_type", mime}, {"data_base64", data}});
+        }
+    }
+
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        if (it.value().is_string()) {
+            std::string s = it.value().get<std::string>();
+            if (looks_like_base64(s)) {
+                out.push_back(json{{"kind", "image"}, {"mime_type", "image/png"}, {"data_base64", s}});
+            }
+        } else {
+            collect_mcp_image_artifacts(it.value(), out);
+        }
+    }
+}
+
 // Replace malformed UTF-8 sequences with '?', to avoid nlohmann::json throwing.
 std::string sanitize_utf8(const std::string& s) {
     std::string out;
@@ -634,6 +746,9 @@ int main(int argc, char** argv) {
     }
     if (const char* env = std::getenv("NCNN_LLM_MCP_TIMEOUT_MS")) {
         if (auto v = parse_int(env)) opt.mcp_timeout_ms = *v;
+    }
+    if (const char* env = std::getenv("NCNN_LLM_MCP_MAX_STRING_BYTES")) {
+        if (auto v = parse_int(env)) opt.mcp_max_string_bytes_in_prompt = (size_t)*v;
     }
 
     auto mcp_client = std::make_shared<McpStdioClient>();
@@ -766,10 +881,18 @@ int main(int argc, char** argv) {
             cfg.do_sample = 0;
         }
 
+        auto artifacts_out = std::make_shared<std::vector<json>>();
+        std::string mcp_image_delivery = body.value("mcp_image_delivery", std::string("file")); // file|base64|both
+        if (mcp_image_delivery != "file" && mcp_image_delivery != "base64" && mcp_image_delivery != "both") {
+            mcp_image_delivery = "file";
+        }
+
         if (!mcp_tools_in_prompt.empty()) {
             auto mcp = mcp_client;
-            auto allowed = std::make_shared<std::unordered_set<std::string>>(std::move(mcp_tools_in_prompt));
-            cfg.tool_callback = [mcp, &mcp_mutex, allowed](const nlohmann::json& call) -> nlohmann::json {
+            const size_t max_tool_string_bytes = opt.mcp_max_string_bytes_in_prompt;
+            auto allowed = std::make_shared<std::unordered_set<std::string>>(mcp_tools_in_prompt);
+            cfg.tool_callback = [mcp, &mcp_mutex, allowed, max_tool_string_bytes, artifacts_out, mcp_image_delivery](
+                                    const nlohmann::json& call) -> nlohmann::json {
                 std::string name = call.value("name", "");
                 json args = call.value("arguments", json::object());
                 if (name.empty()) {
@@ -778,6 +901,34 @@ int main(int argc, char** argv) {
                 if (allowed->find(name) == allowed->end()) {
                     return json{{"error", "tool not available"}, {"name", name}, {"call", call}};
                 }
+
+                // For image outputs: send base64/URL to the HTTP client (artifacts_out),
+                // but never inject huge base64 payloads back into the text-only model prompt.
+                json artifact_summaries = json::array();
+                std::optional<std::string> forced_image_url;
+                std::optional<std::string> forced_image_path;
+                if (name == "sd_txt2img") {
+                    if (mcp_image_delivery == "file" || mcp_image_delivery == "both") {
+                        try {
+                            std::filesystem::path outdir = std::filesystem::path("./examples/web/generated");
+                            std::error_code ec;
+                            std::filesystem::create_directories(outdir, ec);
+
+                            std::string filename = "sd_txt2img_" + std::to_string(now_ms_epoch()) + ".png";
+                            std::filesystem::path outpath = outdir / filename;
+                            args["output"] = mcp_image_delivery;
+                            args["out_path"] = outpath.string();
+                            forced_image_url = std::string("/generated/") + filename;
+                            forced_image_path = outpath.string();
+                        } catch (...) {
+                            args["output"] = mcp_image_delivery;
+                        }
+                    } else {
+                        args["output"] = "base64";
+                        args.erase("out_path");
+                    }
+                }
+
                 std::string err;
                 json result;
                 {
@@ -787,7 +938,35 @@ int main(int argc, char** argv) {
                 if (!err.empty() || result.is_null()) {
                     return json{{"error", "mcp tools/call failed"}, {"detail", err}, {"call", call}};
                 }
-                return json{{"result", result}, {"call", call}};
+
+                if (forced_image_url) {
+                    json a = {{"kind", "image"},
+                              {"mime_type", "image/png"},
+                              {"tool", name},
+                              {"url", *forced_image_url}};
+                    if (forced_image_path) a["path"] = *forced_image_path;
+                    artifacts_out->push_back(a);
+                    artifact_summaries.push_back(json{{"kind", "image"}, {"url", *forced_image_url}});
+                }
+
+                std::vector<json> images;
+                collect_mcp_image_artifacts(result, images);
+                for (auto& img : images) {
+                    img["tool"] = name;
+                    if (forced_image_url && !img.contains("url")) img["url"] = *forced_image_url;
+                    artifacts_out->push_back(img);
+
+                    json summary = {{"kind", "image"}};
+                    if (img.contains("url")) summary["url"] = img["url"];
+                    artifact_summaries.push_back(std::move(summary));
+                }
+
+                // Strip base64 payloads before injecting into the prompt.
+                json safe_result = strip_image_payloads(result);
+                safe_result = truncate_large_strings(safe_result, max_tool_string_bytes);
+                json resp = json{{"result", safe_result}, {"call", call}};
+                if (!artifact_summaries.empty()) resp["artifacts"] = artifact_summaries;
+                return resp;
             };
         }
 
