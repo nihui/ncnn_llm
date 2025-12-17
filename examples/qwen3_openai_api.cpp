@@ -578,20 +578,432 @@ private:
     Transport transport_ = Transport::Lsp;
 };
 #else
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
+static std::wstring utf8_to_wide(const std::string& s) {
+    if (s.empty()) return std::wstring();
+    int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), nullptr, 0);
+    if (len <= 0) return std::wstring();
+    std::wstring w(len, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), w.data(), len);
+    return w;
+}
+
+static std::string win_last_error(DWORD code) {
+    LPSTR msg = nullptr;
+    DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+    DWORD n = FormatMessageA(flags, nullptr, code, 0, (LPSTR)&msg, 0, nullptr);
+    std::string out = (n && msg) ? std::string(msg, n) : std::string("win32 error ") + std::to_string(code);
+    if (msg) LocalFree(msg);
+    while (!out.empty() && (out.back() == '\r' || out.back() == '\n')) out.pop_back();
+    return out;
+}
+
+class StdioProcess {
+public:
+    ~StdioProcess() { stop(); }
+
+    bool start_cmdline(const std::string& cmdline) {
+        if (cmdline.empty()) return false;
+        stop();
+
+        SECURITY_ATTRIBUTES sa;
+        sa.nLength = sizeof(sa);
+        sa.lpSecurityDescriptor = nullptr;
+        sa.bInheritHandle = TRUE;
+
+        HANDLE child_stdin_read = nullptr;
+        HANDLE child_stdin_write = nullptr;
+        HANDLE child_stdout_read = nullptr;
+        HANDLE child_stdout_write = nullptr;
+
+        if (!CreatePipe(&child_stdin_read, &child_stdin_write, &sa, 0)) return false;
+        if (!SetHandleInformation(child_stdin_write, HANDLE_FLAG_INHERIT, 0)) {
+            CloseHandle(child_stdin_read);
+            CloseHandle(child_stdin_write);
+            return false;
+        }
+
+        if (!CreatePipe(&child_stdout_read, &child_stdout_write, &sa, 0)) {
+            CloseHandle(child_stdin_read);
+            CloseHandle(child_stdin_write);
+            return false;
+        }
+        if (!SetHandleInformation(child_stdout_read, HANDLE_FLAG_INHERIT, 0)) {
+            CloseHandle(child_stdin_read);
+            CloseHandle(child_stdin_write);
+            CloseHandle(child_stdout_read);
+            CloseHandle(child_stdout_write);
+            return false;
+        }
+
+        HANDLE parent_stderr = GetStdHandle(STD_ERROR_HANDLE);
+        HANDLE child_stderr = nullptr;
+        if (parent_stderr && parent_stderr != INVALID_HANDLE_VALUE) {
+            DuplicateHandle(GetCurrentProcess(), parent_stderr, GetCurrentProcess(), &child_stderr, 0, TRUE, DUPLICATE_SAME_ACCESS);
+        }
+
+        STARTUPINFOW si;
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        si.dwFlags = STARTF_USESTDHANDLES;
+        si.hStdInput = child_stdin_read;
+        si.hStdOutput = child_stdout_write;
+        si.hStdError = child_stderr ? child_stderr : parent_stderr;
+
+        ZeroMemory(&pi_, sizeof(pi_));
+        std::wstring cmd_w = utf8_to_wide(cmdline);
+        if (cmd_w.empty()) {
+            CloseHandle(child_stdin_read);
+            CloseHandle(child_stdin_write);
+            CloseHandle(child_stdout_read);
+            CloseHandle(child_stdout_write);
+            if (child_stderr) CloseHandle(child_stderr);
+            return false;
+        }
+
+        BOOL ok = CreateProcessW(
+            nullptr,
+            cmd_w.data(), // CreateProcess may modify the buffer
+            nullptr,
+            nullptr,
+            TRUE,
+            0,
+            nullptr,
+            nullptr,
+            &si,
+            &pi_);
+
+        CloseHandle(child_stdin_read);
+        CloseHandle(child_stdout_write);
+        if (child_stderr) CloseHandle(child_stderr);
+
+        if (!ok) {
+            DWORD e = GetLastError();
+            CloseHandle(child_stdin_write);
+            CloseHandle(child_stdout_read);
+            ZeroMemory(&pi_, sizeof(pi_));
+            last_start_error_ = win_last_error(e);
+            return false;
+        }
+
+        child_stdin_write_ = child_stdin_write;
+        child_stdout_read_ = child_stdout_read;
+        read_buf_.clear();
+        last_start_error_.clear();
+        return true;
+    }
+
+    void stop() {
+        if (child_stdin_write_) {
+            CloseHandle(child_stdin_write_);
+            child_stdin_write_ = nullptr;
+        }
+        if (child_stdout_read_) {
+            CloseHandle(child_stdout_read_);
+            child_stdout_read_ = nullptr;
+        }
+        if (pi_.hProcess) {
+            DWORD code = STILL_ACTIVE;
+            if (GetExitCodeProcess(pi_.hProcess, &code) && code == STILL_ACTIVE) {
+                TerminateProcess(pi_.hProcess, 1);
+                WaitForSingleObject(pi_.hProcess, 5000);
+            }
+            CloseHandle(pi_.hProcess);
+            pi_.hProcess = nullptr;
+        }
+        if (pi_.hThread) {
+            CloseHandle(pi_.hThread);
+            pi_.hThread = nullptr;
+        }
+        read_buf_.clear();
+    }
+
+    std::string last_start_error() const { return last_start_error_; }
+
+    bool write_all(const std::string& s) {
+        if (!child_stdin_write_) return false;
+        const char* p = s.data();
+        size_t n = s.size();
+        while (n > 0) {
+            DWORD written = 0;
+            DWORD chunk = (DWORD)std::min<size_t>(n, 1u << 20);
+            if (!WriteFile(child_stdin_write_, p, chunk, &written, nullptr)) return false;
+            if (written == 0) return false;
+            p += written;
+            n -= written;
+        }
+        return true;
+    }
+
+    bool read_exact(size_t n, std::string& out, int timeout_ms, std::string* err) {
+        auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+        out.clear();
+        out.reserve(n);
+        while (out.size() < n) {
+            if (!read_buf_.empty()) {
+                size_t take = std::min(n - out.size(), read_buf_.size());
+                out.append(read_buf_.data(), take);
+                read_buf_.erase(0, take);
+                continue;
+            }
+            if (!read_some_until(deadline, err)) return false;
+        }
+        return true;
+    }
+
+    bool read_until(const std::string& delim, std::string& out, int timeout_ms, std::string* err) {
+        auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+        while (true) {
+            size_t pos = read_buf_.find(delim);
+            if (pos != std::string::npos) {
+                out = read_buf_.substr(0, pos);
+                read_buf_.erase(0, pos + delim.size());
+                return true;
+            }
+            if (!read_some_until(deadline, err)) return false;
+        }
+    }
+
+    bool read_json(json& out, int timeout_ms, std::string* err) {
+        auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+        auto skip_ws = [&]() -> bool {
+            while (true) {
+                while (!read_buf_.empty()) {
+                    char c = read_buf_[0];
+                    if (c == '\r' || c == '\n' || c == ' ' || c == '\t') read_buf_.erase(0, 1);
+                    else return true;
+                }
+                if (!read_some_until(deadline, err)) return false;
+            }
+        };
+
+        if (!skip_ws()) return false;
+
+        if (!read_buf_.empty() && read_buf_[0] == '{') {
+            std::string body;
+            while (true) {
+                size_t nl = read_buf_.find('\n');
+                if (nl == std::string::npos) {
+                    if (!read_some_until(deadline, err)) return false;
+                    continue;
+                }
+                body.append(read_buf_.substr(0, nl + 1));
+                read_buf_.erase(0, nl + 1);
+                std::string trimmed = body;
+                while (!trimmed.empty() && (trimmed.back() == '\r' || trimmed.back() == '\n')) trimmed.pop_back();
+                try {
+                    out = json::parse(trimmed);
+                    return true;
+                } catch (...) {
+                }
+                if (body.size() > 1 * 1024 * 1024) return false;
+            }
+        }
+
+        std::string header;
+        if (!read_until("\r\n\r\n", header, timeout_ms, err)) return false;
+        size_t len = 0;
+        {
+            std::istringstream iss(header);
+            std::string line;
+            bool found = false;
+            while (std::getline(iss, line)) {
+                if (!line.empty() && line.back() == '\r') line.pop_back();
+                const std::string prefix = "Content-Length:";
+                if (line.rfind(prefix, 0) == 0) {
+                    std::string v = line.substr(prefix.size());
+                    while (!v.empty() && (v[0] == ' ' || v[0] == '\t')) v.erase(0, 1);
+                    auto iv = parse_int(v);
+                    if (!iv || *iv < 0) return false;
+                    len = (size_t)*iv;
+                    found = true;
+                }
+            }
+            if (!found) return false;
+        }
+
+        std::string body;
+        if (!read_exact(len, body, timeout_ms, err)) return false;
+        try {
+            out = json::parse(body);
+            return true;
+        } catch (...) {
+            return false;
+        }
+    }
+
+private:
+    bool read_some_until(const std::chrono::steady_clock::time_point deadline, std::string* err) {
+        if (!child_stdout_read_) {
+            if (err) *err = "MCP server stdout not available";
+            return false;
+        }
+        while (true) {
+            auto now = std::chrono::steady_clock::now();
+            if (now >= deadline) {
+                if (err) *err = "timeout waiting for MCP server output";
+                return false;
+            }
+
+            DWORD avail = 0;
+            BOOL ok = PeekNamedPipe(child_stdout_read_, nullptr, 0, nullptr, &avail, nullptr);
+            if (!ok) {
+                if (err) *err = win_last_error(GetLastError());
+                return false;
+            }
+            if (avail > 0) {
+                char tmp[4096];
+                DWORD toread = std::min<DWORD>(avail, (DWORD)sizeof(tmp));
+                DWORD r = 0;
+                if (!ReadFile(child_stdout_read_, tmp, toread, &r, nullptr)) {
+                    if (err) *err = win_last_error(GetLastError());
+                    return false;
+                }
+                if (r == 0) {
+                    if (err) *err = "MCP server closed stdout";
+                    return false;
+                }
+                read_buf_.append(tmp, (size_t)r);
+                return true;
+            }
+
+            if (pi_.hProcess) {
+                DWORD wait = WaitForSingleObject(pi_.hProcess, 0);
+                if (wait == WAIT_OBJECT_0) {
+                    // process exited; check one last time for buffered bytes
+                    DWORD avail2 = 0;
+                    if (PeekNamedPipe(child_stdout_read_, nullptr, 0, nullptr, &avail2, nullptr) && avail2 == 0) {
+                        if (err) *err = "MCP server exited";
+                        return false;
+                    }
+                }
+            }
+
+            auto ms_left = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now).count();
+            DWORD sleep_ms = (DWORD)std::max<int64_t>(1, std::min<int64_t>(10, ms_left));
+            Sleep(sleep_ms);
+        }
+    }
+
+    HANDLE child_stdin_write_ = nullptr;
+    HANDLE child_stdout_read_ = nullptr;
+    PROCESS_INFORMATION pi_{};
+    std::string read_buf_;
+    std::string last_start_error_;
+};
+
 class McpStdioClient {
 public:
-    bool start(const std::string&, std::string* err = nullptr) {
-        if (err) *err = "MCP stdio is not supported on Windows in this demo";
-        return false;
+    enum class Transport {
+        Lsp,
+        Jsonl
+    };
+
+    void set_timeout_ms(int timeout_ms) { timeout_ms_ = timeout_ms; }
+    void set_debug(bool debug) { debug_ = debug; }
+    void set_transport(Transport t) { transport_ = t; }
+
+    bool start(const std::string& cmdline, std::string* err = nullptr) {
+        if (cmdline.empty()) return false;
+        if (debug_) {
+            std::cerr << "[MCP] start: " << cmdline << "\n";
+        }
+        if (!proc_.start_cmdline(cmdline)) {
+            if (err) {
+                std::string detail = proc_.last_start_error();
+                *err = detail.empty() ? "failed to start process" : detail;
+            }
+            return false;
+        }
+        if (!initialize(err)) {
+            proc_.stop();
+            return false;
+        }
+        return true;
     }
+
     json list_tools(std::string* err = nullptr) {
-        if (err) *err = "MCP stdio is not supported on Windows in this demo";
-        return json::array();
+        json resp = request("tools/list", json::object(), err);
+        if (resp.is_null()) return json::object();
+        return resp.value("tools", json::array());
     }
-    json call_tool(const std::string&, const json&, std::string* err = nullptr) {
-        if (err) *err = "MCP stdio is not supported on Windows in this demo";
-        return nullptr;
+
+    json call_tool(const std::string& name, const json& arguments, std::string* err = nullptr) {
+        json params = {{"name", name}, {"arguments", arguments}};
+        return request("tools/call", params, err);
     }
+
+private:
+    bool initialize(std::string* err) {
+        json params = {
+            {"protocolVersion", "2024-11-05"},
+            {"capabilities", {{"tools", json::object()}}},
+            {"clientInfo", {{"name", "ncnn_llm"}, {"version", "demo"}}}
+        };
+        json resp = request("initialize", params, err);
+        if (resp.is_null()) return false;
+        json notif = {{"jsonrpc", "2.0"}, {"method", "notifications/initialized"}, {"params", json::object()}};
+        send(notif);
+        return true;
+    }
+
+    bool send(const json& msg) {
+        std::string body = msg.dump();
+        std::string framed;
+        if (transport_ == Transport::Jsonl) {
+            framed = body;
+            framed.push_back('\n');
+        } else {
+            framed = "Content-Length: " + std::to_string(body.size()) + "\r\n\r\n" + body;
+        }
+        if (debug_) {
+            std::string preview = body;
+            if (preview.size() > 800) preview.resize(800), preview += "...";
+            std::cerr << "[MCP] => " << preview << "\n";
+        }
+        return proc_.write_all(framed);
+    }
+
+    json request(const std::string& method, const json& params, std::string* err) {
+        int64_t id = next_id_++;
+        json req = {{"jsonrpc", "2.0"}, {"id", id}, {"method", method}, {"params", params}};
+        if (!send(req)) {
+            if (err) *err = "failed to write request";
+            return nullptr;
+        }
+
+        while (true) {
+            json msg;
+            std::string read_err;
+            if (!proc_.read_json(msg, timeout_ms_, &read_err)) {
+                if (err) *err = read_err.empty() ? "failed to read response" : read_err;
+                return nullptr;
+            }
+            if (!msg.is_object()) continue;
+            if (debug_) {
+                std::string preview = msg.dump();
+                if (preview.size() > 1200) preview.resize(1200), preview += "...";
+                std::cerr << "[MCP] <= " << preview << "\n";
+            }
+            if (msg.contains("id") && msg["id"].is_number_integer() && msg["id"].get<int64_t>() == id) {
+                if (msg.contains("error")) {
+                    if (err) *err = msg["error"].dump();
+                    return nullptr;
+                }
+                return msg.value("result", json::object());
+            }
+        }
+    }
+
+    StdioProcess proc_;
+    int64_t next_id_ = 1;
+    int timeout_ms_ = 15000;
+    bool debug_ = false;
+    Transport transport_ = Transport::Lsp;
 };
 #endif
 
