@@ -60,6 +60,81 @@ xmake build
 xmake run minicpm4_main
 ```
 
+## 示例：Qwen3 OpenAI API Server（支持 MCP stdio 工具）
+
+该示例提供一个 OpenAI 风格的 HTTP API：`POST /v1/chat/completions`，并内置一个简单网页前端：`http://localhost:8080/`。
+
+```
+xmake build qwen3_openai_api
+xmake run qwen3_openai_api
+```
+
+启动后访问：
+
+- `http://localhost:8080/`（网页聊天）
+- `http://localhost:8080/v1/chat/completions`（OpenAI 风格接口）
+
+### 接入你自己的 MCP server（stdin/stdout）
+
+该 demo 支持通过 stdio 启动 MCP server，并把 MCP 的 `tools/list` 注入到模型可用工具中；当模型产生 `<tool_call>` 时会调用 `tools/call`，并把工具结果作为 `tool_response` 注入继续生成。
+
+> 注意：不同 MCP server 的 framing 可能不同。若你的 server 是“一行一个 JSON”（JSONL），需要加 `--mcp-transport jsonl`。
+
+示例（JSONL）：
+
+```
+xmake run qwen3_openai_api --mcp-transport jsonl --mcp-server "$HOME/path/to/your-mcp-server --flag"
+```
+
+常用参数：
+
+- `--mcp-debug`：打印 MCP 收发的 JSON（排查卡住/协议不匹配时很有用）
+- `--mcp-timeout-ms <n>`：等待 MCP 响应的超时
+- `--port <n>`：HTTP 监听端口（默认 8080）
+
+### 图片工具的返回（base64 / file）
+
+对于图片类工具（例如 `sd_txt2img`），demo **不会把 base64 图片塞回模型 prompt**（避免占用上下文/拖慢推理），而是通过 HTTP 响应的 `artifacts` 字段把图片交给前端渲染。
+
+- 默认：`base64`（前端会直接用 `data:image/png;base64,...` 渲染）
+- 可选：`file` 或 `both`（会写到 `examples/web/generated/` 并通过 `/generated/<name>.png` 访问）
+
+你可以在请求 JSON 里控制：
+
+```json
+{
+  "mcp_image_delivery": "base64"
+}
+```
+
+返回示例（截断）：
+
+```json
+{
+  "artifacts": [
+    { "kind": "image", "mime_type": "image/png", "data_base64": "..." }
+  ]
+}
+```
+
+### 用 curl 调用接口
+
+```
+curl http://localhost:8080/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model":"qwen3-0.6b",
+    "stream": false,
+    "messages":[
+      {"role":"system","content":"You are a helpful assistant."},
+      {"role":"user","content":"Hello!"}
+    ]
+  }'
+```
+
+![MCP绘图](assets/img/mcpimggen.jpg)
+
+
 ## 效果测试
 
 minicpm4
@@ -76,4 +151,3 @@ Assistant:  你好，我是你的智能助手。你好，请问有什么我可�
 User: 你知道什么是opencv吗？
 Assistant:  opencv，全称OpenCV，是一个开源的计算机视觉和机器学习软件库，它包含了许多用于图像和视频处理的算法和工具。它可以帮助 你处理和理解图像和视频数据，从而实现各种计算机视觉任务，如目标检测、图像分类、人脸识别等。你是否对某个具体的任务或者算法感兴趣 ？
 ```
-
