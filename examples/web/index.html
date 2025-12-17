@@ -87,6 +87,14 @@
       border: 1px solid rgba(255,255,255,0.06);
       white-space: pre-wrap;
     }
+    .bubble img.generated {
+      display: block;
+      max-width: min(520px, 100%);
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.15);
+    }
     .user .bubble {
       background: var(--bubble-user);
       color: #0b1f10;
@@ -189,6 +197,10 @@
         <input type="checkbox" id="think">
         <span>禁用思考标签</span>
       </label>
+      <label class="switch">
+        <input type="checkbox" id="imgBase64" checked>
+        <span>图片用Base64返回</span>
+      </label>
       <span class="tip">模型：qwen3-0.6b · 接口：localhost:8080</span>
     </div>
     <form id="form">
@@ -203,6 +215,7 @@
     const sendBtn = document.getElementById('send');
     const streamBox = document.getElementById('stream');
     const thinkBox = document.getElementById('think');
+    const imgBase64Box = document.getElementById('imgBase64');
     const history = [];
 
     function escapeHtml(str) {
@@ -258,10 +271,26 @@
       }
     }
 
+    function renderArtifacts(artifacts) {
+      if (!Array.isArray(artifacts)) return;
+      for (const a of artifacts) {
+        if (!a || typeof a !== 'object') continue;
+        const mime = a.mime_type || 'image/png';
+        const isImage = (a.kind === 'image') || (typeof mime === 'string' && mime.startsWith('image/'));
+        if (!isImage) continue;
+        let src = '';
+        if (typeof a.url === 'string' && a.url) src = a.url;
+        else if (typeof a.data_base64 === 'string' && a.data_base64) src = `data:${mime};base64,${a.data_base64}`;
+        if (!src) continue;
+        addMessage('assistant', `生成的图片：<img class="generated" src="${src}">`, true);
+      }
+    }
+
     async function sendMessage(content) {
       sendBtn.disabled = true;
       const stream = streamBox.checked;
       const disableThinking = thinkBox.checked;
+      const imageDelivery = imgBase64Box.checked ? 'base64' : 'file';
       history.push({ role: 'user', content });
       addMessage('user', content);
       addMessage('assistant', '…生成中');
@@ -271,6 +300,7 @@
         messages: [{ role: 'system', content: 'You are a helpful assistant.' }, ...history],
         stream,
         enable_thinking: !disableThinking,
+        mcp_image_delivery: imageDelivery,
         temperature: 0.7,
         top_p: 0.9
       };
@@ -308,6 +338,7 @@
                 const delta = j.choices?.[0]?.delta?.content || '';
                 assistantText += delta;
                 updateLastAssistantHTML(renderAssistantStreaming(assistantText));
+                if (j.artifacts) renderArtifacts(j.artifacts);
               } catch (err) {
                 console.warn('parse chunk failed', err);
               }
@@ -318,6 +349,7 @@
           const j = await resp.json();
           assistantText = j.choices?.[0]?.message?.content || '';
           updateLastAssistantHTML(renderAssistantStreaming(assistantText));
+          if (j.artifacts) renderArtifacts(j.artifacts);
         }
         history.push({ role: 'assistant', content: assistantText });
       } catch (err) {

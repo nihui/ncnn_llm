@@ -882,7 +882,7 @@ int main(int argc, char** argv) {
         }
 
         auto artifacts_out = std::make_shared<std::vector<json>>();
-        std::string mcp_image_delivery = body.value("mcp_image_delivery", std::string("file")); // file|base64|both
+        std::string mcp_image_delivery = body.value("mcp_image_delivery", std::string("base64")); // file|base64|both
         if (mcp_image_delivery != "file" && mcp_image_delivery != "base64" && mcp_image_delivery != "both") {
             mcp_image_delivery = "file";
         }
@@ -983,7 +983,7 @@ int main(int argc, char** argv) {
 
             res.set_chunked_content_provider(
                 "text/event-stream",
-                [&, prompt, cfg, resp_id, model_name](size_t, httplib::DataSink& sink) mutable {
+                [&, prompt, cfg, resp_id, model_name, artifacts_out](size_t, httplib::DataSink& sink) mutable {
                     std::lock_guard<std::mutex> lock(model_mutex);
 
                     auto ctx = model.prefill(prompt);
@@ -1017,6 +1017,9 @@ int main(int argc, char** argv) {
                             }
                         })}
                     };
+                    if (!artifacts_out->empty()) {
+                        done_chunk["artifacts"] = *artifacts_out;
+                    }
                     std::string end_data = "data: " + done_chunk.dump() + "\n\n";
                     sink.write(end_data.data(), end_data.size());
 
@@ -1050,6 +1053,9 @@ int main(int argc, char** argv) {
             })},
             {"usage", {{"prompt_tokens", 0}, {"completion_tokens", 0}}}
         };
+        if (!artifacts_out->empty()) {
+            resp["artifacts"] = *artifacts_out;
+        }
 
         res.set_content(resp.dump(), "application/json");
     });
