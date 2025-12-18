@@ -4,6 +4,7 @@
 #include <memory>
 #include <ncnn/mat.h>
 #include <ncnn/net.h>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <random>
@@ -81,7 +82,7 @@ struct Beam {
     std::shared_ptr<minicpm4_0_5b_ctx> ctx;
     float score = 0.f;
     bool finished = false;
-    std::vector<int> tokens;
+    std::unordered_set<int> tokens;
 };
 
 // 深拷贝 KV Cache
@@ -508,8 +509,8 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
     // ---------- Do Sample or Greedy ----------
     if (cfg.do_sample == 1 || cfg.beam_size <= 1) {
         auto ctx = clone_ctx(ctx_in);
-        std::vector<int> history;
-        history.push_back(ctx->cur_token);
+        std::unordered_set<int> history;
+        history.insert(ctx->cur_token);
 
         for (int step = 0; step < cfg.max_new_tokens; ++step) {
             // Stop
@@ -574,7 +575,10 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
 
             // repetition_penalty
             for (int t : history) {
-                logits[t] /= cfg.repetition_penalty;
+                if (logits[t] < 0)
+                    logits[t] *= cfg.repetition_penalty;
+                else
+                    logits[t] /= cfg.repetition_penalty;
             }
 
             softmax_vec(logits, cfg.temperature);
@@ -589,7 +593,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
             }
 
             ctx->cur_token = next_id;
-            history.push_back(next_id);
+            history.insert(next_id);
         }
 
         return ctx;  // Update
@@ -605,7 +609,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
 
     Beam b0;
     b0.ctx = base_ctx;
-    b0.tokens.push_back(base_ctx->cur_token);
+    b0.tokens.insert(base_ctx->cur_token);
     beams.push_back(std::move(b0));
 
     for (int step = 0; step < cfg.max_new_tokens; ++step) {
@@ -674,7 +678,10 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
 
             // repetition_penalty
             for (int t : beam.tokens) {
-                logits[t] /= cfg.repetition_penalty;
+                if (logits[t] < 0)
+                    logits[t] *= cfg.repetition_penalty;
+                else
+                    logits[t] /= cfg.repetition_penalty;
             }
 
             // softmax
@@ -696,7 +703,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::generate(
                 nb.ctx = clone_ctx(beam.ctx);
                 nb.ctx->cur_token = tok;
                 nb.tokens = beam.tokens;
-                nb.tokens.push_back(tok);
+                nb.tokens.insert(tok);
                 nb.score  = beam.score + std::log(p + 1e-9f);
                 nb.finished = (tok == eos || tok == im_end);
                 candidates.push_back(std::move(nb));
