@@ -1,7 +1,7 @@
 // Copyright 2025 Tencent
 // SPDX-License-Identifier: Apache-2.0
 
-#include "qwen2.5_vl_3b.h"
+#include "model.h"
 #include "utils/prompt.h"
 #include <cstdio>
 #include <iostream>
@@ -31,17 +31,7 @@ int main(int argc, char** argv)
     }
     fprintf(stderr, "image %s loaded\n", image_path);
 
-    qwen2_5_vl_3b model("./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_embed_patch.ncnn.param",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_embed_patch.ncnn.bin",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_encoder.ncnn.param",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_encoder.ncnn.bin",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_embed_token.ncnn.param",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_embed_token.ncnn.bin",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_proj_out.ncnn.param",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_decoder.ncnn.param",
-                        "./assets/qwen2.5_vl_3b/qwen2.5-vl_decoder.ncnn.bin",
-                        "./assets/qwen2.5_vl_3b/vocab.txt",
-                        "./assets/qwen2.5_vl_3b/merges.txt",
+    ncnn_llm_gpt model("./assets/qwen2.5_vl_3b",
                        /*use_vulkan=*/false);
 
     fprintf(stderr, "model loaded\n");
