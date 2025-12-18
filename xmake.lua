@@ -9,6 +9,10 @@ if is_plat("windows") then
     add_defines("NOMINMAX")
 end
 
+if is_plat("windows", "mingw") then
+    add_syslinks("user32", "gdi32")
+end
+
 add_requires("ncnn master", {
     configs = {
         simple_vulkan = true,
@@ -18,7 +22,7 @@ add_requires("ncnn master", {
     }
 })
 
-add_requires("opencv-mobile")
+add_requires("opencv")
 add_requires("nlohmann_json")
 add_requires("cpp-httplib", {configs = {ssl = false}})
 
@@ -33,7 +37,7 @@ target("ncnn_llm")
     add_files("src/*.cpp")
     add_files("src/utils/*.cpp")
     add_deps("ncnn_tokenizer")
-    add_packages("ncnn", "opencv-mobile", "nlohmann_json")
+    add_packages("ncnn", "opencv", "nlohmann_json")
 
 function add_example(repo)
     target(repo)
@@ -41,7 +45,7 @@ function add_example(repo)
         add_includedirs("examples/")
         add_files("examples/" .. repo .. ".cpp")
         add_deps("ncnn_llm")
-        add_packages("ncnn", "opencv-mobile", "nlohmann_json")
+        add_packages("ncnn", "opencv", "nlohmann_json")
 
         set_rundir("$(projectdir)/")
 end
@@ -57,7 +61,7 @@ target("qwen3_openai_api")
     add_includedirs("examples/")
     add_files("examples/qwen3_openai_api.cpp")
     add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv-mobile", "nlohmann_json", "cpp-httplib")
+    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib")
 
     set_rundir("$(projectdir)/")
 
@@ -66,6 +70,6 @@ target("benchllm")
     add_files("benchmark/benchllm.cpp")
 
     add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv-mobile")
+    add_packages("ncnn", "opencv")
 
     set_rundir("$(projectdir)/assets/minicpm4_0.5b/")

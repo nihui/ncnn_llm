@@ -1,4 +1,4 @@
-#include "minicpm4_0.5b.h"
+#include "model.h"
 #include "utils/prompt.h"
 #include <cstdio>
 #include <iostream>
@@ -6,13 +6,7 @@
 
 int main() {
     
-    minicpm4_0_5b model("./assets/minicpm4_0.5b/minicpm4_embed_token.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_embed_token.ncnn.bin",
-                        "./assets/minicpm4_0.5b/minicpm4_proj_out.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_decoder.ncnn.param",
-                        "./assets/minicpm4_0.5b/minicpm4_decoder.ncnn.bin",
-                        "./assets/minicpm4_0.5b/vocab.txt",
-                        "./assets/minicpm4_0.5b/merges.txt",
+    ncnn_llm_gpt model("./assets/minicpm4_0.5b",
                        /*use_vulkan=*/false);
 
     std::cout << "Chat with MiniCPM4-0.5B! Type 'exit' or 'quit' to end the conversation.\n";

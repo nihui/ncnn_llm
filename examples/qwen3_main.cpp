@@ -1,4 +1,4 @@
-#include "qwen3_0.6b.h"
+#include "model.h"
 #include "utils/prompt.h"
 #include <cstdio>
 #include <iostream>
@@ -6,14 +6,8 @@
 #include <functional>
 
 int main() {
-    qwen3_0_6b model(
-                        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.param",
-                        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.bin",
-                        "./assets/qwen3_0.6b/qwen3_proj_out.ncnn.param",
-                        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.param",
-                        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.bin",
-                        "./assets/qwen3_0.6b/vocab.txt",
-                        "./assets/qwen3_0.6b/merges.txt",
+    ncnn_llm_gpt model(
+                        "./assets/qwen3_0.6b",
                        /*use_vulkan=*/false);
 
     std::cout << "Chat with Qwen3-0.6B! Type 'exit' or 'quit' to end the conversation.\n";
@@ -26,12 +20,12 @@ int main() {
     auto ctx = model.prefill(prompt);
 
     // 定义工具：自动生成 JSON schema
-    auto random_tool = qwen3_0_6b::make_function_tool<int, int, int>(
+    auto random_tool = ncnn_llm_gpt::make_function_tool<int, int, int>(
         "random",
         "Generate a random number between two integers.",
         {"floor", "ceiling"}
     );
-    auto add_tool = qwen3_0_6b::make_function_tool<int, int, int>(
+    auto add_tool = ncnn_llm_gpt::make_function_tool<int, int, int>(
         "add",
         "Add two integers.",
         {"a", "b"}

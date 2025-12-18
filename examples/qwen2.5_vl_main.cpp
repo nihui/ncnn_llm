@@ -13,20 +13,23 @@
 
 int main(int argc, char** argv)
 {
+    const char* image_path;
     if (argc != 2)
     {
         fprintf(stderr, "usage: %s [image-path]\n", argv[0]);
-        return -1;
+        image_path = "./assets/ganyu.jpg";
+    } else {
+        image_path = argv[1];
     }
 
-    const char* image_path = argv[1];
-
-    cv::Mat bgr = cv::imread(image_path, 1);
+    
+    cv::Mat bgr = cv::imread(image_path, cv::IMREAD_COLOR);
     if (bgr.empty())
     {
         fprintf(stderr, "cv::imread %s failed\n", image_path);
         return -1;
     }
+    fprintf(stderr, "image %s loaded\n", image_path);
 
     qwen2_5_vl_3b model("./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_embed_patch.ncnn.param",
                         "./assets/qwen2.5_vl_3b/qwen2.5-vl_vision_embed_patch.ncnn.bin",
@@ -41,6 +44,8 @@ int main(int argc, char** argv)
                         "./assets/qwen2.5_vl_3b/merges.txt",
                        /*use_vulkan=*/false);
 
+    fprintf(stderr, "model loaded\n");
+
     std::cout << "Chat with Qwen2.5-VL-3B! Type 'exit' or 'quit' to end the conversation.\n";
 
     std::string prompt = apply_chat_template({
@@ -50,6 +55,8 @@ int main(int argc, char** argv)
     // std::cout << "prompt = " << prompt << std::endl;
 
     auto ctx = model.prefill(prompt);
+
+    fprintf(stderr, "prompt prefilling done\n");
 
     {
         std::string user_input = "分析图片内容";

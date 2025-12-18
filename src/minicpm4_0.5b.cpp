@@ -184,7 +184,7 @@ std::shared_ptr<minicpm4_0_5b_ctx> minicpm4_0_5b::prefill(const std::string& inp
 
     ncnn::Mat cos_cache;
     ncnn::Mat sin_cache;
-    generate_rope_embed_cache_LongRoPE(token_ids.size(), 64, 0, cos_cache, sin_cache);
+    generate_rope_embed_cache(token_ids.size(), 64, 0, cos_cache, sin_cache);
 
     ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
     ncnn::Mat token_embed;
