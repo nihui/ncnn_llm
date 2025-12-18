@@ -50,6 +50,7 @@ struct ncnn_llm_gpt_ctx
 {
     std::vector<std::pair<ncnn::Mat, ncnn::Mat>> kv_cache;
     int cur_token = 0;
+    int position_id = 0;
 };
 
 
@@ -127,6 +128,8 @@ static std::shared_ptr<ncnn_llm_gpt_ctx>
 clone_ctx(const std::shared_ptr<ncnn_llm_gpt_ctx>& src) {
     auto dst = std::make_shared<ncnn_llm_gpt_ctx>();
     dst->cur_token = src->cur_token;
+    dst->position_id = src->position_id;
+    
     dst->kv_cache.resize(src->kv_cache.size());
     for (size_t i = 0; i < src->kv_cache.size(); ++i) {
         dst->kv_cache[i].first = src->kv_cache[i].first;
@@ -388,6 +391,7 @@ public:
         auto ctx = std::make_shared<ncnn_llm_gpt_ctx>();
         ctx->kv_cache = std::move(kv_cache);
         ctx->cur_token = next_token_id;
+        ctx->position_id = (int)token_ids.size() + 1;
 
         return ctx;
     }
@@ -405,10 +409,12 @@ public:
         ncnn::Mat cos_cache;
         ncnn::Mat sin_cache;
 
+        int current_pos = new_ctx->position_id;
+
         if (rope_type == RoPE_Type::LongRoPE) {
-            generate_rope_embed_cache_LongRoPE(token_ids.size(), rope_head_dim, new_ctx->kv_cache[0].first.h, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
+            generate_rope_embed_cache_LongRoPE(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
         } else {
-            generate_rope_embed_cache(token_ids.size(), rope_head_dim, new_ctx->kv_cache[0].first.h, cos_cache, sin_cache, rope_theta);
+            generate_rope_embed_cache(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta);
         }
         
         ncnn::Mat input_ids_mat = ncnn::Mat((int)token_ids.size(), 1, (void*)token_ids.data()).clone();
@@ -465,10 +471,12 @@ public:
         ncnn::Mat last_cos_cache;
         ncnn::Mat last_sin_cache;
 
+        int last_token_pos = current_pos + (int)token_ids.size();
+
         if (rope_type == RoPE_Type::LongRoPE) {
-            generate_rope_embed_cache_LongRoPE(1, rope_head_dim, new_ctx->kv_cache[0].first.h, last_cos_cache, last_sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
+            generate_rope_embed_cache_LongRoPE(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
         } else {
-            generate_rope_embed_cache(1, rope_head_dim, new_ctx->kv_cache[0].first.h, last_cos_cache, last_sin_cache, rope_theta);
+            generate_rope_embed_cache(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta);
         }
         
         ncnn::Mat last_mask(new_ctx->kv_cache[0].first.h + 1, 1);
@@ -521,6 +529,8 @@ public:
             next_token_id = max_idx;
         }
         new_ctx->cur_token = next_token_id;
+        new_ctx->position_id += ((int)token_ids.size() + 1);
+
         return new_ctx;
     }
 
@@ -607,11 +617,14 @@ public:
                 }
 
                 ncnn::Mat cos_cache, sin_cache;
+
                 if (rope_type == RoPE_Type::LongRoPE) {
-                    generate_rope_embed_cache_LongRoPE(1, rope_head_dim, ctx->kv_cache[0].first.h, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
+                    generate_rope_embed_cache_LongRoPE(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
                 } else {
-                    generate_rope_embed_cache(1, rope_head_dim, ctx->kv_cache[0].first.h, cos_cache, sin_cache, rope_theta);
+                    generate_rope_embed_cache(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta);
                 }
+                
+                ctx->position_id++;
 
                 ncnn::Mat mask(ctx->kv_cache[0].first.h + 1, 1);
                 mask.fill(0.f);
@@ -743,9 +756,9 @@ public:
                 ncnn::Mat cos_cache, sin_cache;
                 
                 if (rope_type == RoPE_Type::LongRoPE) {
-                    generate_rope_embed_cache_LongRoPE(1, rope_head_dim, bctx.kv_cache[0].first.h, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
+                    generate_rope_embed_cache_LongRoPE(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
                 } else {
-                    generate_rope_embed_cache(1, rope_head_dim, bctx.kv_cache[0].first.h, cos_cache, sin_cache, rope_theta);
+                    generate_rope_embed_cache(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta);
                 }
 
 
@@ -815,6 +828,9 @@ public:
 
                     Beam nb;
                     nb.ctx = clone_ctx(beam.ctx);
+                    
+                    nb.ctx->position_id++;
+                    
                     nb.ctx->cur_token = tok;
                     
                     // SAVE PREVIOUS TOKEN & STATE
