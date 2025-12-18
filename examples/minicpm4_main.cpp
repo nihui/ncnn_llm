@@ -1,4 +1,4 @@
-#include "model.h"
+#include "ncnn_llm_gpt.h"
 #include "utils/prompt.h"
 #include <cstdio>
 #include <iostream>

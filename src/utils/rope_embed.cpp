@@ -1,12 +1,11 @@
 #include "rope_embed.h"
 #include <cmath>
 #include <vector>
+#include <cstring>
+#include <cstdio>
 
 void generate_rope_embed_cache(int seqlen, int embed_dim, int position_id, ncnn::Mat& cos_cache, ncnn::Mat& sin_cache, float rope_theta)
 {
-    const float attention_factor = 1.f;
-
-    // prepare inv_freq
     std::vector<float> inv_freq(embed_dim / 2);
     for (int i = 0; i < embed_dim / 2; i++)
     {
@@ -33,7 +32,6 @@ void generate_rope_embed_cache(int seqlen, int embed_dim, int position_id, ncnn:
     }
 }
 
-
 static inline float compute_scaling_factor(int max_position_embeddings, int ORIGINAL_MAX_POSITION_EMBEDDINGS = 32768) {
     float scale = static_cast<float>(max_position_embeddings) / static_cast<float>(ORIGINAL_MAX_POSITION_EMBEDDINGS);
     return std::sqrt(1.0f + std::log(scale) / std::log(static_cast<float>(ORIGINAL_MAX_POSITION_EMBEDDINGS)));
@@ -57,7 +55,6 @@ void generate_rope_embed_cache_LongRoPE(int seqlen,
 
     const int half_dim = embed_dim / 2;
 
-    // ncnn::Mat (w=half_dim, h=seqlen, c=1)
     cos_cache.create(half_dim, seqlen);
     sin_cache.create(half_dim, seqlen);
 
@@ -68,7 +65,6 @@ void generate_rope_embed_cache_LongRoPE(int seqlen,
     float* cos_ptr = cos_cache.channel(0);
     float* sin_ptr = sin_cache.channel(0);
 
-    // idx_j = 2*j => exponent = (2*j)/embed_dim
     std::vector<float> inv_freq(half_dim);
     for (int j = 0; j < half_dim; ++j) {
         float exponent = (2.0f * j) / static_cast<float>(embed_dim);
@@ -78,8 +74,6 @@ void generate_rope_embed_cache_LongRoPE(int seqlen,
     const float* ext_factor = (seqlen > ORIGINAL_MAX_POSITION_EMBEDDINGS) ? LONG_FACTOR : SHORT_FACTOR;
     const float scaling_factor = compute_scaling_factor(ORIGINAL_MAX_POSITION_EMBEDDINGS);
 
-    // freqs[i, j] = ( (t_i) * inv_freq[j] ) / ext_factor[j]
-    // t_i = position_id + i
     for (int i = 0; i < seqlen; ++i) {
         int t = position_id + i;
         float* row_cos = cos_ptr + i * half_dim;
@@ -93,7 +87,7 @@ void generate_rope_embed_cache_LongRoPE(int seqlen,
     }
 }
 
-void inject_image_embeds(std::vector<int>& token_ids, ncnn::Mat& token_embed, int& image_pad_index, const ncnn::Mat& image_embeds)
+void inject_image_embeds(std::vector<int>& token_ids, ncnn::Mat& token_embed, int& image_pad_index, int image_pad_id, const ncnn::Mat& image_embeds)
 {
     image_pad_index = -1;
     if (image_embeds.empty())
@@ -101,24 +95,18 @@ void inject_image_embeds(std::vector<int>& token_ids, ncnn::Mat& token_embed, in
         return;
     }
 
-    // <|image_pad|>
-    fprintf(stderr, "token_embed %d x %d\n", token_embed.w, token_embed.h);
-    fprintf(stderr, "image_embeds %d x %d\n", image_embeds.w, image_embeds.h);
-
     std::vector<int> token_ids_injected(token_ids.size() - 1 + image_embeds.h);
     ncnn::Mat token_embed_injected(token_embed.w, token_embed.h - 1 + image_embeds.h);
 
     for (int i = 0; i < (int)token_ids.size(); i++)
     {
-        // FIXME hardcode
-        // find <|image_pad|>
-        if (token_ids[i] == 151655)
+        if (token_ids[i] == image_pad_id)
         {
             image_pad_index = i;
 
             // inject token ids
             memcpy(token_ids_injected.data(), token_ids.data(), i * sizeof(int));
-            memset(token_ids_injected.data() + i, 151655, image_embeds.h * sizeof(int));
+            memset(token_ids_injected.data() + i, image_pad_id, image_embeds.h * sizeof(int));
             memcpy(token_ids_injected.data() + i + image_embeds.h, token_ids.data() + i + 1, (token_ids.size() - 1 - i) * sizeof(int));
 
             // inject token embed
@@ -134,19 +122,20 @@ void inject_image_embeds(std::vector<int>& token_ids, ncnn::Mat& token_embed, in
     token_embed = token_embed_injected;
 }
 
-void generate_rope_embed_cache_vision_mrope(int seqlen, int embed_dim, int position_id, int image_pad_index, int image_embeds_size, int num_patches_w, ncnn::Mat& cos_cache, ncnn::Mat& sin_cache, float rope_theta)
+void generate_rope_embed_cache_vision_mrope(int seqlen, 
+                                          int embed_dim, 
+                                          int position_id, 
+                                          int image_pad_index, 
+                                          int image_embeds_size, 
+                                          int num_patches_w, 
+                                          int spatial_merge_size,
+                                          const std::vector<int>& mrope_section,
+                                          ncnn::Mat& cos_cache, 
+                                          ncnn::Mat& sin_cache, 
+                                          float rope_theta)
 {
-    const int merge_size = 2;
+    if (mrope_section.size() < 3) return;
 
-    const int mrope[3] = {16,24,24};
-
-    // assert mrope[0] + mrope[1] + mrope[2] == embed_dim / 2
-
-    // const float rope_theta = 100000;
-    // const float rope_theta = 1000000;
-    const float attention_factor = 1.f;
-
-    // prepare inv_freq
     std::vector<float> inv_freq(embed_dim / 2);
     for (int i = 0; i < embed_dim / 2; i++)
     {
@@ -170,26 +159,26 @@ void generate_rope_embed_cache_vision_mrope(int seqlen, int embed_dim, int posit
             }
             else if (i >= image_pad_index + image_embeds_size)
             {
-                pos += i - image_embeds_size + (num_patches_w / merge_size);
+                pos += i - image_embeds_size + (num_patches_w / spatial_merge_size);
             }
             else
             {
-                // we are inside image tokens range
-                if (j < mrope[0])
+                // inside image tokens range
+                if (j < mrope_section[0])
                 {
                     // temporal
                     pos += image_pad_index;
                 }
-                else if (j < mrope[0] + mrope[1])
+                else if (j < mrope_section[0] + mrope_section[1])
                 {
                     // height
-                    int hid = (i - image_pad_index) / (num_patches_w / merge_size);
+                    int hid = (i - image_pad_index) / (num_patches_w / spatial_merge_size);
                     pos += image_pad_index + hid;
                 }
-                else // if (j < mrope[0] + mrope[1] + mrope[2])
+                else
                 {
                     // width
-                    int wid = (i - image_pad_index) % (num_patches_w / merge_size);
+                    int wid = (i - image_pad_index) % (num_patches_w / spatial_merge_size);
                     pos += image_pad_index + wid;
                 }
             }
