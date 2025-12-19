@@ -129,4 +129,4 @@ We welcome everyone to pay attention to and participate in this project to joint
 
 ## 📝 License
 
-[Insert License Here, e.g., MIT, Apache 2.0, etc.]
+Apache 2.0
