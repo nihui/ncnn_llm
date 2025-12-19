@@ -1,4 +1,4 @@
-#include "qwen3_0.6b.h"
+#include "ncnn_llm_gpt.h"
 #include "utils/prompt.h"
 
 #include <chrono>
@@ -1236,14 +1236,8 @@ int main(int argc, char** argv) {
         }
     }
 
-    qwen3_0_6b model(
-        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.param",
-        "./assets/qwen3_0.6b/qwen3_embed_token.ncnn.bin",
-        "./assets/qwen3_0.6b/qwen3_proj_out.ncnn.param",
-        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.param",
-        "./assets/qwen3_0.6b/qwen3_decoder.ncnn.bin",
-        "./assets/qwen3_0.6b/vocab.txt",
-        "./assets/qwen3_0.6b/merges.txt",
+    ncnn_llm_gpt model(
+        "./assets/qwen3_0.6b",
         /*use_vulkan=*/false);
 
     std::mutex model_mutex;

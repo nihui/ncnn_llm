@@ -6,13 +6,6 @@
 #include <stdexcept>
 
 // ---------------- I/O helpers ----------------
-static std::string Trim(const std::string& s) {
-    size_t b = 0, e = s.size();
-    while (b < e && std::isspace(static_cast<unsigned char>(s[b]))) ++b;
-    while (e > b && std::isspace(static_cast<unsigned char>(s[e-1]))) --e;
-    return s.substr(b, e - b);
-}
-
 std::vector<std::string> BpeTokenizer::LoadVocab(const std::string& vocab_path) {
     std::ifstream ifs(vocab_path);
     if (!ifs.is_open()) {
@@ -22,7 +15,6 @@ std::vector<std::string> BpeTokenizer::LoadVocab(const std::string& vocab_path) 
     vocab.reserve(50000);
     std::string line;
     while (std::getline(ifs, line)) {
-        line = Trim(line);
         if (!line.empty()) vocab.push_back(line);
     }
     return vocab;
@@ -47,7 +39,6 @@ std::unordered_map<std::string, int> BpeTokenizer::LoadMergesRank(const std::str
     std::string line;
     int rank = 0;
     while (std::getline(ifs, line)) {
-        line = Trim(line);
         if (line.empty() || line[0] == '#') continue;
         std::istringstream iss(line);
         std::string a, b;
