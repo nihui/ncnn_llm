@@ -4,6 +4,150 @@
 #include <cstring>
 #include <cstdio>
 
+void generate_hunyuan_rope_embed_cache(
+    int seqlen, 
+    int embed_dim, 
+    int position_id, 
+    ncnn::Mat& cos_cache, 
+    ncnn::Mat& sin_cache, 
+    float rope_theta, 
+    const RopeScalingParams& scaling_params
+) {
+    // HunYuanDenseV1 Logic:
+    // base = theta * alpha ^ (dim / (dim - 2))
+    
+    float dim = (float)embed_dim;
+    float alpha = scaling_params.alpha; // 1000.0 from your config
+
+    // Calculate the modified base theta
+    // Matches Python: base = ... * alpha ** (head_dim / (head_dim - 2))
+    float base_correction = powf(alpha, dim / (dim - 2.0f));
+    float hunyuan_theta = rope_theta * base_correction;
+
+    // Precompute inverse frequencies
+    std::vector<float> inv_freq(embed_dim / 2);
+    for (int i = 0; i < embed_dim / 2; i++) {
+        // Matches Python: 1.0 / (base ** (i / head_dim)) 
+        // Note: in Python arange(0, dim, 2) implies indices are multiplied by 2
+        float exponent = (float)(i * 2) / dim;
+        inv_freq[i] = 1.0f / powf(hunyuan_theta, exponent);
+    }
+
+    // Allocate ncnn Mats
+    cos_cache.create(embed_dim / 2, seqlen);
+    sin_cache.create(embed_dim / 2, seqlen);
+
+    // Fill Cache
+    for (int i = 0; i < seqlen; i++) {
+        float* cos_ptr = cos_cache.row(i);
+        float* sin_ptr = sin_cache.row(i);
+
+        for (int j = 0; j < embed_dim / 2; j++) {
+            const int pos = position_id + i;
+            const float t = pos * inv_freq[j];
+            
+            // HunYuanDenseV1 sets attention_scaling = 1.0, so no mscale multiplication needed
+            *cos_ptr++ = cosf(t);
+            *sin_ptr++ = sinf(t);
+        }
+    }
+}
+
+static float yarn_ramp(float low, float high, float val) {
+    if (val < low) return 0.0f;
+    if (val > high) return 1.0f;
+    return (val - low) / (high - low);
+}
+
+void generate_yarn_rope_embed_cache(
+    int seqlen, 
+    int embed_dim, 
+    int position_id, 
+    ncnn::Mat& cos_cache, 
+    ncnn::Mat& sin_cache, 
+    float rope_theta, 
+    const RopeScalingParams& scaling_params
+) {
+    cos_cache.create(embed_dim / 2, seqlen);
+    sin_cache.create(embed_dim / 2, seqlen);
+
+    std::vector<float> inv_freq(embed_dim / 2);
+    
+    float scale = scaling_params.alpha; 
+    float beta_fast = scaling_params.beta_fast;
+    float beta_slow = scaling_params.beta_slow;
+
+    for (int i = 0; i < embed_dim / 2; i++) {
+        float freq = 1.0f / powf(rope_theta, (float)(i * 2) / (float)embed_dim);
+        
+        float r = (float)(i * 2) / (float)embed_dim;
+        
+        float ramp = yarn_ramp(beta_slow, beta_fast, (float)embed_dim / (i * 2 + 1)); 
+        float base_correction = powf(scale, (float)embed_dim / ((float)embed_dim - 2.0f));
+        float ntk_theta = rope_theta * base_correction;
+        inv_freq[i] = 1.0f / powf(ntk_theta, (float)(i * 2) / (float)embed_dim);
+    }
+
+    for (int i = 0; i < seqlen; i++) {
+        float* cos_ptr = cos_cache.row(i);
+        float* sin_ptr = sin_cache.row(i);
+
+        for (int j = 0; j < embed_dim / 2; j++) {
+            const int pos = position_id + i;
+            const float t = pos * inv_freq[j];
+            
+            float mscale = scaling_params.mscale;
+            if (fabs(mscale - 1.0f) > 1e-6) {
+                *cos_ptr++ = cosf(t) * mscale;
+                *sin_ptr++ = sinf(t) * mscale;
+            } else {
+                *cos_ptr++ = cosf(t);
+                *sin_ptr++ = sinf(t);
+            }
+        }
+    }
+}
+
+void generate_ntk_rope_embed_cache(
+    int seqlen, 
+    int embed_dim, 
+    int position_id, 
+    ncnn::Mat& cos_cache, 
+    ncnn::Mat& sin_cache, 
+    float rope_theta, 
+    const RopeScalingParams& scaling_params
+) {
+    float dim = (float)embed_dim;
+    float alpha = scaling_params.alpha;
+    
+    float base_correction = powf(alpha, dim / (dim - 2.0f));
+    float ntk_theta = rope_theta * base_correction;
+
+    std::vector<float> inv_freq(embed_dim / 2);
+    for (int i = 0; i < embed_dim / 2; i++)
+    {
+        inv_freq[i] = 1.f / powf(ntk_theta, (float)(i * 2) / dim);
+    }
+
+    cos_cache.create(embed_dim / 2, seqlen);
+    sin_cache.create(embed_dim / 2, seqlen);
+
+    for (int i = 0; i < seqlen; i++)
+    {
+        float* cos_ptr = cos_cache.row(i);
+        float* sin_ptr = sin_cache.row(i);
+
+        for (int j = 0; j < embed_dim / 2; j++)
+        {
+            const int pos = position_id + i;
+            const float t = pos * inv_freq[j];
+            
+            *cos_ptr++ = cosf(t);
+            *sin_ptr++ = sinf(t);
+        }
+    }
+}
+
 void generate_rope_embed_cache(int seqlen, int embed_dim, int position_id, ncnn::Mat& cos_cache, ncnn::Mat& sin_cache, float rope_theta)
 {
     std::vector<float> inv_freq(embed_dim / 2);
