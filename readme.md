@@ -97,6 +97,69 @@ Assistant: OpenCV (Open Source Computer Vision Library) is an open-source comput
 
 ---
 
+## 🚀 llm_ncnn_run (CLI / OpenAI API + Auto Download + MCP)
+
+`llm_ncnn_run` is a unified example that supports:
+- Two modes: CLI chat (`--mode cli`) and OpenAI-style HTTP server (`--mode openai`)
+- Built-in tools (random/add) + external MCP tools
+- Automatic model download from https://mirrors.sdu.edu.cn/ncnn_modelzoo/ (by parsing `model.json`)
+
+### Build
+
+```bash
+xmake build llm_ncnn_run
+```
+
+### Run (CLI mode)
+
+```bash
+xmake run llm_ncnn_run --mode cli --model qwen2.5_vl_3b
+```
+
+Notes:
+- If `--model` is a bare name (no path separators), it downloads to `./assets/<name>`.
+- You can also pass an explicit path: `--model ./assets/qwen3_0.6b`.
+
+### Run (OpenAI API mode)
+
+```bash
+xmake run llm_ncnn_run --mode openai --port 8080 --model qwen3_0.6b
+```
+
+Endpoints:
+- `http://localhost:8080/` (web chat)
+- `http://localhost:8080/v1/chat/completions` (OpenAI-style API)
+
+### MCP (stdio tools)
+
+CLI mode:
+
+```bash
+xmake run llm_ncnn_run --mode cli --mcp-server "./my_mcp_server --flag"
+```
+
+OpenAI mode:
+
+```bash
+xmake run llm_ncnn_run --mode openai --port 8080 --mcp-server "./my_mcp_server --flag"
+```
+
+Common MCP flags:
+- `--mcp-transport lsp|jsonl`
+- `--mcp-debug`
+- `--mcp-timeout-ms <n>`
+
+### HTTPS Certificate Issues
+
+If download fails due to TLS certificate errors, set CA path:
+
+```bash
+NCNN_LLM_CA_FILE=/etc/ssl/certs/ca-certificates.crt \
+xmake run llm_ncnn_run --mode openai --model qwen2.5_vl_3b
+```
+
+---
+
 ## 📥 Model Zoo
 
 You can download the converted ncnn-compatible model weights from the following mirror:
