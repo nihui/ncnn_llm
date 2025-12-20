@@ -9,12 +9,27 @@
 #include "ncnn_llm_gpt.h"
 
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <mutex>
 #include <string>
 
+namespace {
+
+std::string normalize_model_path(std::string path) {
+    std::filesystem::path p(path);
+    if (p.is_absolute()) return path;
+    if (!p.has_parent_path()) {
+        return (std::filesystem::path("./assets") / p).string();
+    }
+    return path;
+}
+
+} // namespace
+
 int main(int argc, char** argv) {
     Options opt = parse_options(argc, argv);
+    opt.model_path = normalize_model_path(opt.model_path);
     if (opt.mcp_server_cmdline.empty()) {
         if (const char* env = std::getenv("NCNN_LLM_MCP_SERVER")) {
             opt.mcp_server_cmdline = env;
