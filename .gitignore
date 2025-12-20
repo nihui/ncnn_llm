@@ -2,3 +2,5 @@
 /.vscode/
 /.xmake/
 /build/
+/mcp
+/examples/web/generated/
