@@ -25,6 +25,7 @@ add_requires("ncnn master", {
 add_requires("opencv")
 add_requires("nlohmann_json")
 add_requires("cpp-httplib", {configs = {ssl = false}})
+add_requires("libcurl")
 
 add_includedirs("src/")
 
@@ -69,9 +70,8 @@ target("llm_ncnn_run")
     set_kind("binary")
     add_includedirs("examples/")
     add_files("examples/llm_ncnn_run/*.cpp")
-    add_files("examples/common/*.cpp")
     add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib")
+    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib", "libcurl")
 
     set_rundir("$(projectdir)/")
 
