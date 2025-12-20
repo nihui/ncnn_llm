@@ -65,6 +65,16 @@ target("qwen3_openai_api")
 
     set_rundir("$(projectdir)/")
 
+target("llm_ncnn_run")
+    set_kind("binary")
+    add_includedirs("examples/")
+    add_files("examples/llm_ncnn_run/*.cpp")
+    add_files("examples/common/*.cpp")
+    add_deps("ncnn_llm")
+    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib")
+
+    set_rundir("$(projectdir)/")
+
 target("benchllm")
     set_kind("binary")
     add_files("benchmark/benchllm.cpp")
