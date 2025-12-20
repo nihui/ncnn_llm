@@ -1,152 +1,132 @@
-# ncnn llm
-ncnn llm 旨在为ncnn框架提供大语言模型（LLM）的支持。ncnn 是一个高性能的神经网络前向计算框架，专为移动设备和嵌入式设备设计。通过集成大语言模型，ncnn llm 使得在资源受限的环境中运行复杂的自然语言处理任务成为可能。
+# ncnn_llm
 
-ncnn llm is designed to provide support for large language models (LLM) within the ncnn framework. ncnn is a high-performance neural network inference framework optimized for mobile and embedded devices. By integrating large language models, ncnn llm enables the execution of complex natural language processing tasks in resource-constrained environments.
+**ncnn_llm** provides Large Language Model (LLM) support for the [ncnn](https://github.com/Tencent/ncnn) framework.
 
-## 项目起源
+ncnn is a high-performance neural network inference framework specifically optimized for mobile and embedded devices. By integrating LLMs into ncnn, this project enables the execution of complex natural language processing tasks in resource-constrained environments (edge devices, mobile phones, IoT).
 
-本项目起源于nihui为ncnn添加了kvcache功能，这使得在ncnn上运行大语言模型成为可能。本人本着为社区贡献的精神，决定将这一功能进行整理和扩展，形成一个独立的项目，以便更多的开发者能够方便地使用和贡献。
+---
 
-The project originated from nihui's addition of the kvcache feature to ncnn, which made it possible to run large language models on ncnn. Motivated by a spirit of community contribution, I decided to organize and expand this functionality into an independent project, making it easier for more developers to use and contribute.
+## 🚀 Project Origin
 
-**ncnn对kvcache的支持处于实验性阶段，请编译master分支以获得最新功能。**
+This project originated from **nihui's** implementation of the `kvcache` feature for ncnn, which opened the door for running LLMs on the framework. Motivated by the spirit of open-source contribution, this repository organizes and expands upon that functionality into an independent project.
 
-**ncnn's support for kvcache is in an experimental stage; please compile the master branch to obtain the latest features.**
+The goal is to provide a complete pipeline, making it easier for developers to use LLMs on ncnn and contribute to the ecosystem.
 
-## 目前状态
+> **⚠️ Important Note:**
+> ncnn's support for `kvcache` is currently in an **experimental stage**. You **must** compile ncnn from the `master` branch to ensure you have the latest features required for this project to run.
 
-目前，ncnn llm 仍处于早期开发阶段，实现了基本的tokenizer和nllb模型的支持。
+---
 
-Currently, ncnn llm is still in the early stages of development, with basic support for tokenizers and the nllb model implemented.
+## 📊 Model Support Matrix
 
-本项目尽可能提供了详尽的文档和示例代码和完整的导出pipeline，帮助用户快速上手。但是不可避免的，随着库的更新老的导出pipeline可能会失效，用户可以参考示例代码进行调整或者提出issue寻求帮助。
+The project is currently in active development. Below is the current compatibility status of various models.
 
-The project provides detailed documentation, example code, and a complete export pipeline to help users get started quickly. However, as the library evolves, some older export pipelines may become obsolete. Users can refer to the example code for adjustments or raise issues for assistance.
+### ✅ Perfectly Supported
 
-## 未来计划
+*These models run smoothly with the implemented tokenizer and inference pipeline.*
 
-未来计划包括但不限于：
+* **MiniCPM4-0.5B**
+* **Qwen3** (0.6B)
+* **Qwen2.5-VL**
+* **NLLB** (No Language Left Behind)
 
-- 为上游提供相关优化补丁，提升ncnn对大语言模型的支持（直接提交上游，而不会出现在本项目中）
-- 支持更多的模型和tokenizer
-- 优化性能，提升推理速度和降低内存占用
-- 增加更多的示例和文档，帮助用户更好地理解和使用本项目
+### ⚠️ Running with Issues
 
-Future plans include but are not limited to:
-- Providing relevant optimization patches to upstream to enhance ncnn's support for large language models (directly submitted upstream and not appearing in this project)
-- Supporting more models and tokenizers
-- Optimizing performance to improve inference speed and reduce memory usage
-- Adding more examples and documentation to help users better understand and use the project
+*These models can be loaded and run, but may experience bugs or suboptimal performance.*
 
-欢迎大家关注和参与本项目，共同推动ncnn在大语言模型领域的发展！
+* **Hunyuan 0.5B**
 
-TODO LIST:
-- [x] MiniCPM4-0.5B
-- [x] QWen3 0.6B
-- [ ] INT8 量化
-- [ ] 完善的推理过程
+### 🚧 Theoretical Support (Work in Progress)
 
-## 模型获取方法
+*These models should theoretically work but are currently failing or unverified in the current build.*
 
-模型可以从以下链接获取：
-[ncnn modelzoo](https://mirrors.sdu.edu.cn/ncnn_modelzoo/)
+* Qwen3-VL-2B-Instruct
+* TinyLlama-1.1B-Chat-v1.0
+* Qwen2.5-0.5B
+* Llama-3.2-1B-Instruct
+* DeepSeek-R1-Distill-Qwen-1.5b
 
-## 编译和使用
+### 🔜 Coming Soon
 
-```
+* Hunyuan OCR
+* PaddleOCR-VL
+
+---
+
+## 🛠️ Build and Usage
+
+This project uses `xmake` for building.
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/futz12/ncnn_llm.git
 cd ncnn_llm
+
+```
+
+### 2. Build
+
+```bash
 xmake build
+
+```
+
+### 3. Run (Example: MiniCPM4)
+
+Ensure you have downloaded the model weights (see below) before running.
+
+```bash
 xmake run minicpm4_main
-```
-
-## 效果测试
-
-minicpm4
 
 ```
- *  正在执行任务: xmake run minicpm4_main 
+
+### Example Output
+
+```text
+ * Executing task: xmake run minicpm4_main 
 
 Chat with MiniCPM4-0.5B! Type 'exit' or 'quit' to end the conversation.
-User: 你好
+User: Hello
 Assistant: 
-你好，我是你的智能助手。我可以帮助你查询天气、新闻、音乐、翻译等。请问你有什么需要帮助的吗？
-User: 测试
-Assistant:  你好，我是你的智能助手。你好，请问有什么我可以帮助你的吗？
-User: 你知道什么是opencv吗？
-Assistant:  opencv，全称OpenCV，是一个开源的计算机视觉和机器学习软件库，它包含了许多用于图像和视频处理的算法和工具。它可以帮助 你处理和理解图像和视频数据，从而实现各种计算机视觉任务，如目标检测、图像分类、人脸识别等。你是否对某个具体的任务或者算法感兴趣 ？
-```
-
-## 示例：Qwen3 OpenAI API Server（支持 MCP stdio 工具）
-
-该示例提供一个 OpenAI 风格的 HTTP API：`POST /v1/chat/completions`，并内置一个简单网页前端：`http://localhost:8080/`。
+Hello, I am your intelligent assistant. I can help you check the weather, news, music, translation, etc. Is there anything you need help with?
+User: Do you know what OpenCV is?
+Assistant: OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning software library. It contains many algorithms and tools for image and video processing...
 
 ```
-xmake build qwen3_openai_api
-xmake run qwen3_openai_api
-```
 
-启动后访问：
+---
 
-- `http://localhost:8080/`（网页聊天）
-- `http://localhost:8080/v1/chat/completions`（OpenAI 风格接口）
+## 📥 Model Zoo
 
-### 接入你自己的 MCP server（stdin/stdout）
+You can download the converted ncnn-compatible model weights from the following mirror:
 
-该 demo 支持通过 stdio 启动 MCP server，并把 MCP 的 `tools/list` 注入到模型可用工具中；当模型产生 `<tool_call>` 时会调用 `tools/call`，并把工具结果作为 `tool_response` 注入继续生成。
+🔗 **[ncnn Model Zoo Mirror](https://mirrors.sdu.edu.cn/ncnn_modelzoo/)**
 
-> 注意：不同 MCP server 的 framing 可能不同。若你的 server 是“一行一个 JSON”（JSONL），需要加 `--mcp-transport jsonl`。
+---
 
-示例（JSONL）：
+## 🔮 Roadmap
 
-```
-xmake run qwen3_openai_api --mcp-transport jsonl --mcp-server "$HOME/path/to/your-mcp-server --flag"
-```
+We are committed to improving ncnn_llm. Our future plans include:
 
-常用参数：
+* **Upstream Optimization:** Submitting optimization patches directly to the upstream ncnn repository to improve core LLM support.
+* **Expanded Support:** Adding support for more model architectures and tokenizers.
+* **Performance:** Optimizing inference speed and reducing memory footprint.
+* **INT8 Quantization:** Implementing INT8 quantization support.
+* **Documentation:** Improving the export pipeline docs and adding more C++ usage examples.
 
-- `--mcp-debug`：打印 MCP 收发的 JSON（排查卡住/协议不匹配时很有用）
-- `--mcp-timeout-ms <n>`：等待 MCP 响应的超时
-- `--port <n>`：HTTP 监听端口（默认 8080）
+*Note: While we provide a complete export pipeline, older pipelines may become obsolete as the library evolves. Please refer to the latest example code for adjustments.*
 
-### 图片工具的返回（base64 / file）
+---
 
-对于图片类工具（例如 `sd_txt2img`），demo **不会把 base64 图片塞回模型 prompt**（避免占用上下文/拖慢推理），而是通过 HTTP 响应的 `artifacts` 字段把图片交给前端渲染。
+## 🤝 Community & Contact
 
-- 默认：`base64`（前端会直接用 `data:image/png;base64,...` 渲染）
-- 可选：`file` 或 `both`（会写到 `examples/web/generated/` 并通过 `/generated/<name>.png` 访问）
+We welcome everyone to pay attention to and participate in this project to jointly promote the development of ncnn in the field of Large Language Models!
 
-你可以在请求 JSON 里控制：
+* **QQ Group:** `767178345`
 
-```json
-{
-  "mcp_image_delivery": "base64"
-}
-```
+---
 
-返回示例（截断）：
+## 📝 License
 
-```json
-{
-  "artifacts": [
-    { "kind": "image", "mime_type": "image/png", "data_base64": "..." }
-  ]
-}
-```
-
-### 用 curl 调用接口
-
-```
-curl http://localhost:8080/v1/chat/completions \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model":"qwen3-0.6b",
-    "stream": false,
-    "messages":[
-      {"role":"system","content":"You are a helpful assistant."},
-      {"role":"user","content":"Hello!"}
-    ]
-  }'
-```
-
-![MCP绘图](img/mcpimggen.png)
+Apache 2.0

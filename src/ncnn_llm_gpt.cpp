@@ -141,7 +141,25 @@ ncnn_llm_gpt::ncnn_llm_gpt(const std::string& model_path, bool use_vulkan) {
                 original_max_position_embeddings = rope_cfg["original_max_position_embeddings"].get<int>();
             } else if (rope_cfg["type"] == "RoPE") {
                 rope_type = RoPE_Type::RoPE;
+            } else if (rope_cfg["type"] == "NTKRoPE") {
+                // rope_scaling
+                rope_type = RoPE_Type::NTK_RoPE;
+            } else if (rope_cfg["type"] == "YaRNRoPE") {
+                rope_type = RoPE_Type::YARN_RoPE;
+            } else if (rope_cfg["type"] == "HYRoPE") {
+                rope_type = RoPE_Type::HY_RoPE;
             }
+
+            if (rope_cfg.contains("rope_scaling"))
+            {
+                ntk_scaling_params.alpha = rope_cfg["rope_scaling"]["alpha"].get<float>();
+                ntk_scaling_params.beta_fast = rope_cfg["rope_scaling"]["beta_fast"].get<float>();
+                ntk_scaling_params.beta_slow = rope_cfg["rope_scaling"]["beta_slow"].get<float>();
+                ntk_scaling_params.factor = rope_cfg["rope_scaling"]["factor"].get<float>();
+                ntk_scaling_params.mscale = rope_cfg["rope_scaling"]["mscale"].get<float>();
+                ntk_scaling_params.mscale_all_dim = rope_cfg["rope_scaling"]["mscale_all_dim"].get<float>();
+            }
+
             rope_theta = rope_cfg["rope_theta"].get<float>();
         }
 
@@ -214,7 +232,15 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
     ncnn::Mat cos_cache, sin_cache;
     if (rope_type == RoPE_Type::LongRoPE) {
         generate_rope_embed_cache_LongRoPE(token_ids.size(), rope_head_dim, 0, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-    } else {
+    } else if (rope_type == RoPE_Type::NTK_RoPE) {
+        generate_ntk_rope_embed_cache(token_ids.size(), rope_head_dim, 0, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::YARN_RoPE) {
+        generate_yarn_rope_embed_cache(token_ids.size(), rope_head_dim, 0, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::HY_RoPE) {
+        generate_hunyuan_rope_embed_cache(token_ids.size(), rope_head_dim, 0, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    } 
+    else
+    {
         generate_rope_embed_cache(token_ids.size(), rope_head_dim, 0, cos_cache, sin_cache, rope_theta);
     }
 
@@ -267,7 +293,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
     ncnn::Mat last_cos_cache, last_sin_cache;
     if (rope_type == RoPE_Type::LongRoPE) {
         generate_rope_embed_cache_LongRoPE(1, rope_head_dim, (int)token_ids.size(), last_cos_cache, last_sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-    } else {
+    } else if (rope_type == RoPE_Type::NTK_RoPE) {
+        generate_ntk_rope_embed_cache(1, rope_head_dim, (int)token_ids.size(), last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::YARN_RoPE) {
+        generate_yarn_rope_embed_cache(1, rope_head_dim, (int)token_ids.size(), last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::HY_RoPE) {
+        generate_hunyuan_rope_embed_cache(1, rope_head_dim, (int)token_ids.size(), last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    }
+    else {
         generate_rope_embed_cache(1, rope_head_dim, (int)token_ids.size(), last_cos_cache, last_sin_cache, rope_theta);
     }
 
@@ -474,7 +507,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
 
     if (rope_type == RoPE_Type::LongRoPE) {
         generate_rope_embed_cache_LongRoPE(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-    } else {
+    } else if (rope_type == RoPE_Type::NTK_RoPE) {
+        generate_ntk_rope_embed_cache(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::YARN_RoPE) {
+        generate_yarn_rope_embed_cache(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::HY_RoPE) {
+        generate_hunyuan_rope_embed_cache(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+    }
+    else {
         generate_rope_embed_cache(token_ids.size(), rope_head_dim, current_pos, cos_cache, sin_cache, rope_theta);
     }
     
@@ -535,7 +575,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
 
     if (rope_type == RoPE_Type::LongRoPE) {
         generate_rope_embed_cache_LongRoPE(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-    } else {
+    } else if (rope_type == RoPE_Type::NTK_RoPE) {
+        generate_ntk_rope_embed_cache(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::YARN_RoPE) {
+        generate_yarn_rope_embed_cache(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    } else if (rope_type == RoPE_Type::HY_RoPE) {
+        generate_hunyuan_rope_embed_cache(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta, ntk_scaling_params);
+    }
+    else {
         generate_rope_embed_cache(1, rope_head_dim, last_token_pos, last_cos_cache, last_sin_cache, rope_theta);
     }
     
@@ -654,7 +701,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::generate(const std::shared_ptr<n
             ncnn::Mat cos_cache, sin_cache;
             if (rope_type == RoPE_Type::LongRoPE) {
                 generate_rope_embed_cache_LongRoPE(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-            } else {
+            } else if (rope_type == RoPE_Type::NTK_RoPE) {
+                generate_ntk_rope_embed_cache(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            } else if (rope_type == RoPE_Type::YARN_RoPE) {
+                generate_yarn_rope_embed_cache(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            } else if (rope_type == RoPE_Type::HY_RoPE) {
+                generate_hunyuan_rope_embed_cache(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            }
+            else {
                 generate_rope_embed_cache(1, rope_head_dim, ctx->position_id, cos_cache, sin_cache, rope_theta);
             }
             
@@ -771,7 +825,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::generate(const std::shared_ptr<n
             ncnn::Mat cos_cache, sin_cache;
             if (rope_type == RoPE_Type::LongRoPE) {
                 generate_rope_embed_cache_LongRoPE(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta, short_factor.data(), long_factor.data(), original_max_position_embeddings);
-            } else {
+            } else if (rope_type == RoPE_Type::NTK_RoPE) {
+                generate_ntk_rope_embed_cache(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            } else if (rope_type == RoPE_Type::YARN_RoPE) {
+                generate_yarn_rope_embed_cache(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            } else if (rope_type == RoPE_Type::HY_RoPE) {
+                generate_hunyuan_rope_embed_cache(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta, ntk_scaling_params);
+            }
+            else {
                 generate_rope_embed_cache(1, rope_head_dim, bctx.position_id, cos_cache, sin_cache, rope_theta);
             }
 

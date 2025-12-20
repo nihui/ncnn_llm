@@ -1,6 +1,3 @@
-// Copyright 2025 Tencent
-// SPDX-License-Identifier: Apache-2.0
-
 #pragma once
 
 #include <array>
@@ -85,9 +82,14 @@ protected:
 
     enum RoPE_Type {
         RoPE = 0,
-        LongRoPE = 1
+        LongRoPE = 1,
+        NTK_RoPE = 2,
+        YARN_RoPE = 3,
+        HY_RoPE = 4
     } rope_type;
     float rope_theta = 100000.0f;
+
+    RopeScalingParams ntk_scaling_params;
 
     std::vector<float> short_factor;
     std::vector<float> long_factor;
