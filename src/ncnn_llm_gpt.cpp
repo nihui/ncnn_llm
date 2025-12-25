@@ -361,6 +361,7 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
     return ctx;
 }
 
+#if NCNN_LLM_WITH_OPENCV
 std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input_text, const cv::Mat& bgr, const std::shared_ptr<ncnn_llm_gpt_ctx> ctx) const {
     std::shared_ptr<ncnn_llm_gpt_ctx> new_ctx = clone_ctx(ctx);
 
@@ -494,6 +495,12 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input
     new_ctx->cur_token = next_token_id;
     return new_ctx;
 }
+#else
+std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input_text, const cv::Mat& bgr, const std::shared_ptr<ncnn_llm_gpt_ctx> ctx) const {
+    (void)bgr;
+    return prefill(input_text, ctx);
+}
+#endif
 
 std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::prefill(const std::string& input_text, const std::shared_ptr<ncnn_llm_gpt_ctx> ctx) const {
     std::shared_ptr<ncnn_llm_gpt_ctx> new_ctx = clone_ctx(ctx);
@@ -1026,6 +1033,7 @@ void ncnn_llm_gpt::get_image_size_for_patches(int image_height, int image_width,
     }
 }
 
+#if NCNN_LLM_WITH_OPENCV
 ncnn::Mat ncnn_llm_gpt::bgr_to_pixel_values(const cv::Mat& bgr) const {
     const float image_mean[3] = {0.48145466f, 0.4578275f, 0.40821073f};
     const float image_std[3] = {0.26862954f, 0.26130258f, 0.27577711f};
@@ -1076,6 +1084,12 @@ ncnn::Mat ncnn_llm_gpt::bgr_to_pixel_values(const cv::Mat& bgr) const {
     }
     return pixel_values;
 }
+#else
+ncnn::Mat ncnn_llm_gpt::bgr_to_pixel_values(const cv::Mat& bgr) const {
+    (void)bgr;
+    return ncnn::Mat();
+}
+#endif
 
 ncnn::Mat ncnn_llm_gpt::reorder_patches_for_merge(const ncnn::Mat& pixel_values, int h_patches, int w_patches) const {
     int num_patches = pixel_values.h;
@@ -1211,6 +1225,7 @@ void ncnn_llm_gpt::generate_rope_embeds(int num_patches_w, int num_patches_h, nc
     }
 }
 
+#if NCNN_LLM_WITH_OPENCV
 int ncnn_llm_gpt::get_visiual_features(const cv::Mat& bgr, ncnn::Mat& image_embeds, int& num_patches_w, int& num_patches_h) const {
     if (bgr.empty()) {
         image_embeds.release();
@@ -1325,3 +1340,12 @@ int ncnn_llm_gpt::get_visiual_features(const cv::Mat& bgr, ncnn::Mat& image_embe
     image_embeds = image_embeds_restored;
     return 0;
 }
+#else
+int ncnn_llm_gpt::get_visiual_features(const cv::Mat& bgr, ncnn::Mat& image_embeds, int& num_patches_w, int& num_patches_h) const {
+    (void)bgr;
+    image_embeds.release();
+    num_patches_w = 0;
+    num_patches_h = 0;
+    return -1;
+}
+#endif

@@ -5,6 +5,15 @@ set_encodings("utf-8")
 
 set_languages("c++20", "c11")
 
+local with_opencv = not is_plat("wasm")
+local with_libcurl = not is_plat("wasm")
+
+if with_opencv then
+    add_defines("NCNN_LLM_WITH_OPENCV=1")
+else
+    add_defines("NCNN_LLM_WITH_OPENCV=0")
+end
+
 if is_plat("wasm") then
     add_requires("emscripten")
     set_toolchains("emcc@emscripten")
@@ -27,10 +36,14 @@ add_requires("ncnn master", {
     }
 })
 
-add_requires("opencv")
+if with_opencv then
+    add_requires("opencv")
+end
 add_requires("nlohmann_json")
 add_requires("cpp-httplib", {configs = {ssl = false}})
-add_requires("libcurl")
+if with_libcurl then
+    add_requires("libcurl")
+end
 
 add_includedirs("src/")
 
@@ -43,7 +56,10 @@ target("ncnn_llm")
     add_files("src/*.cpp")
     add_files("src/utils/*.cpp")
     add_deps("ncnn_tokenizer")
-    add_packages("ncnn", "opencv", "nlohmann_json")
+    add_packages("ncnn", "nlohmann_json")
+    if with_opencv then
+        add_packages("opencv")
+    end
 
 function add_example(repo)
     target(repo)
@@ -51,7 +67,10 @@ function add_example(repo)
         add_includedirs("examples/")
         add_files("examples/" .. repo .. ".cpp")
         add_deps("ncnn_llm")
-        add_packages("ncnn", "opencv", "nlohmann_json")
+        add_packages("ncnn", "nlohmann_json")
+        if with_opencv then
+            add_packages("opencv")
+        end
 
         set_rundir("$(projectdir)/")
 end
@@ -60,31 +79,44 @@ add_example("nllb_main")
 add_example("minicpm4_main")
 add_example("qwen3_main")
 add_example("bytelevelbpe_main")
-add_example("qwen2.5_vl_main")
+if with_opencv then
+    add_example("qwen2.5_vl_main")
+end
 
 target("qwen3_openai_api")
     set_kind("binary")
     add_includedirs("examples/")
     add_files("examples/qwen3_openai_api.cpp")
     add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib")
+    add_packages("ncnn", "nlohmann_json", "cpp-httplib")
+    if with_opencv then
+        add_packages("opencv")
+    end
 
     set_rundir("$(projectdir)/")
 
-target("llm_ncnn_run")
-    set_kind("binary")
-    add_includedirs("examples/")
-    add_files("examples/llm_ncnn_run/*.cpp")
-    add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv", "nlohmann_json", "cpp-httplib", "libcurl")
+if with_libcurl then
+    target("llm_ncnn_run")
+        set_kind("binary")
+        add_includedirs("examples/")
+        add_files("examples/llm_ncnn_run/*.cpp")
+        add_deps("ncnn_llm")
+        add_packages("ncnn", "nlohmann_json", "cpp-httplib", "libcurl")
+        if with_opencv then
+            add_packages("opencv")
+        end
 
-    set_rundir("$(projectdir)/")
+        set_rundir("$(projectdir)/")
+end
 
 target("benchllm")
     set_kind("binary")
     add_files("benchmark/benchllm.cpp")
 
     add_deps("ncnn_llm")
-    add_packages("ncnn", "opencv")
+    add_packages("ncnn")
+    if with_opencv then
+        add_packages("opencv")
+    end
 
     set_rundir("$(projectdir)/assets/minicpm4_0.5b/")
