@@ -5,6 +5,11 @@ set_encodings("utf-8")
 
 set_languages("c++20", "c11")
 
+if is_plat("wasm") then
+    add_requires("emscripten")
+    set_toolchains("emcc@emscripten")
+end
+
 if is_plat("windows") then
     add_defines("NOMINMAX")
 end
