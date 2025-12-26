@@ -17,6 +17,8 @@ end
 if is_plat("wasm") then
     add_requires("emscripten")
     set_toolchains("emcc@emscripten")
+    add_cxflags("-sMEMORY64=1", "-sWASM_BIGINT")
+    add_ldflags("-sMEMORY64=1", "-sWASM_BIGINT")
 end
 
 if is_plat("windows") then
