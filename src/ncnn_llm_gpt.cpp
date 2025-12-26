@@ -87,12 +87,26 @@ ncnn_llm_gpt::ncnn_llm_gpt(const std::string& model_path, bool use_vulkan) {
             proj_out_net->opt.use_vulkan_compute = true;
         }
 
+        if (true) {
+            decoder_net->opt.use_fp16_storage = true;
+            embed_net->opt.use_fp16_storage = true;
+            proj_out_net->opt.use_fp16_storage = true;
+        }
+
         std::string decoder_param = model_path + "/" + config["params"]["decoder_param"].get<std::string>();
         std::string decoder_bin = model_path + "/" + config["params"]["decoder_bin"].get<std::string>();
         std::string embed_param = model_path + "/" + config["params"]["embed_token_param"].get<std::string>();
         std::string embed_bin = model_path + "/" + config["params"]["embed_token_bin"].get<std::string>();
         std::string proj_out_param = model_path + "/" + config["params"]["proj_out_param"].get<std::string>();
         std::string proj_out_bin = model_path + "/" + config["params"]["proj_out_bin"].get<std::string>();
+
+        printf("Loading model from %s\n", model_path.c_str());
+        printf("  decoder param: %s\n", decoder_param.c_str());
+        printf("  decoder bin: %s\n", decoder_bin.c_str());
+        printf("  embed param: %s\n", embed_param.c_str());
+        printf("  embed bin: %s\n", embed_bin.c_str());
+        printf("  proj_out param: %s\n", proj_out_param.c_str());
+        printf("  proj_out bin: %s\n", proj_out_bin.c_str());
 
         decoder_net->load_param(decoder_param.c_str());
         decoder_net->load_model(decoder_bin.c_str());

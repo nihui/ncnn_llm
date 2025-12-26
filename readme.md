@@ -1,5 +1,7 @@
 # ncnn_llm
 
+中文版: [README_CN](README_CN.md)
+
 **ncnn_llm** provides Large Language Model (LLM) support for the [ncnn](https://github.com/Tencent/ncnn) framework.
 
 ncnn is a high-performance neural network inference framework specifically optimized for mobile and embedded devices. By integrating LLMs into ncnn, this project enables the execution of complex natural language processing tasks in resource-constrained environments (edge devices, mobile phones, IoT).
