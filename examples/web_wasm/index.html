@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qwen3 WebAssembly Chat</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+
+    :root {
+      --bg-1: #0a0f1d;
+      --bg-2: #111a2e;
+      --panel: rgba(15, 23, 42, 0.9);
+      --panel-strong: rgba(10, 15, 26, 0.96);
+      --accent: #ff9f1c;
+      --accent-2: #22d3ee;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --user: #ff9f1c;
+      --assistant: #1f2937;
+      --border: rgba(148, 163, 184, 0.18);
+      --shadow: 0 24px 60px rgba(3, 7, 18, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Noto Sans", "PingFang SC", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 159, 28, 0.18), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(34, 211, 238, 0.2), transparent 38%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2));
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 48px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      background: var(--panel);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: floatIn 0.6s ease-out;
+      backdrop-filter: blur(6px);
+    }
+
+    @keyframes floatIn {
+      from { transform: translateY(18px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      background: linear-gradient(90deg, rgba(255, 159, 28, 0.18), rgba(34, 211, 238, 0.12));
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.6px;
+    }
+
+    header .badge {
+      font-size: 12px;
+      color: #0b1220;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 20px;
+      background: var(--panel-strong);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status .line {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status .line strong {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .status button {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(130deg, var(--accent), #ffd166);
+      color: #1f1300;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      box-shadow: 0 10px 20px rgba(255, 159, 28, 0.3);
+    }
+
+    .status button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .controls {
+      padding: 16px 20px;
+      display: grid;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.75);
+    }
+
+    .controls .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .field input[type="text"],
+    .field input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+    }
+
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .switch input {
+      accent-color: var(--accent-2);
+    }
+
+    .file {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .file input {
+      padding: 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.3);
+      color: var(--text);
+    }
+
+    #log {
+      padding: 20px;
+      min-height: 240px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg {
+      display: flex;
+      gap: 10px;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: translateY(6px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .msg.user { justify-content: flex-end; }
+    .bubble {
+      max-width: 86%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      line-height: 1.55;
+      background: var(--assistant);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      white-space: pre-wrap;
+    }
+    .msg.user .bubble {
+      background: var(--user);
+      color: #1f1300;
+      font-weight: 600;
+      border: none;
+    }
+
+    details.think {
+      margin-top: 8px;
+      background: rgba(8, 13, 24, 0.75);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    details.think summary {
+      cursor: pointer;
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+    details.think pre {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      color: #cbd5f5;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 16px 20px 20px;
+      background: var(--panel-strong);
+      border-top: 1px solid var(--border);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      max-height: 200px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text);
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(255, 159, 28, 0.4);
+    }
+
+    button.send {
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #ffcf52);
+      color: #231400;
+      font-weight: 700;
+      padding: 12px 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(255, 159, 28, 0.3);
+      transition: transform 0.1s ease;
+    }
+
+    button.send:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .hint {
+      padding: 0 20px 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hint code {
+      color: #ffd166;
+    }
+
+    @media (max-width: 720px) {
+      .status {
+        grid-template-columns: 1fr;
+      }
+      .controls .row {
+        grid-template-columns: 1fr;
+      }
+      form {
+        grid-template-columns: 1fr;
+      }
+      button.send {
+        width: 100%;
+      }
+    }
+  </style>
+  <script>
+    var Module = {
+      locateFile: (path) => path,
+      onRuntimeInitialized: () => {
+        if (window.__wasmReady) return;
+        window.__wasmReady = true;
+        if (typeof window.onWasmReady === 'function') {
+          window.onWasmReady();
+        }
+      }
+    };
+  </script>
+  <script src="qwen3_web_wasm.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Qwen3 WebAssembly Chat</h1>
+      <span class="badge">WASM</span>
+    </header>
+    <section class="status">
+      <div class="line">
+        <strong id="statusTitle">Runtime: loading...</strong>
+        <span id="statusDesc">Waiting for WebAssembly runtime.</span>
+      </div>
+      <button id="loadModel" disabled>Load Model</button>
+    </section>
+    <section class="controls">
+      <div class="row">
+        <div class="field">
+          <label for="modelPath">Model Path</label>
+          <input id="modelPath" type="text" value="/assets/qwen3_0.6b">
+        </div>
+        <div class="field">
+          <label for="systemPrompt">System Prompt</label>
+          <input id="systemPrompt" type="text" value="You are a helpful assistant.">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="maxTokens">Max Tokens</label>
+          <input id="maxTokens" type="number" min="1" max="4096" value="256">
+        </div>
+        <div class="field">
+          <label for="temperature">Temperature</label>
+          <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.7">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="topP">Top P</label>
+          <input id="topP" type="number" min="0" max="1" step="0.05" value="0.9">
+        </div>
+        <div class="field">
+          <label for="topK">Top K</label>
+          <input id="topK" type="number" min="1" max="200" value="40">
+        </div>
+      </div>
+      <div class="row">
+        <label class="switch">
+          <input type="checkbox" id="enableThinking">
+          <span>Enable thinking tags</span>
+        </label>
+        <label class="switch">
+          <input type="checkbox" id="resetSession">
+          <span>Reset model context on send</span>
+        </label>
+      </div>
+      <div class="row">
+        <label class="switch">
+          <input type="checkbox" id="verboseLogs" checked>
+          <span>Verbose logs</span>
+        </label>
+        <span></span>
+      </div>
+      <div class="file">
+        <label for="modelFiles">Optional: import model folder (Chrome/Edge supports directory upload)</label>
+        <input id="modelFiles" type="file" multiple webkitdirectory>
+      </div>
+    </section>
+    <div id="log"></div>
+    <form id="form">
+      <textarea id="input" placeholder="Ask the model something..." required></textarea>
+      <button class="send" id="send" type="submit">Send</button>
+    </form>
+    <div class="hint">
+      If you preload assets with emscripten, set <code>/assets/qwen3_0.6b</code> as the path.
+      Large models will be slow in the browser; try a smaller or quantized model for quick demos.
+    </div>
+  </div>
+
+  <script>
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDesc = document.getElementById('statusDesc');
+    const loadBtn = document.getElementById('loadModel');
+    const modelPathInput = document.getElementById('modelPath');
+    const systemPromptInput = document.getElementById('systemPrompt');
+    const maxTokensInput = document.getElementById('maxTokens');
+    const tempInput = document.getElementById('temperature');
+    const topPInput = document.getElementById('topP');
+    const topKInput = document.getElementById('topK');
+    const enableThinkingBox = document.getElementById('enableThinking');
+    const resetBox = document.getElementById('resetSession');
+    const fileInput = document.getElementById('modelFiles');
+    const verboseBox = document.getElementById('verboseLogs');
+    const log = document.getElementById('log');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+
+    let chat = null;
+
+    function debugLog(...args) {
+      if (!verboseBox || !verboseBox.checked) return;
+      console.log('[wasm-ui]', ...args);
+    }
+
+    function getFS() {
+      if (Module && Module.FS) return Module.FS;
+      if (window.FS) return window.FS;
+      return null;
+    }
+
+    function setStatus(title, desc, isError) {
+      statusTitle.textContent = title;
+      statusDesc.textContent = desc || '';
+      statusTitle.style.color = isError ? '#ff6b6b' : '#f8fafc';
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderAssistant(raw) {
+      if (!raw) return '';
+      let html = '';
+      let pos = 0;
+      while (pos < raw.length) {
+        const start = raw.indexOf('<think>', pos);
+        if (start === -1) {
+          html += escapeHtml(raw.slice(pos));
+          break;
+        }
+        html += escapeHtml(raw.slice(pos, start));
+        const close = raw.indexOf('</think>', start + 7);
+        if (close === -1) {
+          const thinkText = raw.slice(start + 7);
+          html += `<details class="think" open><summary>Thinking (partial)</summary><pre>${escapeHtml(thinkText)}</pre></details>`;
+          pos = raw.length;
+          break;
+        } else {
+          const thinkText = raw.slice(start + 7, close);
+          html += `<details class="think"><summary>Thinking</summary><pre>${escapeHtml(thinkText)}</pre></details>`;
+          pos = close + 8;
+        }
+      }
+      return html || '&nbsp;';
+    }
+
+    function addMessage(role, text, allowHTML = false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + (role === 'user' ? 'user' : 'assistant');
+      wrap.innerHTML = '<div class="bubble"></div>';
+      const bubble = wrap.querySelector('.bubble');
+      if (allowHTML) bubble.innerHTML = text;
+      else bubble.textContent = text;
+      log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function updateLastAssistant(html) {
+      const bubbles = log.querySelectorAll('.msg.assistant .bubble');
+      if (!bubbles.length) return;
+      bubbles[bubbles.length - 1].innerHTML = html;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function importModelFiles() {
+      const fs = getFS();
+      if (!fs) {
+        setStatus('Runtime not ready', 'Wait for WASM to initialize before importing files.', true);
+        debugLog('FS not available on Module/window');
+        return;
+      }
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+
+      debugLog('import files', files.length);
+      const root = files[0].webkitRelativePath
+        ? files[0].webkitRelativePath.split('/')[0]
+        : 'uploaded_model';
+      const base = `/models/${root}`;
+
+      setStatus('Importing files...', `Writing ${files.length} files into WASM FS.`);
+      for (const file of files) {
+        const rel = file.webkitRelativePath || file.name;
+        const outPath = `/models/${rel}`;
+        const dir = outPath.substring(0, outPath.lastIndexOf('/'));
+        if (dir) fs.mkdirTree(dir);
+        const data = new Uint8Array(await file.arrayBuffer());
+        fs.writeFile(outPath, data);
+        debugLog('wrote', outPath, data.length);
+      }
+
+      modelPathInput.value = base;
+      setStatus('Model files imported', `Ready at ${base}.`);
+      debugLog('import complete', base);
+    }
+
+    async function loadModel() {
+      if (!Module || !Module.Qwen3WebWasm) {
+        setStatus('Runtime not ready', 'Wait for WASM to initialize before loading.', true);
+        return;
+      }
+      loadBtn.disabled = true;
+      setStatus('Loading model...', 'This can take a while depending on model size.');
+      await new Promise((r) => setTimeout(r, 30));
+      try {
+        debugLog('load model', modelPathInput.value.trim());
+        chat = new Module.Qwen3WebWasm(modelPathInput.value.trim());
+        chat.reset(systemPromptInput.value.trim(), enableThinkingBox.checked);
+        chat.set_verbose(verboseBox.checked);
+        setStatus('Model loaded', 'You can start chatting now.');
+        debugLog('model loaded');
+      } catch (err) {
+        setStatus('Load failed', err.message || String(err), true);
+        debugLog('load failed', err);
+      } finally {
+        loadBtn.disabled = false;
+      }
+    }
+
+    function makeOptions() {
+      return {
+        max_tokens: Number(maxTokensInput.value || 256),
+        temperature: Number(tempInput.value || 0.7),
+        top_p: Number(topPInput.value || 0.9),
+        top_k: Number(topKInput.value || 40),
+        enable_thinking: enableThinkingBox.checked
+      };
+    }
+
+    async function sendMessage(text) {
+      if (!chat) {
+        setStatus('Model not loaded', 'Load a model before sending messages.', true);
+        return;
+      }
+      if (resetBox.checked) {
+        chat.reset(systemPromptInput.value.trim(), enableThinkingBox.checked);
+        log.innerHTML = '';
+      }
+      sendBtn.disabled = true;
+      input.disabled = true;
+      addMessage('user', text);
+      addMessage('assistant', 'Generating...');
+
+      try {
+        chat.set_verbose(verboseBox.checked);
+        debugLog('send', text);
+        const output = chat.generate(text, JSON.stringify(makeOptions()));
+        updateLastAssistant(renderAssistant(output));
+        const err = chat.last_error();
+        if (err) {
+          setStatus('Generated with warnings', err, true);
+          debugLog('generate warning', err);
+        }
+      } catch (err) {
+        updateLastAssistant(escapeHtml(`Error: ${err.message || err}`));
+        setStatus('Generation failed', err.message || String(err), true);
+        debugLog('generate failed', err);
+      } finally {
+        sendBtn.disabled = false;
+        input.disabled = false;
+        input.focus();
+      }
+    }
+
+    window.onWasmReady = () => {
+      setStatus('Runtime ready', 'Import a model directory or preload assets.');
+      loadBtn.disabled = false;
+      debugLog('runtime ready');
+      if (!getFS()) {
+        debugLog('FS missing after runtime init');
+      }
+    };
+    if (window.__wasmReady) {
+      window.onWasmReady();
+    }
+
+    fileInput.addEventListener('change', () => {
+      importModelFiles().catch((err) => {
+        setStatus('Import failed', err.message || String(err), true);
+        debugLog('import failed', err);
+      });
+    });
+
+    verboseBox.addEventListener('change', () => {
+      if (chat) chat.set_verbose(verboseBox.checked);
+      debugLog('verbose', verboseBox.checked);
+    });
+
+    loadBtn.addEventListener('click', () => {
+      loadModel().catch((err) => {
+        setStatus('Load failed', err.message || String(err), true);
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendMessage(text);
+    });
+  </script>
+</body>
+</html>

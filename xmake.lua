@@ -17,8 +17,12 @@ end
 if is_plat("wasm") then
     add_requires("emscripten")
     set_toolchains("emcc@emscripten")
-    add_cxflags("-sMEMORY64=1", "-sWASM_BIGINT")
-    add_ldflags("-sMEMORY64=1", "-sWASM_BIGINT")
+    add_ldflags("-sASSERTIONS=2", "-sDEMANGLE_SUPPORT=1", "-sEXPORTED_RUNTIME_METHODS=['FS']")
+end
+
+if is_plat("wasm") and is_arch("wasm64") then
+    add_cxflags("-sMEMORY64=1")
+    add_ldflags("-sMEMORY64=1")   -- 一般不需要再单独写 -sWASM_BIGINT
 end
 
 if is_plat("windows") then
@@ -96,6 +100,19 @@ target("qwen3_openai_api")
     end
 
     set_rundir("$(projectdir)/")
+
+if is_plat("wasm") then
+    target("qwen3_web_wasm")
+        set_kind("binary")
+        add_includedirs("examples/")
+        add_files("examples/qwen3_web_wasm.cpp")
+        add_deps("ncnn_llm")
+        add_packages("ncnn", "nlohmann_json")
+        add_ldflags("--bind", "-sALLOW_MEMORY_GROWTH=1", "-sEXIT_RUNTIME=0", {force = true})
+        set_targetdir("$(projectdir)/examples/web_wasm")
+        set_filename("qwen3_web_wasm.js")
+        set_rundir("$(projectdir)/examples/web_wasm")
+end
 
 if with_libcurl then
     target("llm_ncnn_run")
