@@ -22,7 +22,8 @@ end
 
 if is_plat("wasm") and is_arch("wasm64") then
     add_cxflags("-sMEMORY64=1")
-    add_ldflags("-sMEMORY64=1")   -- 一般不需要再单独写 -sWASM_BIGINT
+    add_ldflags("-sMEMORY64=1", "-sWASM_BIGINT=1")
+    add_ldflags("-sINITIAL_MEMORY=1073741824", "-sMAXIMUM_MEMORY=17179869184")
 end
 
 if is_plat("windows") then
