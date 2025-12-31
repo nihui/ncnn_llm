@@ -15,7 +15,12 @@ std::vector<std::string> BpeTokenizer::LoadVocab(const std::string& vocab_path) 
     vocab.reserve(50000);
     std::string line;
     while (std::getline(ifs, line)) {
-        if (!line.empty()) vocab.push_back(line);
+        if (!line.empty()) {
+            if (line.back() == '\r') {
+                line.pop_back(); // strip CR
+            }
+            vocab.push_back(line);
+        }
     }
     return vocab;
 }
