@@ -16,8 +16,16 @@
 #include <unordered_set>
 #include <algorithm>
 
+#ifndef NCNN_LLM_WITH_OPENCV
+#define NCNN_LLM_WITH_OPENCV 1
+#endif
+
+#if NCNN_LLM_WITH_OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#else
+namespace cv { class Mat; }
+#endif
 
 #include <ncnn/mat.h>
 #include <ncnn/net.h>

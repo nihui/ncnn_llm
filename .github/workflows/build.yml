@@ -95,9 +95,65 @@ jobs:
         path: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
         retention-days: 90
 
+  build_wasm:
+    name: Build (wasm)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+
+    - name: Cache xmake packages
+      uses: actions/cache@v4
+      id: xmake-cache
+      with:
+        path: ~/.xmake
+        key: xmake-wasm-${{ runner.os }}-${{ hashFiles('xmake.lua') }}
+
+    - name: Configure Project (wasm)
+      run: xmake config -y -m release -p wasm
+
+    - name: Build Project (wasm)
+      run: xmake -y -v
+
+    - name: Install to Distribution Directory
+      run: xmake install -o dist -y
+
+    - name: Package wasm Artifact
+      id: package_wasm
+      run: |
+        if [ ! -d "dist" ]; then
+          echo "Error: dist directory not found. Did xmake install fail?"
+          exit 1
+        fi
+
+        echo "--- Debug: Contents of Dist Directory ---"
+        ls -lR dist
+        echo "-----------------------------------------"
+
+        ARCHIVE_NAME="ncnn_llm_wasm.zip"
+
+        cd dist
+        zip -r "../$ARCHIVE_NAME" .
+        cd ..
+
+        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
+
+    - name: Upload Packaged Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.package_wasm.outputs.archive_name }}
+        path: ${{ steps.package_wasm.outputs.archive_name }}
+        retention-days: 90
+
   release:
     name: Create GitHub Release
-    needs: build
+    needs: [build, build_wasm]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
