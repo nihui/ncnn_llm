@@ -7,6 +7,9 @@ set_languages("c++20", "c11")
 
 if is_plat("windows") then
     add_defines("NOMINMAX")
+
+    --- enable utf-8 in Windows console
+    add_cxflags("/utf-8")
 end
 
 if is_plat("windows", "mingw") then
