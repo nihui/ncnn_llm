@@ -2,3 +2,7 @@
 /.vscode/
 /.xmake/
 /build/
+/mcp
+/examples/web/generated/
+examples/web_wasm/qwen3_web_wasm.js
+examples/web_wasm/qwen3_web_wasm.wasm

@@ -1,5 +1,7 @@
 # ncnn_llm
 
+中文版: [README_CN](README_CN.md)
+
 **ncnn_llm** provides Large Language Model (LLM) support for the [ncnn](https://github.com/Tencent/ncnn) framework.
 
 ncnn is a high-performance neural network inference framework specifically optimized for mobile and embedded devices. By integrating LLMs into ncnn, this project enables the execution of complex natural language processing tasks in resource-constrained environments (edge devices, mobile phones, IoT).
@@ -93,6 +95,69 @@ Hello, I am your intelligent assistant. I can help you check the weather, news, 
 User: Do you know what OpenCV is?
 Assistant: OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning software library. It contains many algorithms and tools for image and video processing...
 
+```
+
+---
+
+## 🚀 llm_ncnn_run (CLI / OpenAI API + Auto Download + MCP)
+
+`llm_ncnn_run` is a unified example that supports:
+- Two modes: CLI chat (`--mode cli`) and OpenAI-style HTTP server (`--mode openai`)
+- Built-in tools (random/add) + external MCP tools
+- Automatic model download from https://mirrors.sdu.edu.cn/ncnn_modelzoo/ (by parsing `model.json`)
+
+### Build
+
+```bash
+xmake build llm_ncnn_run
+```
+
+### Run (CLI mode)
+
+```bash
+xmake run llm_ncnn_run --mode cli --model qwen2.5_vl_3b
+```
+
+Notes:
+- If `--model` is a bare name (no path separators), it downloads to `./assets/<name>`.
+- You can also pass an explicit path: `--model ./assets/qwen3_0.6b`.
+
+### Run (OpenAI API mode)
+
+```bash
+xmake run llm_ncnn_run --mode openai --port 8080 --model qwen3_0.6b
+```
+
+Endpoints:
+- `http://localhost:8080/` (web chat)
+- `http://localhost:8080/v1/chat/completions` (OpenAI-style API)
+
+### MCP (stdio tools)
+
+CLI mode:
+
+```bash
+xmake run llm_ncnn_run --mode cli --mcp-server "./my_mcp_server --flag"
+```
+
+OpenAI mode:
+
+```bash
+xmake run llm_ncnn_run --mode openai --port 8080 --mcp-server "./my_mcp_server --flag"
+```
+
+Common MCP flags:
+- `--mcp-transport lsp|jsonl`
+- `--mcp-debug`
+- `--mcp-timeout-ms <n>`
+
+### HTTPS Certificate Issues
+
+If download fails due to TLS certificate errors, set CA path:
+
+```bash
+NCNN_LLM_CA_FILE=/etc/ssl/certs/ca-certificates.crt \
+xmake run llm_ncnn_run --mode openai --model qwen2.5_vl_3b
 ```
 
 ---
