@@ -31,6 +31,7 @@ The project is currently in active development. Below is the current compatibili
 * **Qwen3** (0.6B)
 * **Qwen2.5-VL**
 * **NLLB** (No Language Left Behind)
+* **Youtu-LLM-2B**
 
 ### ⚠️ Running with Issues
 

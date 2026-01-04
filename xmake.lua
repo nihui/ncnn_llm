@@ -88,6 +88,7 @@ end
 add_example("nllb_main")
 add_example("minicpm4_main")
 add_example("qwen3_main")
+add_example("youtu_llm_main")
 add_example("bytelevelbpe_main")
 if with_opencv then
     add_example("qwen2.5_vl_main")

@@ -31,6 +31,7 @@ ncnn 是一个为移动端和嵌入式设备深度优化的高性能神经网络
 * **Qwen3** (0.6B)
 * **Qwen2.5-VL**
 * **NLLB** (No Language Left Behind)
+* **Youtu-LLM-2B**
 
 ### ⚠️ 可运行但存在问题
 
