@@ -761,7 +761,7 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::generate(const std::shared_ptr<n
                     ncnn::Mat k_cache, v_cache;
                     ex.extract(kname, k_cache);
                     ex.extract(vname, v_cache);
-                    ctx->kv_cache[i] = { k_cache, v_cache };
+                    ctx->kv_cache[i] = { std::move(k_cache), std::move(v_cache) };
                 }
                 ex.extract("out0", decode_out);
             }
@@ -883,7 +883,7 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_gpt::generate(const std::shared_ptr<n
                     ncnn::Mat k_cache, v_cache;
                     ex.extract(kname, k_cache);
                     ex.extract(vname, v_cache);
-                    bctx.kv_cache[i] = { k_cache, v_cache };
+                    bctx.kv_cache[i] = { std::move(k_cache), std::move(v_cache) };
                 }
                 ex.extract("out0", decode_out);
             }

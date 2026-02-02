@@ -31,6 +31,7 @@ if is_plat("windows") then
 
     --- enable utf-8 in Windows console
     add_cxflags("/utf-8")
+    add_cxxflags("/utf-8")
 end
 
 if is_plat("windows", "mingw") then
