@@ -65,6 +65,8 @@ struct Beam {
     bool in_tool_call = false;
     std::string tool_buffer;
     std::unordered_set<int> tokens;
+    std::vector<int> token_history;  // Complete token sequence for this beam
+    std::vector<bool> token_in_tool_call;  // Whether each token was generated inside a tool call
     
     int prev_token = -1;
     bool prev_in_tool_call = false;
@@ -85,6 +87,8 @@ protected:
     int eos = 0;
     int tool_call_id = -1;
     int tool_call_end_id = -1;
+    int think_id = -1;
+    int think_end_id = -1;
     int attn_cnt = 32;
     int rope_head_dim = 64;
 
@@ -92,8 +96,7 @@ protected:
         RoPE = 0,
         LongRoPE = 1,
         NTK_RoPE = 2,
-        YARN_RoPE = 3,
-        HY_RoPE = 4
+        YARN_RoPE = 3
     } rope_type;
     float rope_theta = 100000.0f;
 

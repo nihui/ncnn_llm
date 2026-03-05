@@ -6,7 +6,6 @@ set_encodings("utf-8")
 set_languages("c++20", "c11")
 
 local with_opencv = not is_plat("wasm")
-local with_libcurl = not is_plat("wasm")
 
 if with_opencv then
     add_defines("NCNN_LLM_WITH_OPENCV=1")
@@ -29,7 +28,6 @@ end
 if is_plat("windows") then
     add_defines("NOMINMAX")
 
-    --- enable utf-8 in Windows console
     add_cxflags("/utf-8")
     add_cxxflags("/utf-8")
 end
@@ -51,10 +49,6 @@ if with_opencv then
     add_requires("opencv")
 end
 add_requires("nlohmann_json")
-add_requires("cpp-httplib", {configs = {ssl = false}})
-if with_libcurl then
-    add_requires("libcurl")
-end
 
 add_includedirs("src/")
 
@@ -72,66 +66,17 @@ target("ncnn_llm")
         add_packages("opencv")
     end
 
-function add_example(repo)
-    target(repo)
-        set_kind("binary")
-        add_includedirs("examples/")
-        add_files("examples/" .. repo .. ".cpp")
-        add_deps("ncnn_llm")
-        add_packages("ncnn", "nlohmann_json")
-        if with_opencv then
-            add_packages("opencv")
-        end
-
-        set_rundir("$(projectdir)/")
-end
-
-add_example("nllb_main")
-add_example("minicpm4_main")
-add_example("qwen3_main")
-add_example("bytelevelbpe_main")
-if with_opencv then
-    add_example("qwen2.5_vl_main")
-end
-
-target("qwen3_openai_api")
+target("llm_ncnn_run")
     set_kind("binary")
     add_includedirs("examples/")
-    add_files("examples/qwen3_openai_api.cpp")
+    add_files("examples/llm_ncnn_run/*.cpp")
     add_deps("ncnn_llm")
-    add_packages("ncnn", "nlohmann_json", "cpp-httplib")
+    add_packages("ncnn", "nlohmann_json")
     if with_opencv then
         add_packages("opencv")
     end
 
     set_rundir("$(projectdir)/")
-
-if is_plat("wasm") then
-    target("qwen3_web_wasm")
-        set_kind("binary")
-        add_includedirs("examples/")
-        add_files("examples/qwen3_web_wasm.cpp")
-        add_deps("ncnn_llm")
-        add_packages("ncnn", "nlohmann_json")
-        add_ldflags("--bind", "-sALLOW_MEMORY_GROWTH=1", "-sEXIT_RUNTIME=0", {force = true})
-        set_targetdir("$(projectdir)/examples/web_wasm")
-        set_filename("qwen3_web_wasm.js")
-        set_rundir("$(projectdir)/examples/web_wasm")
-end
-
-if with_libcurl then
-    target("llm_ncnn_run")
-        set_kind("binary")
-        add_includedirs("examples/")
-        add_files("examples/llm_ncnn_run/*.cpp")
-        add_deps("ncnn_llm")
-        add_packages("ncnn", "nlohmann_json", "cpp-httplib", "libcurl")
-        if with_opencv then
-            add_packages("opencv")
-        end
-
-        set_rundir("$(projectdir)/")
-end
 
 target("benchllm")
     set_kind("binary")
@@ -144,3 +89,15 @@ target("benchllm")
     end
 
     set_rundir("$(projectdir)/assets/minicpm4_0.5b/")
+
+target("test_llm")
+    set_kind("binary")
+    add_includedirs("tests/")
+    add_files("tests/test_llm.cpp")
+    add_deps("ncnn_llm")
+    add_packages("ncnn", "nlohmann_json")
+    if with_opencv then
+        add_packages("opencv")
+    end
+
+    set_rundir("$(projectdir)/")

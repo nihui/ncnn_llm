@@ -22,16 +22,6 @@ void generate_ntk_rope_embed_cache(
     const RopeScalingParams& scaling_params
 );
 
-void generate_hunyuan_rope_embed_cache(
-    int seqlen, 
-    int embed_dim, 
-    int position_id, 
-    ncnn::Mat& cos_cache, 
-    ncnn::Mat& sin_cache, 
-    float rope_theta, 
-    const RopeScalingParams& scaling_params
-);
-
 void generate_yarn_rope_embed_cache(
     int seqlen, 
     int embed_dim, 

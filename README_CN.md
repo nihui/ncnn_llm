@@ -36,7 +36,7 @@ ncnn 是一个为移动端和嵌入式设备深度优化的高性能神经网络
 
 *这些模型可以加载并运行，但可能存在 bug 或性能欠佳。*
 
-* **Hunyuan 0.5B**
+* (暂无)
 
 ### 🚧 理论支持（开发中）
 
@@ -50,7 +50,6 @@ ncnn 是一个为移动端和嵌入式设备深度优化的高性能神经网络
 
 ### 🔜 即将支持
 
-* Hunyuan OCR
 * PaddleOCR-VL
 
 ---
@@ -99,12 +98,11 @@ Assistant: OpenCV (Open Source Computer Vision Library) is an open-source comput
 
 ---
 
-## 🚀 llm_ncnn_run（CLI / OpenAI API + 自动下载 + MCP）
+## 🚀 llm_ncnn_run（CLI）
 
 `llm_ncnn_run` 是一个统一示例，支持：
-- 两种模式：CLI 对话（`--mode cli`）和 OpenAI 风格的 HTTP 服务（`--mode openai`）
-- 内置工具（random/add）+ 外部 MCP 工具
-- 自动从 https://mirrors.sdu.edu.cn/ncnn_modelzoo/ 下载模型（解析 `model.json`）
+- CLI 对话模式
+- 内置工具（random/add）
 
 ### 构建
 
@@ -112,53 +110,15 @@ Assistant: OpenCV (Open Source Computer Vision Library) is an open-source comput
 xmake build llm_ncnn_run
 ```
 
-### 运行（CLI 模式）
+### 运行
 
 ```bash
-xmake run llm_ncnn_run --mode cli --model qwen2.5_vl_3b
+xmake run llm_ncnn_run --model ./assets/qwen3_0.6b
 ```
 
 说明：
-- 如果 `--model` 是纯名称（不含路径分隔符），会下载到 `./assets/<name>`。
-- 也可以传入显式路径：`--model ./assets/qwen3_0.6b`。
-
-### 运行（OpenAI API 模式）
-
-```bash
-xmake run llm_ncnn_run --mode openai --port 8080 --model qwen3_0.6b
-```
-
-接口：
-- `http://localhost:8080/`（网页聊天）
-- `http://localhost:8080/v1/chat/completions`（OpenAI 风格 API）
-
-### MCP（stdio 工具）
-
-CLI 模式：
-
-```bash
-xmake run llm_ncnn_run --mode cli --mcp-server "./my_mcp_server --flag"
-```
-
-OpenAI 模式：
-
-```bash
-xmake run llm_ncnn_run --mode openai --port 8080 --mcp-server "./my_mcp_server --flag"
-```
-
-常用 MCP 参数：
-- `--mcp-transport lsp|jsonl`
-- `--mcp-debug`
-- `--mcp-timeout-ms <n>`
-
-### HTTPS 证书问题
-
-如果下载因 TLS 证书错误失败，请设置 CA 路径：
-
-```bash
-NCNN_LLM_CA_FILE=/etc/ssl/certs/ca-certificates.crt \
-xmake run llm_ncnn_run --mode openai --model qwen2.5_vl_3b
-```
+- 模型路径必须是包含模型文件的有效目录。
+- 从 https://mirrors.sdu.edu.cn/ncnn_modelzoo/ 下载模型
 
 ---
 

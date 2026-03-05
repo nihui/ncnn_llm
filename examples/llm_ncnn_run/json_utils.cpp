@@ -36,17 +36,6 @@ size_t base64_fingerprint(const std::string& s) {
     return hp ^ (hs << 1) ^ (s.size() << 2);
 }
 
-std::string image_artifact_key(const json& a) {
-    if (a.is_object() && a.contains("url") && a["url"].is_string()) {
-        return std::string("url:") + a["url"].get<std::string>();
-    }
-    if (a.is_object() && a.contains("data_base64") && a["data_base64"].is_string()) {
-        const std::string b64 = a["data_base64"].get<std::string>();
-        return "b64:" + std::to_string(b64.size()) + ":" + std::to_string(base64_fingerprint(b64));
-    }
-    return {};
-}
-
 std::string extract_content(const json& content) {
     if (content.is_string()) {
         return content.get<std::string>();
@@ -140,40 +129,6 @@ json strip_image_payloads(json v) {
         return v;
     }
     return v;
-}
-
-void collect_mcp_image_artifacts(const json& v, std::vector<json>& out, std::unordered_set<size_t>& seen_b64) {
-    if (v.is_array()) {
-        for (const auto& el : v) collect_mcp_image_artifacts(el, out, seen_b64);
-        return;
-    }
-    if (!v.is_object()) return;
-
-    if (v.value("type", "") == "image" && v.contains("data") && v["data"].is_string()) {
-        std::string data = v["data"].get<std::string>();
-        if (looks_like_base64(data)) {
-            size_t fp = base64_fingerprint(data);
-            if (seen_b64.insert(fp).second) {
-                std::string mime = v.value("mimeType", v.value("mime_type", std::string("image/png")));
-                out.push_back(json{{"kind", "image"}, {"mime_type", mime}, {"data_base64", data}});
-            }
-        }
-    }
-
-    for (auto it = v.begin(); it != v.end(); ++it) {
-        if (v.value("type", "") == "image" && it.key() == "data") continue;
-        if (it.value().is_string()) {
-            std::string s = it.value().get<std::string>();
-            if (looks_like_base64(s)) {
-                size_t fp = base64_fingerprint(s);
-                if (seen_b64.insert(fp).second) {
-                    out.push_back(json{{"kind", "image"}, {"mime_type", "image/png"}, {"data_base64", s}});
-                }
-            }
-        } else {
-            collect_mcp_image_artifacts(it.value(), out, seen_b64);
-        }
-    }
 }
 
 std::string sanitize_utf8(const std::string& s) {

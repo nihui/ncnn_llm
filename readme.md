@@ -36,7 +36,7 @@ The project is currently in active development. Below is the current compatibili
 
 *These models can be loaded and run, but may experience bugs or suboptimal performance.*
 
-* **Hunyuan 0.5B**
+* (None currently)
 
 ### 🚧 Theoretical Support (Work in Progress)
 
@@ -50,7 +50,6 @@ The project is currently in active development. Below is the current compatibili
 
 ### 🔜 Coming Soon
 
-* Hunyuan OCR
 * PaddleOCR-VL
 
 ---
@@ -99,12 +98,11 @@ Assistant: OpenCV (Open Source Computer Vision Library) is an open-source comput
 
 ---
 
-## 🚀 llm_ncnn_run (CLI / OpenAI API + Auto Download + MCP)
+## 🚀 llm_ncnn_run (CLI)
 
 `llm_ncnn_run` is a unified example that supports:
-- Two modes: CLI chat (`--mode cli`) and OpenAI-style HTTP server (`--mode openai`)
-- Built-in tools (random/add) + external MCP tools
-- Automatic model download from https://mirrors.sdu.edu.cn/ncnn_modelzoo/ (by parsing `model.json`)
+- CLI chat mode
+- Built-in tools (random/add)
 
 ### Build
 
@@ -112,53 +110,15 @@ Assistant: OpenCV (Open Source Computer Vision Library) is an open-source comput
 xmake build llm_ncnn_run
 ```
 
-### Run (CLI mode)
+### Run
 
 ```bash
-xmake run llm_ncnn_run --mode cli --model qwen2.5_vl_3b
+xmake run llm_ncnn_run --model ./assets/qwen3_0.6b
 ```
 
 Notes:
-- If `--model` is a bare name (no path separators), it downloads to `./assets/<name>`.
-- You can also pass an explicit path: `--model ./assets/qwen3_0.6b`.
-
-### Run (OpenAI API mode)
-
-```bash
-xmake run llm_ncnn_run --mode openai --port 8080 --model qwen3_0.6b
-```
-
-Endpoints:
-- `http://localhost:8080/` (web chat)
-- `http://localhost:8080/v1/chat/completions` (OpenAI-style API)
-
-### MCP (stdio tools)
-
-CLI mode:
-
-```bash
-xmake run llm_ncnn_run --mode cli --mcp-server "./my_mcp_server --flag"
-```
-
-OpenAI mode:
-
-```bash
-xmake run llm_ncnn_run --mode openai --port 8080 --mcp-server "./my_mcp_server --flag"
-```
-
-Common MCP flags:
-- `--mcp-transport lsp|jsonl`
-- `--mcp-debug`
-- `--mcp-timeout-ms <n>`
-
-### HTTPS Certificate Issues
-
-If download fails due to TLS certificate errors, set CA path:
-
-```bash
-NCNN_LLM_CA_FILE=/etc/ssl/certs/ca-certificates.crt \
-xmake run llm_ncnn_run --mode openai --model qwen2.5_vl_3b
-```
+- Model path must be a valid directory containing model files.
+- Download models from https://mirrors.sdu.edu.cn/ncnn_modelzoo/
 
 ---
 

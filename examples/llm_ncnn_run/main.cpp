@@ -1,18 +1,17 @@
 #include "cli_runner.h"
-#include "llm_ncnn_run/model_downloader.h"
-#include "mcp.h"
 #include "options.h"
-#include "openai_server.h"
 #include "tools.h"
-#include "util.h"
 
 #include "ncnn_llm_gpt.h"
 
-#include <cstdlib>
 #include <filesystem>
 #include <iostream>
-#include <mutex>
 #include <string>
+
+#if NCNN_LLM_WITH_OPENCV
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#endif
 
 namespace {
 
@@ -30,42 +29,31 @@ std::string normalize_model_path(std::string path) {
 int main(int argc, char** argv) {
     Options opt = parse_options(argc, argv);
     opt.model_path = normalize_model_path(opt.model_path);
-    if (opt.mcp_server_cmdline.empty()) {
-        if (const char* env = std::getenv("NCNN_LLM_MCP_SERVER")) {
-            opt.mcp_server_cmdline = env;
-        }
-    }
-    if (!opt.mcp_debug) {
-        if (const char* env = std::getenv("NCNN_LLM_MCP_DEBUG")) {
-            opt.mcp_debug = (std::string(env) == "1" || std::string(env) == "true" || std::string(env) == "TRUE");
-        }
-    }
-    if (const char* env = std::getenv("NCNN_LLM_MCP_TRANSPORT")) {
-        std::string v = env;
-        if (v == "lsp" || v == "jsonl") opt.mcp_transport = v;
-    }
-    if (const char* env = std::getenv("NCNN_LLM_MCP_TIMEOUT_MS")) {
-        if (auto v = parse_int(env)) opt.mcp_timeout_ms = *v;
-    }
-    if (const char* env = std::getenv("NCNN_LLM_MCP_MAX_STRING_BYTES")) {
-        if (auto v = parse_int(env)) opt.mcp_max_string_bytes_in_prompt = (size_t)*v;
-    }
 
-    std::string dl_err;
-    if (!ensure_model_present(opt.model_path, &dl_err)) {
-        std::cerr << "Model download failed: " << dl_err << "\n";
+    if (!std::filesystem::exists(opt.model_path)) {
+        std::cerr << "Model path does not exist: " << opt.model_path << "\n";
         return 1;
     }
-
-    McpState mcp = init_mcp(opt);
 
     ncnn_llm_gpt model(opt.model_path, opt.use_vulkan);
     std::vector<json> builtin_tools = opt.enable_builtin_tools ? make_builtin_tools() : std::vector<json>();
     auto builtin_router = make_builtin_router();
-    std::mutex mcp_mutex;
 
-    if (opt.mode == RunMode::Cli) {
-        return run_cli(opt, model, builtin_tools, builtin_router, mcp, mcp_mutex);
+#if NCNN_LLM_WITH_OPENCV
+    cv::Mat image;
+    if (!opt.image_path.empty()) {
+        image = cv::imread(opt.image_path, cv::IMREAD_COLOR);
+        if (image.empty()) {
+            std::cerr << "Failed to load image: " << opt.image_path << "\n";
+            return 1;
+        }
+        std::cerr << "Image loaded: " << opt.image_path << "\n";
     }
-    return run_openai_server(opt, model, builtin_tools, builtin_router, mcp, mcp_mutex);
+    return run_cli(opt, model, builtin_tools, builtin_router, image);
+#else
+    if (!opt.image_path.empty()) {
+        std::cerr << "Warning: --image option is not supported without OpenCV\n";
+    }
+    return run_cli(opt, model, builtin_tools, builtin_router);
+#endif
 }

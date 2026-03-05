@@ -4,55 +4,6 @@
 #include <cstring>
 #include <cstdio>
 
-void generate_hunyuan_rope_embed_cache(
-    int seqlen, 
-    int embed_dim, 
-    int position_id, 
-    ncnn::Mat& cos_cache, 
-    ncnn::Mat& sin_cache, 
-    float rope_theta, 
-    const RopeScalingParams& scaling_params
-) {
-    // HunYuanDenseV1 Logic:
-    // base = theta * alpha ^ (dim / (dim - 2))
-    
-    float dim = (float)embed_dim;
-    float alpha = scaling_params.alpha; // 1000.0 from your config
-
-    // Calculate the modified base theta
-    // Matches Python: base = ... * alpha ** (head_dim / (head_dim - 2))
-    float base_correction = powf(alpha, dim / (dim - 2.0f));
-    float hunyuan_theta = rope_theta * base_correction;
-
-    // Precompute inverse frequencies
-    std::vector<float> inv_freq(embed_dim / 2);
-    for (int i = 0; i < embed_dim / 2; i++) {
-        // Matches Python: 1.0 / (base ** (i / head_dim)) 
-        // Note: in Python arange(0, dim, 2) implies indices are multiplied by 2
-        float exponent = (float)(i * 2) / dim;
-        inv_freq[i] = 1.0f / powf(hunyuan_theta, exponent);
-    }
-
-    // Allocate ncnn Mats
-    cos_cache.create(embed_dim / 2, seqlen);
-    sin_cache.create(embed_dim / 2, seqlen);
-
-    // Fill Cache
-    for (int i = 0; i < seqlen; i++) {
-        float* cos_ptr = cos_cache.row(i);
-        float* sin_ptr = sin_cache.row(i);
-
-        for (int j = 0; j < embed_dim / 2; j++) {
-            const int pos = position_id + i;
-            const float t = pos * inv_freq[j];
-            
-            // HunYuanDenseV1 sets attention_scaling = 1.0, so no mscale multiplication needed
-            *cos_ptr++ = cosf(t);
-            *sin_ptr++ = sinf(t);
-        }
-    }
-}
-
 static float yarn_ramp(float low, float high, float val) {
     if (val < low) return 0.0f;
     if (val > high) return 1.0f;
