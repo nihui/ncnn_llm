@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ncnn/net.h>
-#include <ncnn/benchmark.h>
-#include <ncnn/cpu.h>
-#include <ncnn/datareader.h>
-#include <ncnn/layer_type.h>
+#include <net.h>
+#include <benchmark.h>
+#include <cpu.h>
+#include <datareader.h>
+#include <layer_type.h>
 
 class DataReaderFromEmpty : public ncnn::DataReader
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ncnn/mat.h>
+#include <mat.h>
 #include <vector>
 
 struct RopeScalingParams {

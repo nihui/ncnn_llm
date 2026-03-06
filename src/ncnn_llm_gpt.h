@@ -27,8 +27,8 @@
 namespace cv { class Mat; }
 #endif
 
-#include <ncnn/mat.h>
-#include <ncnn/net.h>
+#include <mat.h>
+#include <net.h>
 #include <nlohmann/json.hpp>
 
 #include "utils/tokenizer/bpe_tokenizer.h"

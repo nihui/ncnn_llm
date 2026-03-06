@@ -13,8 +13,8 @@
 #include <vector>
 
 // Internal-only includes
-#include <ncnn/mat.h>
-#include <ncnn/net.h>
+#include <mat.h>
+#include <net.h>
 #include "utils/tokenizer/bpe_tokenizer.h"
 
 namespace {

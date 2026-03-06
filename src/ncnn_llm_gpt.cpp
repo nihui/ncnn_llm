@@ -36,18 +36,23 @@ ncnn_llm_gpt::ncnn_llm_gpt(const std::string& model_path, bool use_vulkan, int n
         }
 
         if (use_vulkan) {
+            printf("[ncnn_llm_gpt] Vulkan enabled, using device %d\n", vulkan_device >= 0 ? vulkan_device : 0);
+            // Only decoder_net uses Vulkan for compute-intensive operations
+
+            // Set specific Vulkan device BEFORE enabling vulkan compute
+            if (vulkan_device >= 0) {
+                decoder_net->opt.vulkan_device_index = vulkan_device;
+            }
+            decoder_net->opt.use_bf16_storage = true;
+            // decoder_net->opt.use_bf16_packed = true;
+            decoder_net->opt.use_fp16_arithmetic = false;
+            decoder_net->opt.use_fp16_storage = false;
+            decoder_net->opt.use_fp16_packed = false;
             decoder_net->opt.use_vulkan_compute = true;
-            embed_net->opt.use_vulkan_compute = true;
-            proj_out_net->opt.use_vulkan_compute = true;
-            
-            // Note: ncnn selects Vulkan device automatically
-            // To use a specific device, set NCNN_VULKAN_DEVICE environment variable
-            (void)vulkan_device;  // Unused for now
+        } else {
+            printf("[ncnn_llm_gpt] Vulkan disabled, using CPU only\n");
         }
 
-        decoder_net->opt.use_fp16_storage = true;
-        embed_net->opt.use_fp16_storage = true;
-        proj_out_net->opt.use_fp16_storage = true;
 
         std::string decoder_param = model_path + "/" + config["params"]["decoder_param"].get<std::string>();
         std::string decoder_bin = model_path + "/" + config["params"]["decoder_bin"].get<std::string>();
