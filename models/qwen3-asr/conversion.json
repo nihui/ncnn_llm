@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "model": "Qwen3-ASR-0.6B",
+  "checkpoint": "Qwen/Qwen3-ASR-0.6B@5eb144179a02acc5e5ba31e748d22b0cf3e303b0",
+  "pnnx_version": "20260526",
+  "working_directory": ".",
+  "command": [
+    "python",
+    "models/qwen3-asr/convert.py",
+    "--checkpoint",
+    "build/checkpoints/Qwen3-ASR-0.6B",
+    "--output",
+    "build/models/qwen3_asr_0.6b",
+    "--pnnx",
+    "pnnx"
+  ],
+  "outputs": [
+    "build/models/qwen3_asr_0.6b/model.json",
+    "build/models/qwen3_asr_0.6b/vocab.txt",
+    "build/models/qwen3_asr_0.6b/merges.txt",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_mel.ncnn.param",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_mel.ncnn.bin",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_audio_conv.ncnn.param",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_audio_conv.ncnn.bin",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_audio_encoder.ncnn.param",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_audio_encoder.ncnn.bin",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_text_embed.ncnn.param",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_text_embed.ncnn.bin",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_decoder.ncnn.param",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_decoder.ncnn.bin",
+    "build/models/qwen3_asr_0.6b/qwen3_asr_lm_head.ncnn.param"
+  ]
+}

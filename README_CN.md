@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <img alt="Build" src="https://img.shields.io/badge/build-xmake-4c8eda">
+  <img alt="Build" src="https://img.shields.io/badge/build-CMake%20%7C%20xmake-4c8eda">
   <img alt="Backend" src="https://img.shields.io/badge/backend-ncnn-orange">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Android-lightgrey">
 </p>
@@ -69,7 +69,7 @@
 ### 2. 克隆仓库
 
 ```bash
-git clone https://github.com/futz12/ncnn_llm.git
+git clone https://github.com/nihui/ncnn_llm.git
 cd ncnn_llm
 ```
 
@@ -77,6 +77,15 @@ cd ncnn_llm
 
 ```bash
 xmake build
+```
+
+也可以使用可复现的 CMake preset；它会获取固定版本的依赖并运行跨平台
+单元测试与一致性工具测试：
+
+```bash
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
 ```
 
 只构建单个 target：
@@ -157,6 +166,20 @@ xmake run ocr_main --model ./assets/glm_ocr --image ./test_ocr.png --prompt "Rea
 Generating text:
 Hello World 123
 ```
+
+## 语音识别
+
+Qwen3-ASR 的 ncnn 音频前端和编码器之后复用共享文本 decoder 与 KV cache。
+输入格式为 16 kHz 单声道 PCM16 或 float32 WAV。
+
+```bash
+xmake build asr_main
+xmake run asr_main --model ./assets/qwen3_asr_0.6b \
+  --audio ./sample-16k.wav --max-new-tokens 256
+```
+
+固定 checkpoint、pnnx 转换、带哈希的模型下载和 PyTorch/Windows/Linux
+严格一致性证据见 `models/qwen3-asr/README.md`。
 
 ## 嵌入模型
 

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "mode": "text",
+  "created_at": "2026-07-15T17:35:40.657062+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "reference": {
+    "path": "models\\qwen3-asr\\tests\\pytorch.txt",
+    "sha256": "817cafe879a57eb4b7f2e786eb766ae14ec5e0b3f5cef483ff4ac25bd54b3dc6"
+  },
+  "actual": {
+    "path": "models\\qwen3-asr\\tests\\windows-ncnn.txt",
+    "sha256": "817cafe879a57eb4b7f2e786eb766ae14ec5e0b3f5cef483ff4ac25bd54b3dc6"
+  },
+  "result": {
+    "exact": true,
+    "reference_bytes": 186,
+    "actual_bytes": 186
+  }
+}

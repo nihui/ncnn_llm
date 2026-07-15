@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "model": "Qwen3-ASR-0.6B ncnn",
+  "source": "https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/",
+  "files": [
+    {"path":"merges.txt","size":1671839,"sha256":"599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/merges.txt"]},
+    {"path":"model.json","size":2946,"sha256":"216f9c9b390fb650154520320afeb5e088aa2b53ba435101bb6e94184e11f2d3","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/model.json"]},
+    {"path":"qwen3_asr_audio_conv.ncnn.bin","size":44183568,"sha256":"efc58d2089ccb69c7e8b821a36c98a42ac5dad69cc256f5b23eb8f192291fbb7","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_audio_conv.ncnn.bin"]},
+    {"path":"qwen3_asr_audio_conv.ncnn.param","size":957,"sha256":"bb5edba9c5c92644c2fd39c253625f372adcf9c71a977d3da49cfe4986891954","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_audio_conv.ncnn.param"]},
+    {"path":"qwen3_asr_audio_encoder.ncnn.bin","size":701368400,"sha256":"262ac4d696b39f5ab5e6fa9f2a8c47f03898a05f73c270b55d3685ed3250fc8a","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_audio_encoder.ncnn.bin"]},
+    {"path":"qwen3_asr_audio_encoder.ncnn.param","size":14758,"sha256":"08646b47cf2f1d710b952276adf9839cbd64606399fd055c045338905b99edec","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_audio_encoder.ncnn.param"]},
+    {"path":"qwen3_asr_decoder.ncnn.bin","size":1761870608,"sha256":"1f3ad4f9a32573335523ceff525d1627b60d2d8130af8740ee675861856d61fd","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_decoder.ncnn.bin"]},
+    {"path":"qwen3_asr_decoder.ncnn.param","size":71692,"sha256":"dfed01e232c6a04d58af2b218ea2386fef78384c608efa67a42c08c7b5948c69","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_decoder.ncnn.param"]},
+    {"path":"qwen3_asr_lm_head.ncnn.param","size":179,"sha256":"3e68be91a36ebc155b78decaf7ef828faa2cd2776a65621ed0428e34fc5d7b1a","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_lm_head.ncnn.param"]},
+    {"path":"qwen3_asr_mel.ncnn.bin","size":102916,"sha256":"085953740322199b7756cc6662b3c5c00fcc782712f96694d45d4677b2784035","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_mel.ncnn.bin"]},
+    {"path":"qwen3_asr_mel.ncnn.param","size":293,"sha256":"e9b1e81f09e4f4ca01eae8fc0448930dfc88981af3d86608a5ca35468c3cb2f5","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_mel.ncnn.param"]},
+    {"path":"qwen3_asr_text_embed.ncnn.bin","size":622329860,"sha256":"26f178b8c242afd88027584e9f7679215888b0ba35acf8c7c432d8fc2fe11665","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_text_embed.ncnn.bin"]},
+    {"path":"qwen3_asr_text_embed.ncnn.param","size":165,"sha256":"5cd8757133d48058445d5ba3316b6c1c07b807e46ae69036db077304fb47e049","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/qwen3_asr_text_embed.ncnn.param"]},
+    {"path":"vocab.txt","size":1521125,"sha256":"36c3749fd3c87e2402f612459b45ae4e6ce5488a3ecde47a8a3ea3ed3d5dda5a","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/qwen3_asr_0.6b/vocab.txt"]}
+  ]
+}

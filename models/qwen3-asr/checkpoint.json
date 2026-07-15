@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "model": "Qwen3-ASR-0.6B",
+  "official_repository": "https://huggingface.co/Qwen/Qwen3-ASR-0.6B",
+  "model_id": "Qwen/Qwen3-ASR-0.6B",
+  "revision": "5eb144179a02acc5e5ba31e748d22b0cf3e303b0",
+  "modelscope_mirror": "Qwen/Qwen3-ASR-0.6B",
+  "config_sha256": "76d3ae4601ce939830b2517f4a6cadb86cc51316c3900af6b020b051c21a478c",
+  "weights_sha256": "79d6cbd4c98c7bbffe9db2edac07f56cd6637d0d5944b27f6c2b8353840323ea",
+  "conversion_dtype": "float32"
+}

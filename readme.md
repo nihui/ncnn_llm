@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <img alt="Build" src="https://img.shields.io/badge/build-xmake-4c8eda">
+  <img alt="Build" src="https://img.shields.io/badge/build-CMake%20%7C%20xmake-4c8eda">
   <img alt="Backend" src="https://img.shields.io/badge/backend-ncnn-orange">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Android-lightgrey">
 </p>
@@ -41,7 +41,7 @@ The project started from **nihui's** experimental ncnn `kvcache` work and expand
 - NLLB translation example
 - Text and multimodal embedding APIs
 - BPE and Unigram tokenizer support
-- xmake-based build with small standalone examples
+- CMake and xmake builds with Linux/Windows CI
 
 ## Supported Models
 
@@ -63,13 +63,13 @@ The project started from **nihui's** experimental ncnn `kvcache` work and expand
 
 ### 1. Requirements
 
-- `xmake`
+- CMake 3.20+ and Ninja, or `xmake`
 - ncnn built from `master`
 
 ### 2. Clone
 
 ```bash
-git clone https://github.com/futz12/ncnn_llm.git
+git clone https://github.com/nihui/ncnn_llm.git
 cd ncnn_llm
 ```
 
@@ -77,6 +77,15 @@ cd ncnn_llm
 
 ```bash
 xmake build
+```
+
+The reproducible CMake preset fetches pinned dependencies and runs the portable
+unit/parity-tool test suite:
+
+```bash
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
 ```
 
 Build a single target:
@@ -157,6 +166,20 @@ Example output:
 Generating text:
 Hello World 123
 ```
+
+## ASR
+
+Qwen3-ASR uses the shared text decoder/KV-cache runtime after its ncnn audio
+frontend and encoder. The input contract is 16 kHz mono PCM16 or float32 WAV.
+
+```bash
+xmake build asr_main
+xmake run asr_main --model ./assets/qwen3_asr_0.6b \
+  --audio ./sample-16k.wav --max-new-tokens 256
+```
+
+The pinned checkpoint, pnnx conversion, verified model download, and exact
+PyTorch/Windows/Linux evidence are documented in `models/qwen3-asr/README.md`.
 
 ## Embeddings
 

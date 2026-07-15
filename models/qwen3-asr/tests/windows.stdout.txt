@@ -1,0 +1,8 @@
+﻿Audio: C:\Users\zhangzherui\Desktop\Tencent\ncnn-models\qwen3_asr_0.6b\asr_en_16k_pcm16.wav  (240820 samples, 16000 Hz)
+Loading ASR model from C:\Users\zhangzherui\Desktop\Tencent\ncnn-models\qwen3_asr_0.6b
+[ncnn_llm_asr] loaded qwen3_asr: attn_cnt=28 hidden=1024 head_dim=128 theta=1e+06 vocab=151936
+[ncnn_llm_asr] audio: samples=240820, mel_frames=1505, audio_tokens=196
+
+==== Result ====
+language: English
+text: Hmm. Oh yeah, yeah. He wasn't even that big when I started listening to him, but and his solo music didn't do overly well, but he did very well when he started writing for other people.

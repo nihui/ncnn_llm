@@ -1,4 +1,5 @@
 #include "test_framework.h"
+#include "ncnn_llm_asr.h"
 #include "ncnn_llm_gpt.h"
 #include "utils/prompt.h"
 
@@ -216,6 +217,19 @@ bool test_long_conversation() {
     return true;
 }
 
+bool test_qwen3_asr_audio_token_layout() {
+    struct Case {
+        int mel_frames;
+        int audio_tokens;
+    };
+    const Case cases[] = {{99, 13}, {100, 13}, {101, 14}, {200, 26}};
+    for (const Case& item : cases) {
+        TEST_ASSERT(ncnn_llm_asr::feat_out_len(item.mel_frames) == item.audio_tokens,
+                    "Qwen3-ASR frame-to-token layout mismatch");
+    }
+    return true;
+}
+
 // Model-based tests (require model files)
 bool test_model_tool_calling() {
     if (!has_model("qwen3_0.6b")) {
@@ -297,6 +311,7 @@ int main() {
     runner.add_test("empty_tools", test_empty_tools);
     runner.add_test("thinking_mode", test_thinking_mode);
     runner.add_test("long_conversation", test_long_conversation);
+    runner.add_test("qwen3_asr_audio_token_layout", test_qwen3_asr_audio_token_layout);
 
     std::cout << "\n=== Model Tests ===\n\n";
 
