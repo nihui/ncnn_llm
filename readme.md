@@ -175,15 +175,14 @@ cmake -S . -B build -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_PREFIX_PATH=/path/to/ncnn \
   -DNCNN_LLM_FETCH_DEPS=ON
-cmake --build build --target hunyuan_ocr_ncnn
+  cmake --build build --target ocr_main
 ```
 
 `tools/hunyuan_ocr_parity.py` runs the original PyTorch model and the ncnn
 executable on the same image and saves both raw outputs. The JSON report records
 strict UTF-8 equality, a whitespace-insensitive character similarity, input and
 output hashes, model configuration hashes, platform, runtime versions, device,
-dtype, and attention backend. The default pass threshold is 0.90; use
-`--require-exact` when byte-for-byte identity is required.
+  dtype, and attention backend. Only byte-for-byte identity is accepted.
 
 Example output:
 

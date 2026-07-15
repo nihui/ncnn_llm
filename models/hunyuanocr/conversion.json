@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "model": "HunyuanOCR 1.0",
+  "checkpoint": "tencent/HunyuanOCR@45ca99a02acc15fc45a86e5fd5ca2ab57c1cc84d",
+  "pnnx_version": "20260526",
+  "working_directory": ".",
+  "command": [
+    "python",
+    "models/hunyuanocr/convert.py",
+    "--checkpoint",
+    "build/checkpoints/HunyuanOCR-1.0",
+    "--output",
+    "build/models/hunyuan_ocr",
+    "--pnnx",
+    "pnnx"
+  ],
+  "outputs": [
+    "build/models/hunyuan_ocr/model.json",
+    "build/models/hunyuan_ocr/vocab.txt",
+    "build/models/hunyuan_ocr/merges.txt",
+    "build/models/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.param",
+    "build/models/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.bin",
+    "build/models/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.param",
+    "build/models/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.bin",
+    "build/models/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.param",
+    "build/models/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.bin",
+    "build/models/hunyuan_ocr/hunyuan_ocr_lm_head.ncnn.param"
+  ]
+}

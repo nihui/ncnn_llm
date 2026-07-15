@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "model": "HunyuanOCR 1.0 ncnn",
+  "source": "https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/",
+  "files": [
+    {"path":"hunyuan_ocr_lm_head.ncnn.param","size":179,"sha256":"24580dbcfd9828e15ad4153a45b388dac0becdff5169593a030a9b8b5e7c8573","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_lm_head.ncnn.param"]},
+    {"path":"hunyuan_ocr_text_decoder.ncnn.bin","size":1661170336,"sha256":"6e038ddf1f05d4505ea6acc9c8efaf4d9b86b0d2d1528883781bcd42860fefb6","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.bin"]},
+    {"path":"hunyuan_ocr_text_decoder.ncnn.param","size":61245,"sha256":"a3fc90b776f77e157092823f85b3ce6eac8f13895b205059d54d606d6dd349e3","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.param"]},
+    {"path":"hunyuan_ocr_text_embed.ncnn.bin","size":494870532,"sha256":"ddfe020dcafa57b5374992f39399ce3f2cc76497f80f92f9c33724e7c39389e1","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.bin"]},
+    {"path":"hunyuan_ocr_text_embed.ncnn.param","size":165,"sha256":"37876590d73972374cf0c0789570487eb3b45b72b493a90f567a4c190a1df049","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.param"]},
+    {"path":"hunyuan_ocr_vision_encoder.ncnn.bin","size":1828784436,"sha256":"9fb6801292fad3ac7e6676db1f4ffa8c62298480a612a59ddadacedfec915ff8","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.bin"]},
+    {"path":"hunyuan_ocr_vision_encoder.ncnn.param","size":23994,"sha256":"71c0f85eece77f8ed7fd14eb3bcd78a24bf6b917e75045f94ca7f59dae31cf08","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.param"]},
+    {"path":"merges.txt","size":1494615,"sha256":"14a0e42420a38603585d27bb262a708e6896c2f44ab8d7e5090ee504ac809be7","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/merges.txt"]},
+    {"path":"model.json","size":2128,"sha256":"f099890ecde4e5a04905ca447a3c9bc24c71d9a12acc7db5ce158519f284d454","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/model.json"]},
+    {"path":"vocab.txt","size":1405175,"sha256":"ca889ede99fa4506b2befcb0f6141de3fcbf91ea38d263b2ff71119e011cd792","urls":["https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/vocab.txt"]}
+  ]
+}

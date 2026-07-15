@@ -1,0 +1,67 @@
+{
+  "model_type": "hunyuan_ocr",
+  "params": {
+    "vision_param": "hunyuan_ocr_vision_encoder.ncnn.param",
+    "vision_bin": "hunyuan_ocr_vision_encoder.ncnn.bin",
+    "text_embed_param": "hunyuan_ocr_text_embed.ncnn.param",
+    "text_embed_bin": "hunyuan_ocr_text_embed.ncnn.bin",
+    "text_decoder_param": "hunyuan_ocr_text_decoder.ncnn.param",
+    "text_decoder_bin": "hunyuan_ocr_text_decoder.ncnn.bin",
+    "lm_head_param": "hunyuan_ocr_lm_head.ncnn.param",
+    "lm_head_bin": "hunyuan_ocr_text_embed.ncnn.bin"
+  },
+  "tokenizer": {
+    "type": "bbpe",
+    "vocab_file": "vocab.txt",
+    "merges_file": "merges.txt",
+    "bos": "<｜hy_begin▁of▁sentence｜>",
+    "eos": "<｜hy_place▁holder▁no▁2｜>",
+    "pad": "<｜hy_▁pad▁｜>",
+    "eos_ids": [120007, 120020],
+    "additional_special_tokens": [
+      "<｜hy_begin▁of▁sentence｜>",
+      "<｜hy_place▁holder▁no▁2｜>",
+      "<｜hy_place▁holder▁no▁3｜>",
+      "<｜hy_User｜>",
+      "<｜hy_Assistant｜>",
+      "<｜hy_place▁holder▁no▁100｜>",
+      "<｜hy_place▁holder▁no▁101｜>",
+      "<｜hy_place▁holder▁no▁102｜>"
+    ]
+  },
+  "setting": {
+    "attn_cnt": 24,
+    "hidden_size": 1024,
+    "head_dim": 128,
+    "num_attention_heads": 16,
+    "num_key_value_heads": 8,
+    "vocab_size": 120818,
+    "kv_cache": false,
+    "rope": {
+      "type": "xdrope",
+      "rope_head_dim": 128,
+      "rope_theta": 10000.0,
+      "alpha": 1000.0,
+      "xdrope_section": [16, 16, 16, 16]
+    },
+    "bos_token_id": 120000,
+    "system_end_token_id": 120021,
+    "user_end_token_id": 120006,
+    "image_token_id": 120120,
+    "image_start_token_id": 120118,
+    "image_end_token_id": 120119,
+    "special_token_id_begin": 120000,
+    "vision": {
+      "type": "hunyuan_vl",
+      "patch_size": 16,
+      "spatial_merge_size": 2,
+      "vision_hidden_size": 1152,
+      "vision_out_hidden_size": 1024,
+      "min_pixels": 262144,
+      "max_pixels": 4194304,
+      "image_mean": [0.48145466, 0.4578275, 0.40821073],
+      "image_std": [0.26862954, 0.26130258, 0.27577711],
+      "resample": "bicubic"
+    }
+  }
+}

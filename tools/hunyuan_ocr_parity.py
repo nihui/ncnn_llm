@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""Run HunyuanOCR with PyTorch and ncnn and compare the final text.
+"""Run HunyuanOCR with PyTorch and ncnn and require exact final-text parity.
 
-The report always records strict UTF-8 equality. It also reports a conservative
-character similarity after normalizing line-break spelling and whitespace,
-because converted inference can choose a neighboring token at very small logit
-margins. Both raw outputs are retained so the metric is independently auditable.
+Both raw outputs are retained. A whitespace-insensitive similarity value is
+reported only as a diagnostic when strict UTF-8 equality fails.
 """
 
 from __future__ import annotations
@@ -34,17 +32,6 @@ def parse_args() -> argparse.Namespace:
         choices=("sdpa", "eager"),
         default="sdpa",
         help="PyTorch attention backend; SDPA avoids quadratic eager-attention memory use on large pages.",
-    )
-    parser.add_argument(
-        "--minimum-similarity",
-        type=float,
-        default=0.90,
-        help="Exit successfully when whitespace-insensitive character similarity reaches this value.",
-    )
-    parser.add_argument(
-        "--require-exact",
-        action="store_true",
-        help="Require strict UTF-8 equality instead of the similarity threshold.",
     )
     return parser.parse_args()
 
@@ -175,8 +162,6 @@ def run_ncnn(args: argparse.Namespace) -> tuple[str, str, list[str]]:
 
 def main() -> int:
     args = parse_args()
-    if not 0.0 <= args.minimum_similarity <= 1.0:
-        raise SystemExit("--minimum-similarity must be between 0 and 1")
     for path in (
         args.pytorch_model,
         args.ncnn_model,
@@ -202,15 +187,13 @@ def main() -> int:
     similarity = difflib.SequenceMatcher(
         None, pytorch_normalized, ncnn_normalized, autojunk=False
     ).ratio()
-    parity_pass = exact_match if args.require_exact else similarity >= args.minimum_similarity
+    parity_pass = exact_match
     report = {
         "schema_version": 1,
         "parity_pass": parity_pass,
         "exact_match": exact_match,
-        "comparison": "strict UTF-8 equality plus whitespace-insensitive character similarity",
+        "comparison": "strict UTF-8 equality",
         "whitespace_insensitive_similarity": similarity,
-        "minimum_similarity": args.minimum_similarity,
-        "require_exact": args.require_exact,
         "pytorch_text_length": len(pytorch_text),
         "ncnn_text_length": len(ncnn_text),
         "prompt": args.prompt,
