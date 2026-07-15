@@ -144,12 +144,37 @@ Assistant: Hello! How can I help you today?
 
 ## OCR
 
-GLM-OCR uses a dedicated image prefill path and the shared text decode runtime.
+GLM-OCR and HunyuanOCR use dedicated image prefill paths and the shared text
+decode runtime.
 
 ```bash
 xmake build ocr_main
 xmake run ocr_main --model ./assets/glm_ocr --image ./test_ocr.png --prompt "Read the text in the image."
+xmake run ocr_main --model ./assets/hunyuan_ocr --image ./test_ocr.png --prompt "提取图中的文字。"
 ```
+
+Use `--max-new-tokens <count>` to cap decoding for reproducible parity and
+latency tests.
+
+The converted HunyuanOCR package is available from
+`https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/`.
+
+The same OCR target can also be built with CMake:
+
+```bash
+cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH=/path/to/ncnn \
+  -DNCNN_LLM_FETCH_DEPS=ON
+cmake --build build --target hunyuan_ocr_ncnn
+```
+
+`tools/hunyuan_ocr_parity.py` runs the original PyTorch model and the ncnn
+executable on the same image and saves both raw outputs. The JSON report records
+strict UTF-8 equality, a whitespace-insensitive character similarity, input and
+output hashes, model configuration hashes, platform, runtime versions, device,
+dtype, and attention backend. The default pass threshold is 0.90; use
+`--require-exact` when byte-for-byte identity is required.
 
 Example output:
 

@@ -1,5 +1,6 @@
 #include "test_framework.h"
 #include "ncnn_llm_gpt.h"
+#include "utils/hunyuan_ocr_prompt.h"
 #include "utils/prompt.h"
 
 #include <filesystem>
@@ -16,6 +17,38 @@ static std::string get_model_path(const std::string& model_name) {
     std::string path = "./assets/" + model_name;
     if (std::filesystem::exists(path)) return path;
     return "./" + model_name;
+}
+
+bool test_hunyuan_ocr_prompt_layout() {
+    const HunyuanOcrPromptLayout layout = build_hunyuan_ocr_prompt_layout(
+        100, 200, 300, {11, 12}, 2, 3);
+
+    TEST_ASSERT(layout.first_image_index == 1, "Image placeholders must follow BOS directly");
+    TEST_ASSERT(layout.token_ids.size() == 14, "Unexpected HunyuanOCR prompt length");
+    TEST_ASSERT(layout.token_ids.front() == 100, "BOS token must be first");
+    for (int i = 1; i <= 10; i++) {
+        TEST_ASSERT(layout.token_ids[i] == 200, "Vision features must replace image placeholders");
+    }
+    TEST_ASSERT(layout.token_ids[11] == 11 && layout.token_ids[12] == 12,
+                "Prompt text must follow the image placeholders");
+    TEST_ASSERT(layout.token_ids.back() == 300, "UserEnd token must terminate the prompt");
+
+    for (int axis = 0; axis < 4; axis++) {
+        TEST_ASSERT(layout.position_ids[axis][0] == 0, "BOS position must be zero");
+        TEST_ASSERT(layout.position_ids[axis][1] == 1,
+                    "Leading vision feature must retain its linear position");
+        TEST_ASSERT(layout.position_ids[axis][10] == 10,
+                    "Trailing vision feature must retain its linear position");
+        TEST_ASSERT(layout.position_ids[axis][11] == 11,
+                    "Text positions must remain linear");
+    }
+    TEST_ASSERT(layout.position_ids[1][2] == 0 && layout.position_ids[1][5] == 3,
+                "Vision width positions must include the newline column");
+    TEST_ASSERT(layout.position_ids[2][2] == 0 && layout.position_ids[2][6] == 1,
+                "Vision height positions must advance by row");
+    TEST_ASSERT(layout.position_ids[3][2] == 0 && layout.position_ids[3][9] == 0,
+                "Vision temporal positions must be zero");
+    return true;
 }
 
 // Test 1: Basic prompt template generation
@@ -297,6 +330,7 @@ int main() {
     runner.add_test("empty_tools", test_empty_tools);
     runner.add_test("thinking_mode", test_thinking_mode);
     runner.add_test("long_conversation", test_long_conversation);
+    runner.add_test("hunyuan_ocr_prompt_layout", test_hunyuan_ocr_prompt_layout);
 
     std::cout << "\n=== Model Tests ===\n\n";
 
