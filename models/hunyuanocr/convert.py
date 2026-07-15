@@ -159,9 +159,9 @@ class DecoderAttention(nn.Module):
         sin = torch.cat((sin, sin), dim=-1)
         query = self.query_layernorm(query * cos + rotate_half(query) * sin)
         key = self.key_layernorm(key * cos + rotate_half(key) * sin)
-        key = key.repeat_interleave(2, dim=1)
-        val = val.repeat_interleave(2, dim=1)
-        result = F.scaled_dot_product_attention(query, key, val, attn_mask=mask)
+        result = F.scaled_dot_product_attention(
+            query, key, val, attn_mask=mask, enable_gqa=True
+        )
         result = result.permute(0, 2, 1, 3).reshape(1, length, 2048)
         return self.o_proj(result)
 
