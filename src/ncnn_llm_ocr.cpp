@@ -1,4 +1,5 @@
 #include "ncnn_llm_ocr.h"
+#include "utils/hunyuan_ocr_prompt.h"
 #include "utils/vision_rope.h"
 
 ncnn_llm_ocr::ncnn_llm_ocr(const std::string& model_path, bool use_vulkan, int num_threads)
@@ -622,20 +623,14 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_ocr::prefill_hunyuan(const std::strin
     printf("[ncnn_llm_ocr] hunyuan vision: resized %dx%d, grid %dx%d, vision_tokens=%d\n",
            target_w, target_h, gh, gw, num_vision_tokens);
 
-    // Assemble token ids directly (special tokens by id, prompt text via bbpe).
+    // Match HunYuanVLProcessor exactly: BOS, repeated image placeholders,
+    // prompt text, then UserEnd. The ViT output replaces every placeholder.
     std::vector<int> text_ids = bpe_->encode(prompt_text, false, false);
-    std::vector<int> token_ids;
-    token_ids.reserve(3 + num_vision_tokens + text_ids.size() + 1);
-    token_ids.push_back(bos_id_);
-    token_ids.push_back(system_end_id_);
-    token_ids.push_back(image_start_id_);
-    int first_image_index = (int)token_ids.size();
-    for (int i = 0; i < num_vision_tokens; i++) token_ids.push_back(image_token_id_);
-    token_ids.push_back(image_end_id_);
-    for (int t : text_ids) token_ids.push_back(t);
-    token_ids.push_back(user_end_id_);
-
-    int seq_len = (int)token_ids.size();
+    HunyuanOcrPromptLayout layout = build_hunyuan_ocr_prompt_layout(
+        bos_id_, image_token_id_, user_end_id_, text_ids, patch_h, patch_w);
+    const std::vector<int>& token_ids = layout.token_ids;
+    const int first_image_index = layout.first_image_index;
+    const int seq_len = (int)token_ids.size();
 
     // Text embeddings + inject vision features into the image-token slots (in order).
     ncnn::Mat token_embed = llm_run_text_embed(*text_embed_net_, token_ids);
@@ -645,26 +640,9 @@ std::shared_ptr<ncnn_llm_gpt_ctx> ncnn_llm_ocr::prefill_hunyuan(const std::strin
         memcpy(dst, src, hidden_size_ * sizeof(float));
     }
 
-    // Build 4-axis position ids (axis0 linear; grid tokens carry (w,h,0)).
-    std::vector<int> pos_lin(seq_len), pos_w(seq_len), pos_h(seq_len), pos_t(seq_len);
-    for (int i = 0; i < seq_len; i++) {
-        pos_lin[i] = i; pos_w[i] = i; pos_h[i] = i; pos_t[i] = i;
-    }
-    int start = first_image_index + 1;  // skip the leading "begin" vision token
-    for (int r = 0; r < patch_h; r++) {
-        for (int c = 0; c < patch_w + 1; c++) {
-            int idx = start + r * (patch_w + 1) + c;
-            if (idx >= seq_len) break;
-            pos_w[idx] = c;
-            pos_h[idx] = r;
-            pos_t[idx] = 0;
-        }
-    }
-
     // Prefill decode with KV cache (empty cache in).
-    const std::vector<int> pos4[4] = { pos_lin, pos_w, pos_h, pos_t };
     ncnn::Mat cos_cache, sin_cache;
-    generate_hunyuan_xdrope_cos_sin(pos4, seq_len, head_dim_, xdrope_section_,
+    generate_hunyuan_xdrope_cos_sin(layout.position_ids.data(), seq_len, head_dim_, xdrope_section_,
                                     rope_theta_, rope_alpha_, cos_cache, sin_cache);
 
     ncnn::Mat mask(seq_len, seq_len);
