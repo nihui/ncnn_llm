@@ -1,0 +1,109 @@
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [8,2048]f32,[8,8]f32,[8,128]f32,[8,128]f32
+inputshape2 = [16,2048]f32,[16,16]f32,[16,128]f32,[16,128]f32
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [8,2048]f32,[8,8]f32,[8,128]f32,[8,128]f32
+############# pass_level0
+inline module = export_penguinvl.RMSNorm
+inline module = export_penguinvl.RMSNorm
+
+----------------
+
+assign dynamic shape info
+inline module = export_penguinvl.RMSNorm
+
+----------------
+
+assign dynamic shape info
+inline module = export_penguinvl.RMSNorm
+
+----------------
+
+assign dynamic shape info
+inline module = export_penguinvl.RMSNorm
+
+----------------
+
+assign dynamic shape info
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+[libprotobuf ERROR /project/protobuf-21.12/src/google/protobuf/message_lite.cc:402] onnx.ModelProto exceeded maximum protobuf size of 2GB: 5637807597
+write onnx failed
+############# pass_ncnn
+fallback batch axis 233 for operand 2
+fallback batch axis 233 for operand 3
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+model inputshape = [?,2048]f32,[?,?]f32,[?,128]f32,[?,128]f32
+FLOPS = 0
+memory OPS = 0

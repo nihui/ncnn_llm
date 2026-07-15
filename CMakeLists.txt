@@ -86,13 +86,23 @@ add_library(ncnn_llm STATIC
     src/ncnn_text_runtime.cpp
     src/nllb_600m.cpp
     src/sampling.cpp
+    src/penguin/image_preprocess.cpp
+    src/penguin/json_min.cpp
+    src/penguin/penguin_config.cpp
+    src/penguin/penguin_vision.cpp
+    src/penguin/penguin_vl.cpp
     src/utils/gdr.cpp
     src/utils/image_utils.cpp
     src/utils/prompt.cpp
     src/utils/rope_embed.cpp
     src/utils/vision_rope.cpp
 )
-target_include_directories(ncnn_llm PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(ncnn_llm PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/penguin"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/utils"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/tokenizer"
+)
 target_link_libraries(ncnn_llm
     PUBLIC
         ncnn
@@ -120,6 +130,9 @@ if(NCNN_LLM_BUILD_EXAMPLES)
     target_include_directories(asr_main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/examples")
     target_link_libraries(asr_main PRIVATE ncnn_llm)
 
+    add_executable(penguin_vl_main examples/penguin_vl_main.cpp)
+    target_link_libraries(penguin_vl_main PRIVATE ncnn_llm)
+
     add_executable(nllb_main examples/nllb_main.cpp)
     target_link_libraries(nllb_main PRIVATE ncnn_llm)
 
@@ -139,6 +152,7 @@ if(NCNN_LLM_BUILD_EXAMPLES)
         target_link_libraries(llm_ncnn_run PRIVATE shell32)
         target_link_libraries(ocr_main PRIVATE shell32)
         target_link_libraries(asr_main PRIVATE shell32)
+        target_link_libraries(penguin_vl_main PRIVATE shell32)
     endif()
 endif()
 
@@ -149,7 +163,7 @@ install(TARGETS ncnn_llm ncnn_tokenizer
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 if(NCNN_LLM_BUILD_EXAMPLES)
-    install(TARGETS llm_ncnn_run ocr_main asr_main nllb_main embedding_main clip_main
+    install(TARGETS llm_ncnn_run ocr_main asr_main penguin_vl_main nllb_main embedding_main clip_main
         bytelevelbpe_main unigram_main
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
@@ -164,6 +178,22 @@ if(NCNN_LLM_BUILD_TESTS)
         add_test(NAME ncnn_llm_tests COMMAND ncnn_llm_tests)
         set_tests_properties(ncnn_llm_tests PROPERTIES
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+
+        add_executable(penguin_vl_tests
+            tests/penguin/test_main.cpp
+            tests/penguin/test_preprocess.cpp
+            tests/penguin/test_rope2d.cpp
+            tests/penguin/test_json.cpp
+            tests/penguin/test_tokenizer.cpp
+        )
+        target_include_directories(penguin_vl_tests PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/penguin"
+        )
+        target_link_libraries(penguin_vl_tests PRIVATE ncnn_llm)
+        add_test(NAME penguin_vl_tests COMMAND penguin_vl_tests)
+        set_tests_properties(penguin_vl_tests PROPERTIES
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )
 
         find_package(Python3 COMPONENTS Interpreter QUIET)

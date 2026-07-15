@@ -1,0 +1,8 @@
+accelerate==1.8.1
+decord==0.6.0
+einops==0.8.2
+ffmpeg-python==0.2.0
+imageio==2.37.3
+opencv-python-headless==5.0.0.93
+pillow==12.3.0
+transformers==4.51.3

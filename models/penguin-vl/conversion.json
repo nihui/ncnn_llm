@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "model": "Penguin-VL-2B",
+  "checkpoint": "tencent/Penguin-VL-2B@26ac2ceac1179ec3eda106cbb88e9eb909e68d4e",
+  "pnnx_version": "20260526",
+  "working_directory": ".",
+  "command": [
+    "python",
+    "models/penguin-vl/convert.py",
+    "--checkpoint",
+    "build/checkpoints/Penguin-VL-2B",
+    "--vision-encoder",
+    "build/checkpoints/Penguin-Encoder",
+    "--output",
+    "build/models/penguin-vl-2b-ncnn",
+    "--pnnx",
+    "pnnx"
+  ],
+  "outputs": [
+    "build/models/penguin-vl-2b-ncnn/model.json",
+    "build/models/penguin-vl-2b-ncnn/vocab.txt",
+    "build/models/penguin-vl-2b-ncnn/merges.txt",
+    "build/models/penguin-vl-2b-ncnn/vision_patch_embed.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/vision_patch_embed.ncnn.bin",
+    "build/models/penguin-vl-2b-ncnn/vision_encoder.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/vision_encoder.ncnn.bin",
+    "build/models/penguin-vl-2b-ncnn/vision_projector.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/vision_projector.ncnn.bin",
+    "build/models/penguin-vl-2b-ncnn/embed.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/embed.ncnn.bin",
+    "build/models/penguin-vl-2b-ncnn/decoder_nocache.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/decoder_nocache.ncnn.bin",
+    "build/models/penguin-vl-2b-ncnn/lm_head.ncnn.param",
+    "build/models/penguin-vl-2b-ncnn/lm_head.ncnn.bin"
+  ]
+}

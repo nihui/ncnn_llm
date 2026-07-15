@@ -1,0 +1,15 @@
+58558834042ad540264da76c42c3693c952fe2ebee5ca4d92967ff1eb0414d40  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/model.json
+b619b8a981cd15e3b90b67c3803471af233b65d01c5912aa3001c91c2ab6f106  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vocab.txt
+b8e04af9c950e393054010dcef499c3f005e803e9b2da1a09b96a26c33266eb1  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/merges.txt
+aee4152320a6b6b639e62745a68db8094cccffb3ff6c7476dc1e217cdd09e3a6  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_patch_embed.ncnn.param
+e26f043ea9d2a60967b5327442e40c536cc7eedaac34cccf1cdb575cedcf1e06  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_patch_embed.ncnn.bin
+0ff6b0b26113cd61870ba4d6d837be6775d8cf95438ae2c509672e14fb9add5b  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_encoder.ncnn.param
+2581ed5df39501f9ed9b8cb79dbc4fc882c8b71140b78fbb8e4c450e75eb31d4  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_encoder.ncnn.bin
+991296b85e4bde2994b50a9484a639d679204dd79d069663496763dfe0fc676a  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_projector.ncnn.param
+c42bc1ce8c146077f6d8cc7834bc02c693dc09c9b762e40481225dc089d9f4e9  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/vision_projector.ncnn.bin
+35150e5115c29fa32ed0b4d4636dce899a9dccc320c4494fb91dee0a8243ffc9  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/embed.ncnn.param
+659c54a1aee512b5976fa08436658ab7ee88a8604808131cfc97b4b70c8a6ea1  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/embed.ncnn.bin
+3928927fb25fee34d8f0388bf2badb01521e05526409c0364cf1c8458dba1298  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/decoder_nocache.ncnn.param
+f338caf1e194a70657324a3940444dee9b70bdb73a1da136358075f39e1f1024  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/decoder_nocache.ncnn.bin
+b5d5723390dd2679b22369739f48c36c66741d59e5281ceda2b8ea58621719ad  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/lm_head.ncnn.param
+659c54a1aee512b5976fa08436658ab7ee88a8604808131cfc97b4b70c8a6ea1  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn/lm_head.ncnn.bin

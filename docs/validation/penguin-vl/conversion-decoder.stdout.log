@@ -1,0 +1,9 @@
+Detected nested encoder keys in checkpoint, adding key mapping for vision_encoder
+[decoder] model loaded
+[decoder] rebuilt 28 layers, freed source model
+[decoder] tracing...
+[decoder] traced, saving .pt...
+[decoder] saved .pt, running pnnx...
+[pnnx] /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work_decoder_nocache.pt inputshape=[8,2048]f32,[8,8]f32,[8,128]f32,[8,128]f32 inputshape2=[16,2048]f32,[16,16]f32,[16,128]f32,[16,128]f32 ncnnparam=/home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.param ncnnbin=/home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.bin fp16=0
+[patch] rewrote 28 ambiguous mask Reshape op(s) to copy-dim form
+[note] cacheless decoder: inputs in0..in3, output out0 -- no blob rename needed. Set "kv_cache": false in model.json.

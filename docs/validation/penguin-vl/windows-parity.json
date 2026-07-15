@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "pass": true,
+  "expected": "July",
+  "actual": "July",
+  "expected_sha256": "e9cf7a1ca4a760843ff30e1fbb125e6a066c63e883c58523bdbe04c9daf5dbae",
+  "actual_sha256": "e9cf7a1ca4a760843ff30e1fbb125e6a066c63e883c58523bdbe04c9daf5dbae",
+  "expected_utf8_bytes": 4,
+  "actual_utf8_bytes": 4
+}
