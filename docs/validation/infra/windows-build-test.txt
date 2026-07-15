@@ -1,0 +1,18 @@
+platform=Windows
+cmake version 4.4.0
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+1.13.2
+g++.exe (Rev5, Built by MSYS2 project) 16.1.0
+f2f29e41be164c788c36cc44bdbf2d0d4810477e
+13b6d5318c73be53bb386fa51e8067615d0eb7c1
+ninja: no work to do.
+Test project C:/Users/zhangzherui/Desktop/Tencent/ncnn-builds/infra-windows-final
+    Start 1: ncnn_llm_tests
+1/2 Test #1: ncnn_llm_tests ...................   Passed    0.01 sec
+    Start 2: ncnn_llm_tool_tests
+2/2 Test #2: ncnn_llm_tool_tests ..............   Passed    0.17 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.19 sec
