@@ -1,0 +1,2 @@
+frontend prompt_len=21 text="Hello, welcome to Qwen text to speech." speaker=Ryan language=English
+generated frames=2 wav_samples=3840 sample_rate=24000 out=/home/zhangzherui/ncnn-evidence/qwen3-tts/wsl/ncnn-exact-2f.wav

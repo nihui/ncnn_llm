@@ -74,6 +74,7 @@ endif()
 
 add_library(ncnn_tokenizer STATIC
     src/utils/tokenizer/bpe_tokenizer.cpp
+    src/utils/tokenizer/qwen_bpe.cpp
     src/utils/tokenizer/unigram_tokenizer.cpp
 )
 target_include_directories(ncnn_tokenizer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -86,6 +87,8 @@ add_library(ncnn_llm STATIC
     src/ncnn_text_runtime.cpp
     src/nllb_600m.cpp
     src/sampling.cpp
+    src/tts/qwen3_tts_frontend.cpp
+    src/tts/qwen3_tts_runtime.cpp
     src/utils/gdr.cpp
     src/utils/image_utils.cpp
     src/utils/prompt.cpp
@@ -120,6 +123,9 @@ if(NCNN_LLM_BUILD_EXAMPLES)
     target_include_directories(asr_main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/examples")
     target_link_libraries(asr_main PRIVATE ncnn_llm)
 
+    add_executable(qwen3_tts_main examples/qwen3_tts_main.cpp)
+    target_link_libraries(qwen3_tts_main PRIVATE ncnn_llm)
+
     add_executable(nllb_main examples/nllb_main.cpp)
     target_link_libraries(nllb_main PRIVATE ncnn_llm)
 
@@ -139,6 +145,7 @@ if(NCNN_LLM_BUILD_EXAMPLES)
         target_link_libraries(llm_ncnn_run PRIVATE shell32)
         target_link_libraries(ocr_main PRIVATE shell32)
         target_link_libraries(asr_main PRIVATE shell32)
+        target_link_libraries(qwen3_tts_main PRIVATE shell32)
     endif()
 endif()
 
@@ -149,7 +156,7 @@ install(TARGETS ncnn_llm ncnn_tokenizer
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 if(NCNN_LLM_BUILD_EXAMPLES)
-    install(TARGETS llm_ncnn_run ocr_main asr_main nllb_main embedding_main clip_main
+    install(TARGETS llm_ncnn_run ocr_main asr_main qwen3_tts_main nllb_main embedding_main clip_main
         bytelevelbpe_main unigram_main
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
@@ -165,6 +172,10 @@ if(NCNN_LLM_BUILD_TESTS)
         set_tests_properties(ncnn_llm_tests PROPERTIES
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         )
+
+        if(NCNN_LLM_BUILD_EXAMPLES)
+            add_test(NAME qwen3_tts_help COMMAND qwen3_tts_main --help)
+        endif()
 
         find_package(Python3 COMPONENTS Interpreter QUIET)
         if(Python3_Interpreter_FOUND)

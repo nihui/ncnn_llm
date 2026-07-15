@@ -1,0 +1,840 @@
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s02.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s02.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s02.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s02_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s02.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s02.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s02.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s02_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,2,1024]f32,[1,1,2,2]f32,[1,2]f32,[2]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,2,1024]f32,[1,1,2,2]f32,[1,2]f32
+FLOPS = 315.403M
+memory OPS = 79.537M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s03.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s03.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s03.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s03_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s03.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s03.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s03.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s03_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,3,1024]f32,[1,1,3,3]f32,[1,3]f32,[3]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,3,1024]f32,[1,1,3,3]f32,[1,3]f32
+FLOPS = 473.229M
+memory OPS = 79.978M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s04.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s04.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s04.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s04_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s04.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s04.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s04.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s04_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,4,1024]f32,[1,1,4,4]f32,[1,4]f32,[4]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,4,1024]f32,[1,1,4,4]f32,[1,4]f32
+FLOPS = 631.138M
+memory OPS = 80.42M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s05.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s05.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s05.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s05_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s05.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s05.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s05.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s05_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,5,1024]f32,[1,1,5,5]f32,[1,5]f32,[5]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,5,1024]f32,[1,1,5,5]f32,[1,5]f32
+FLOPS = 789.13M
+memory OPS = 80.861M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s06.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s06.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s06.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s06_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s06.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s06.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s06.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s06_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,6,1024]f32,[1,1,6,6]f32,[1,6]f32,[6]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,6,1024]f32,[1,1,6,6]f32,[1,6]f32
+FLOPS = 947.205M
+memory OPS = 81.303M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s07.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s07.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s07.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s07_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s07.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s07.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s07.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s07_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,7,1024]f32,[1,1,7,7]f32,[1,7]f32,[7]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,7,1024]f32,[1,1,7,7]f32,[1,7]f32
+FLOPS = 1.105G
+memory OPS = 81.744M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s08.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s08.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s08.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s08_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s08.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s08.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s08.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s08_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,8,1024]f32,[1,1,8,8]f32,[1,8]f32,[8]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,8,1024]f32,[1,1,8,8]f32,[1,8]f32
+FLOPS = 1.264G
+memory OPS = 82.186M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s09.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s09.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s09.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s09_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s09.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s09.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s09.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s09_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,9,1024]f32,[1,1,9,9]f32,[1,9]f32,[9]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,9,1024]f32,[1,1,9,9]f32,[1,9]f32
+FLOPS = 1.422G
+memory OPS = 82.628M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s10.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s10.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s10.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s10_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s10.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s10.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s10.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s10_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,10,1024]f32,[1,1,10,10]f32,[1,10]f32,[10]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,10,1024]f32,[1,1,10,10]f32,[1,10]f32
+FLOPS = 1.58G
+memory OPS = 83.071M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s11.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s11.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s11.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s11_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s11.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s11.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s11.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s11_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,11,1024]f32,[1,1,11,11]f32,[1,11]f32,[11]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,11,1024]f32,[1,1,11,11]f32,[1,11]f32
+FLOPS = 1.739G
+memory OPS = 83.513M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s12.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s12.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s12.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s12_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s12.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s12.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s12.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s12_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,12,1024]f32,[1,1,12,12]f32,[1,12]f32,[12]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,12,1024]f32,[1,1,12,12]f32,[1,12]f32
+FLOPS = 1.897G
+memory OPS = 83.956M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s13.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s13.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s13.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s13_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s13.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s13.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s13.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s13_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,13,1024]f32,[1,1,13,13]f32,[1,13]f32,[13]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,13,1024]f32,[1,1,13,13]f32,[1,13]f32
+FLOPS = 2.056G
+memory OPS = 84.399M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s14.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s14.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s14.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s14_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s14.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s14.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s14.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s14_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,14,1024]f32,[1,1,14,14]f32,[1,14]f32,[14]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,14,1024]f32,[1,1,14,14]f32,[1,14]f32
+FLOPS = 2.215G
+memory OPS = 84.841M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s15.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s15.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s15.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s15_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s15.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s15.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s15.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s15_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,15,1024]f32,[1,1,15,15]f32,[1,15]f32,[15]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,15,1024]f32,[1,1,15,15]f32,[1,15]f32
+FLOPS = 2.374G
+memory OPS = 85.285M
+wsl.exe : pnnxparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/
+code_predictor_body_s16.pnnx.param
+At line:2 char:607
++ ... [$seq]i64"; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx $ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pnnxparam = /ho..._s16.pnnx.param:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+pnnxbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s16.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s16_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predic
+tor_body_s16.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predi
+ctor_body_s16.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predict
+or_body_s16.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/code_predictor/code_predictor_body_by_len/code_predicto
+r_body_s16_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,16,1024]f32,[1,1,16,16]f32,[1,16]f32,[16]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSAttention
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSDecoderLayer
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRMSNorm
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSRotaryEmbedding
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerCodePredictorModel
+inline module = qwen_tts.core.models.modeling_qwen3_tts.Qwen3TTSTalkerTextMLP
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+model inputshape = [1,16,1024]f32,[1,1,16,16]f32,[1,16]f32
+FLOPS = 2.533G
+memory OPS = 85.728M

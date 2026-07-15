@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "codes": {
+    "count": 32,
+    "exact": true,
+    "reference_sha256": "8550f3b28f8bea426a225ec0fe0d09e37eb13df169583bd823d23bd78aed0d9d",
+    "ncnn_sha256": "8550f3b28f8bea426a225ec0fe0d09e37eb13df169583bd823d23bd78aed0d9d"
+  },
+  "audio": {
+    "sample_rate": 24000,
+    "samples": 3840,
+    "shape_equal": true,
+    "max_pcm_lsb": 1,
+    "max_pcm_lsb_allowed": 1,
+    "equal_samples": 3732,
+    "reference_sha256": "d325f9be48fccbda790b51fc866042dce5b8d9f379fa727cc1f62b75e9173f94",
+    "ncnn_sha256": "e7e6a3ca40dcdd2a84a8c7384f7e09c06d4a1a9907940d7bc26c0d91d4dffcf1"
+  },
+  "passed": true
+}
