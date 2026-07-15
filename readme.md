@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <img alt="Build" src="https://img.shields.io/badge/build-xmake-4c8eda">
+  <img alt="Build" src="https://img.shields.io/badge/build-CMake%20%7C%20xmake-4c8eda">
   <img alt="Backend" src="https://img.shields.io/badge/backend-ncnn-orange">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Android-lightgrey">
 </p>
@@ -41,7 +41,7 @@ The project started from **nihui's** experimental ncnn `kvcache` work and expand
 - NLLB translation example
 - Text and multimodal embedding APIs
 - BPE and Unigram tokenizer support
-- xmake-based build with small standalone examples
+- CMake and xmake builds with Linux/Windows CI
 
 ## Supported Models
 
@@ -63,13 +63,13 @@ The project started from **nihui's** experimental ncnn `kvcache` work and expand
 
 ### 1. Requirements
 
-- `xmake`
+- CMake 3.20+ and Ninja, or `xmake`
 - ncnn built from `master`
 
 ### 2. Clone
 
 ```bash
-git clone https://github.com/futz12/ncnn_llm.git
+git clone https://github.com/nihui/ncnn_llm.git
 cd ncnn_llm
 ```
 
@@ -77,6 +77,15 @@ cd ncnn_llm
 
 ```bash
 xmake build
+```
+
+The reproducible CMake preset fetches pinned dependencies and runs the portable
+unit/parity-tool test suite:
+
+```bash
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
 ```
 
 Build a single target:
@@ -144,12 +153,36 @@ Assistant: Hello! How can I help you today?
 
 ## OCR
 
-GLM-OCR uses a dedicated image prefill path and the shared text decode runtime.
+GLM-OCR and HunyuanOCR use dedicated image prefill paths and the shared text
+decode runtime.
 
 ```bash
 xmake build ocr_main
 xmake run ocr_main --model ./assets/glm_ocr --image ./test_ocr.png --prompt "Read the text in the image."
+xmake run ocr_main --model ./assets/hunyuan_ocr --image ./test_ocr.png --prompt "提取图中的文字。"
 ```
+
+Use `--max-new-tokens <count>` to cap decoding for reproducible parity and
+latency tests.
+
+The converted HunyuanOCR package is available from
+`https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/`.
+
+The same OCR target can also be built with CMake:
+
+```bash
+cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH=/path/to/ncnn \
+  -DNCNN_LLM_FETCH_DEPS=ON
+  cmake --build build --target ocr_main
+```
+
+`tools/hunyuan_ocr_parity.py` runs the original PyTorch model and the ncnn
+executable on the same image and saves both raw outputs. The JSON report records
+strict UTF-8 equality, a whitespace-insensitive character similarity, input and
+output hashes, model configuration hashes, platform, runtime versions, device,
+  dtype, and attention backend. Only byte-for-byte identity is accepted.
 
 Example output:
 

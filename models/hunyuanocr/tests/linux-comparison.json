@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "mode": "text",
+  "created_at": "2026-07-15T17:03:26.534087+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "reference": {
+    "path": "C:\\Users\\zhangzherui\\Desktop\\Tencent\\ncnn-evidence\\hunyuanocr\\final-right-column-exact-strict\\pytorch.txt",
+    "sha256": "171c58169bf5fb3a5c6f7df69bd972da294ab8d494e15cc46167f9a7fb44738a"
+  },
+  "actual": {
+    "path": "C:\\Users\\zhangzherui\\Desktop\\Tencent\\ncnn-evidence\\hunyuanocr\\final-right-column-exact-strict\\ncnn.txt",
+    "sha256": "171c58169bf5fb3a5c6f7df69bd972da294ab8d494e15cc46167f9a7fb44738a"
+  },
+  "result": {
+    "exact": true,
+    "reference_bytes": 19,
+    "actual_bytes": 19
+  }
+}

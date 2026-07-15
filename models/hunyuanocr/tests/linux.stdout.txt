@@ -1,0 +1,22 @@
+Loading OCR model from /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr
+[ncnn_llm_ocr] Vulkan disabled, using CPU only
+Loading OCR model (hunyuan_ocr) from /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr
+  vision param: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.param
+  vision bin: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_vision_encoder.ncnn.bin
+  text_embed param: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.param
+  text_embed bin: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.bin
+  text_decoder param: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.param
+  text_decoder bin: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_text_decoder.ncnn.bin
+  lm_head param: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_lm_head.ncnn.param
+  lm_head bin: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/hunyuan_ocr/hunyuan_ocr_text_embed.ncnn.bin
+  [hunyuan_ocr] attn_cnt: 24, hidden_size: 1024, head_dim: 128, vocab_size: 120818
+  [hunyuan_ocr] patch_size: 16, merge_size: 2, min/max_pixels: 262144/4194304
+  [hunyuan_ocr] rope_theta: 10000.0, alpha: 1000.0, xdrope_section size: 4, kv_cache: 0
+  [hunyuan_ocr] image_token_id: 120120, image_start: 120118, image_end: 120119, bos: 120000, user_end: 120006
+Loading image: /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-evidence/hunyuanocr/guwan-right-column.png
+Running OCR prefill with prompt: OCR
+[ncnn_llm_ocr] hunyuan vision: resized 384x736, grid 46x24, vision_tokens=301
+Generating text:
+清江浦河庫道
+
+Done.

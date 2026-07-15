@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
     std::string image_path;
     std::string prompt;
     bool prompt_set = false;
+    int max_new_tokens = 1024;
 
     for (size_t i = 1; i < args.size(); i++) {
         const std::string& arg = args[i];
@@ -22,11 +23,18 @@ int main(int argc, char** argv) {
         } else if (arg == "--prompt" && i + 1 < args.size()) {
             prompt = args[++i];
             prompt_set = true;
+        } else if (arg == "--max-new-tokens" && i + 1 < args.size()) {
+            try {
+                max_new_tokens = std::stoi(args[++i]);
+            } catch (...) {
+                fprintf(stderr, "Invalid --max-new-tokens value\n");
+                return 1;
+            }
         }
     }
 
-    if (image_path.empty()) {
-        fprintf(stderr, "Usage: %s --image <image_path> [--model <model_path>] [--prompt <prompt>]\n", argv[0]);
+    if (image_path.empty() || max_new_tokens <= 0) {
+        fprintf(stderr, "Usage: %s --image <image_path> [--model <model_path>] [--prompt <prompt>] [--max-new-tokens <count>]\n", argv[0]);
         return 1;
     }
 
@@ -63,7 +71,7 @@ int main(int argc, char** argv) {
     printf("Generating text:\n");
 
     GenerateConfig cfg;
-    cfg.max_new_tokens = 1024;
+    cfg.max_new_tokens = max_new_tokens;
     cfg.temperature = 0.0f;
     cfg.top_p = 0.00001f;
     cfg.top_k = 1;

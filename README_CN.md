@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <img alt="Build" src="https://img.shields.io/badge/build-xmake-4c8eda">
+  <img alt="Build" src="https://img.shields.io/badge/build-CMake%20%7C%20xmake-4c8eda">
   <img alt="Backend" src="https://img.shields.io/badge/backend-ncnn-orange">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Android-lightgrey">
 </p>
@@ -69,7 +69,7 @@
 ### 2. 克隆仓库
 
 ```bash
-git clone https://github.com/futz12/ncnn_llm.git
+git clone https://github.com/nihui/ncnn_llm.git
 cd ncnn_llm
 ```
 
@@ -77,6 +77,15 @@ cd ncnn_llm
 
 ```bash
 xmake build
+```
+
+也可以使用可复现的 CMake preset；它会获取固定版本的依赖并运行跨平台
+单元测试与一致性工具测试：
+
+```bash
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
 ```
 
 只构建单个 target：
@@ -144,12 +153,34 @@ Assistant: Hello! How can I help you today?
 
 ## OCR
 
-GLM-OCR 使用专用的图像 prefill 路径，并复用共享文本解码运行时。
+GLM-OCR 和 HunyuanOCR 使用各自的图像 prefill 路径，并复用共享文本解码运行时。
 
 ```bash
 xmake build ocr_main
 xmake run ocr_main --model ./assets/glm_ocr --image ./test_ocr.png --prompt "Read the text in the image."
+xmake run ocr_main --model ./assets/hunyuan_ocr --image ./test_ocr.png --prompt "提取图中的文字。"
 ```
+
+可以使用 `--max-new-tokens <count>` 限制解码长度，便于进行可复现的一致性和延迟测试。
+
+HunyuanOCR 的 ncnn 转换模型可从
+`https://mirrors.sdu.edu.cn/ncnn_modelzoo/hunyuan_ocr/` 下载。
+
+同一个 OCR 程序也可以使用 CMake 构建：
+
+```bash
+cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH=/path/to/ncnn \
+  -DNCNN_LLM_FETCH_DEPS=ON
+cmake --build build --target hunyuan_ocr_ncnn
+```
+
+`tools/hunyuan_ocr_parity.py` 会用同一张图片分别运行原版 PyTorch
+模型和 ncnn 程序，并保存两边的原始输出。JSON 报告会记录严格 UTF-8
+相等结果、忽略空白的字符相似度、输入输出哈希、模型配置哈希、平台、
+运行时版本、设备、数据类型和注意力后端。默认通过阈值为 0.90；需要
+逐字节一致时可加 `--require-exact`。
 
 输出示例：
 

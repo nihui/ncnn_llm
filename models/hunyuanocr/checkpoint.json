@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "model": "HunyuanOCR 1.0",
+  "official_repository": "https://huggingface.co/tencent/HunyuanOCR",
+  "model_id": "tencent/HunyuanOCR",
+  "revision": "45ca99a02acc15fc45a86e5fd5ca2ab57c1cc84d",
+  "modelscope_mirror": "Tencent-Hunyuan/HunyuanOCR",
+  "config_sha256": "57d825203dbe1317eab32d16dc8b36c06892062765e9c5718dd740ab936cc245",
+  "conversion_dtype": "float32",
+  "reference_dtype": "bfloat16",
+  "reference_attention": "eager"
+}
