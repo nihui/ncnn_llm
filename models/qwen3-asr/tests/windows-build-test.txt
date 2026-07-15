@@ -1,0 +1,18 @@
+﻿platform=Windows-11-native
+cmake version 4.4.0
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+1.13.2
+g++.exe (Rev5, Built by MSYS2 project) 16.1.0
+fe3eff93a9aa5b7094d714fc8f42f293ad9964c7
+[1/2] Building CXX object CMakeFiles/ncnn_llm_tests.dir/tests/test_llm.cpp.obj
+[2/2] Linking CXX executable ncnn_llm_tests.exe
+Test project C:/Users/zhangzherui/Desktop/Tencent/ncnn-builds/infra-windows-final
+    Start 1: ncnn_llm_tests
+1/2 Test #1: ncnn_llm_tests ...................   Passed    0.80 sec
+    Start 2: ncnn_llm_tool_tests
+2/2 Test #2: ncnn_llm_tool_tests ..............   Passed    0.22 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   3.27 sec

@@ -1,0 +1,2 @@
+﻿exit_code=0
+wall_seconds=9.6068335

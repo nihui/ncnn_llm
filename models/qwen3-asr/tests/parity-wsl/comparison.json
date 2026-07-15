@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "parity_pass": true,
+  "comparison": "strict language and UTF-8 final-text equality",
+  "pytorch_language": "English",
+  "ncnn_language": "English",
+  "language_exact": true,
+  "text_exact": true,
+  "audio_sha256": "9c33540cbba2cf82c2b724f733b002466b87f83c06e20fbe3c4eed83c141edc9",
+  "pytorch_config_sha256": "76d3ae4601ce939830b2517f4a6cadb86cc51316c3900af6b020b051c21a478c",
+  "ncnn_config_sha256": "216f9c9b390fb650154520320afeb5e088aa2b53ba435101bb6e94184e11f2d3",
+  "ncnn_command": [
+    "/home/zhangzherui/builds/ncnn_llm-infra/asr_main",
+    "--model",
+    "/mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-models/qwen3_asr_0.6b",
+    "--audio",
+    "models/qwen3-asr/tests/asr_en_16k_pcm16.wav",
+    "--max-new-tokens",
+    "256"
+  ],
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "torch": "2.13.0+cpu",
+  "qwen_asr": "unknown"
+}

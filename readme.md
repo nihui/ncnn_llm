@@ -167,6 +167,20 @@ Generating text:
 Hello World 123
 ```
 
+## ASR
+
+Qwen3-ASR uses the shared text decoder/KV-cache runtime after its ncnn audio
+frontend and encoder. The input contract is 16 kHz mono PCM16 or float32 WAV.
+
+```bash
+xmake build asr_main
+xmake run asr_main --model ./assets/qwen3_asr_0.6b \
+  --audio ./sample-16k.wav --max-new-tokens 256
+```
+
+The pinned checkpoint, pnnx conversion, verified model download, and exact
+PyTorch/Windows/Linux evidence are documented in `models/qwen3-asr/README.md`.
+
 ## Embeddings
 
 `ncnn_embedding` provides a common API for text embeddings and CLIP-style text-image embeddings.

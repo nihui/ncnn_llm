@@ -167,6 +167,20 @@ Generating text:
 Hello World 123
 ```
 
+## 语音识别
+
+Qwen3-ASR 的 ncnn 音频前端和编码器之后复用共享文本 decoder 与 KV cache。
+输入格式为 16 kHz 单声道 PCM16 或 float32 WAV。
+
+```bash
+xmake build asr_main
+xmake run asr_main --model ./assets/qwen3_asr_0.6b \
+  --audio ./sample-16k.wav --max-new-tokens 256
+```
+
+固定 checkpoint、pnnx 转换、带哈希的模型下载和 PyTorch/Windows/Linux
+严格一致性证据见 `models/qwen3-asr/README.md`。
+
 ## 嵌入模型
 
 `ncnn_embedding` 为文本嵌入和 CLIP 风格的图文嵌入提供统一 API。
