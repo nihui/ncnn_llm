@@ -1,0 +1,50 @@
+﻿=== platform ===
+Linux DESKTOP-O4ENA9T 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+cmake version 3.28.3
+1.11.1
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+=== configure ===
+-- CMAKE_INSTALL_PREFIX = /usr/local
+-- NCNN_VERSION_STRING = 1.0.20260716
+-- Target arch: x86 64bit
+CMake Warning at /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn/CMakeLists.txt:724 (message):
+  The compiler does not support avx vnni int16 extension.  NCNN_AVXVNNIINT16
+  will be OFF.
+System.Management.Automation.RemoteException
+System.Management.Automation.RemoteException
+-- Configuring done (3.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/zhangzherui/builds/ncnn_llm-infra
+=== build ===
+[1/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/options.cpp.o
+[2/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/util.cpp.o
+[3/19] Building CXX object CMakeFiles/nllb_main.dir/examples/nllb_main.cpp.o
+[4/19] Linking CXX executable nllb_main
+[5/19] Building CXX object CMakeFiles/embedding_main.dir/examples/embedding_main.cpp.o
+[6/19] Building CXX object CMakeFiles/clip_main.dir/examples/clip_main.cpp.o
+[7/19] Building CXX object CMakeFiles/ocr_main.dir/examples/ocr_main.cpp.o
+[8/19] Building CXX object CMakeFiles/asr_main.dir/examples/asr_main.cpp.o
+[9/19] Linking CXX executable embedding_main
+[10/19] Linking CXX executable clip_main
+[11/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/main.cpp.o
+[12/19] Linking CXX executable ocr_main
+[13/19] Linking CXX executable asr_main
+[14/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/json_utils.cpp.o
+[15/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/tools.cpp.o
+[16/19] Building CXX object CMakeFiles/ncnn_llm_tests.dir/tests/test_llm.cpp.o
+[17/19] Linking CXX executable ncnn_llm_tests
+[18/19] Building CXX object CMakeFiles/llm_ncnn_run.dir/examples/llm_ncnn_run/cli_runner.cpp.o
+[19/19] Linking CXX executable llm_ncnn_run
+=== ctest ===
+Internal ctest changing into directory: /home/zhangzherui/builds/ncnn_llm-infra
+Test project /home/zhangzherui/builds/ncnn_llm-infra
+    Start 1: ncnn_llm_tests
+1/3 Test #1: ncnn_llm_tests ...................   Passed    0.00 sec
+    Start 2: penguin_vl_tests
+2/3 Test #2: penguin_vl_tests .................   Passed    0.01 sec
+    Start 3: ncnn_llm_tool_tests
+3/3 Test #3: ncnn_llm_tool_tests ..............   Passed    0.13 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   0.14 sec

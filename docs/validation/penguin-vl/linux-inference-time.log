@@ -1,0 +1,23 @@
+	Command being timed: "/home/zhangzherui/builds/ncnn_llm-infra/penguin_vl_main --model /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent --image models/penguin-vl/testdata/newspaper_top_square.png --prompt What month is printed at the top? Answer with the month only. --threads 8 --max-new-tokens 16 --output docs/validation/penguin-vl/linux-ncnn.txt"
+	User time (seconds): 50.59
+	System time (seconds): 11.73
+	Percent of CPU this job got: 509%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.23
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 9940228
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3824011
+	Voluntary context switches: 843
+	Involuntary context switches: 106
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

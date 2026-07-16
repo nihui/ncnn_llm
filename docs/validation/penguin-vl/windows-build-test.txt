@@ -1,0 +1,46 @@
+=== platform ===
+Microsoft Windows NT 10.0.26200.0
+cmake version 4.4.0
+1.13.2
+g++.exe (Rev5, Built by MSYS2 project) 16.1.0
+=== configure ===
+-- CMAKE_INSTALL_PREFIX = C:/Program Files (x86)/ncnn_llm
+-- NCNN_VERSION_STRING = 1.0.20260716
+-- Target arch: x86 64bit
+-- Configuring done (0.7s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/zhangzherui/Desktop/Tencent/ncnn-builds/penguin-win
+=== build ===
+[1/21] Building CXX object CMakeFiles/penguin_vl_tests.dir/tests/penguin/test_main.cpp.obj
+[2/21] Building CXX object CMakeFiles/ncnn_llm.dir/src/penguin/penguin_config.cpp.obj
+[3/21] Building CXX object CMakeFiles/penguin_vl_tests.dir/tests/penguin/test_tokenizer.cpp.obj
+[4/21] Building CXX object CMakeFiles/ncnn_llm.dir/src/penguin/image_preprocess.cpp.obj
+[5/21] Building CXX object CMakeFiles/ncnn_llm.dir/src/penguin/json_min.cpp.obj
+[6/21] Building CXX object CMakeFiles/ncnn_llm.dir/src/penguin/penguin_vision.cpp.obj
+[7/21] Building CXX object CMakeFiles/penguin_vl_tests.dir/tests/penguin/test_rope2d.cpp.obj
+[8/21] Building CXX object CMakeFiles/penguin_vl_main.dir/examples/penguin_vl_main.cpp.obj
+[9/21] Building CXX object CMakeFiles/penguin_vl_tests.dir/tests/penguin/test_json.cpp.obj
+[10/21] Building CXX object CMakeFiles/penguin_vl_tests.dir/tests/penguin/test_preprocess.cpp.obj
+[11/21] Building CXX object CMakeFiles/ncnn_llm.dir/src/penguin/penguin_vl.cpp.obj
+[12/21] Linking CXX static library libncnn_llm.a
+[13/21] Linking CXX executable penguin_vl_main.exe
+[14/21] Linking CXX executable asr_main.exe
+[15/21] Linking CXX executable ocr_main.exe
+[16/21] Linking CXX executable llm_ncnn_run.exe
+[17/21] Linking CXX executable nllb_main.exe
+[18/21] Linking CXX executable embedding_main.exe
+[19/21] Linking CXX executable clip_main.exe
+[20/21] Linking CXX executable ncnn_llm_tests.exe
+[21/21] Linking CXX executable penguin_vl_tests.exe
+=== ctest ===
+Test project C:/Users/zhangzherui/Desktop/Tencent/ncnn-builds/penguin-win
+    Start 1: ncnn_llm_tests
+1/3 Test #1: ncnn_llm_tests ...................   Passed    0.81 sec
+    Start 2: penguin_vl_tests
+2/3 Test #2: penguin_vl_tests .................   Passed    0.90 sec
+    Start 3: ncnn_llm_tool_tests
+3/3 Test #3: ncnn_llm_tool_tests ..............   Passed    0.18 sec
+
+100% tests passed out of 3
+
+Total Test time (real) =   2.47 sec

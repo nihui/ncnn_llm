@@ -1,0 +1,6 @@
+﻿{
+    "exit_code":  0,
+    "wall_seconds":  11.0860997,
+    "command":  "C:\\Users\\zhangzherui\\Desktop\\Tencent\\ncnn-builds\\penguin-win\\penguin_vl_main.exe --model C:\\Users\\zhangzherui\\Desktop\\Tencent\\ncnn-models\\penguin-vl-2b-ncnn-independent --image C:\\Users\\zhangzherui\\Desktop\\Tencent\\ncnn-final\\ncnn_llm\\models\\penguin-vl\\testdata\\newspaper_top_square.png --prompt \u003cfixed\u003e --threads 8 --max-new-tokens 16",
+    "stdout":  "Assistant: July"
+}

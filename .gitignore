@@ -3,6 +3,11 @@
 /.vscode/
 /.xmake/
 /build/
+/.cache/
+/dist/
+*.receipt.json
+__pycache__/
+*.py[cod]
 /mcp
 /examples/web/generated/
 examples/web_wasm/qwen3_web_wasm.js

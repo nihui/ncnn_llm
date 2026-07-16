@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "model": "tencent/Penguin-VL-2B",
+  "revision": "26ac2ceac1179ec3eda106cbb88e9eb909e68d4e",
+  "license": "Apache-2.0",
+  "url": "https://huggingface.co/tencent/Penguin-VL-2B/tree/26ac2ceac1179ec3eda106cbb88e9eb909e68d4e",
+  "files": [
+    {
+      "path": "config.json",
+      "size": 1728,
+      "sha256": "f1ae4b984d80ac3e7971979032e799c8edc7621415684fb74a436ea7313fd99f"
+    },
+    {
+      "path": "model.safetensors",
+      "size": 4335965984,
+      "sha256": "b13dc884fa52b873d861b32f3bcfa406b04964ec3412e69a1e0424950d5832d3"
+    },
+    {
+      "path": "preprocessor_config.json",
+      "size": 584,
+      "sha256": "83dee8ee0d53bdc0e7faa1aad1d192f28dabec14a722fc2baf099bb04f8bb5f8"
+    }
+  ]
+}

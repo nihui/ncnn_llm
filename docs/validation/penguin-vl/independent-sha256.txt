@@ -1,0 +1,15 @@
+756189bacbcc6d2aada2a616c35c7aaaa318e9c212822197a977389262b8fcf8  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/model.json
+207bc51ac1824ec8c90b26954bb88e0935f65990b30cfc484bdbc2d13ba44371  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vocab.txt
+8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/merges.txt
+aee4152320a6b6b639e62745a68db8094cccffb3ff6c7476dc1e217cdd09e3a6  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_patch_embed.ncnn.param
+e26f043ea9d2a60967b5327442e40c536cc7eedaac34cccf1cdb575cedcf1e06  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_patch_embed.ncnn.bin
+11fc38bbbb8e554cd6de7da049ead36556ef507773ada5d5e294c402873f63c6  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_encoder.ncnn.param
+2581ed5df39501f9ed9b8cb79dbc4fc882c8b71140b78fbb8e4c450e75eb31d4  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_encoder.ncnn.bin
+991296b85e4bde2994b50a9484a639d679204dd79d069663496763dfe0fc676a  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_projector.ncnn.param
+c42bc1ce8c146077f6d8cc7834bc02c693dc09c9b762e40481225dc089d9f4e9  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_projector.ncnn.bin
+35150e5115c29fa32ed0b4d4636dce899a9dccc320c4494fb91dee0a8243ffc9  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/embed.ncnn.param
+659c54a1aee512b5976fa08436658ab7ee88a8604808131cfc97b4b70c8a6ea1  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/embed.ncnn.bin
+d4855ac19324dd673ecac8610842f233bb778a9c4fcfc03e30ea05aef7d379f8  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.param
+f338caf1e194a70657324a3940444dee9b70bdb73a1da136358075f39e1f1024  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/decoder_nocache.ncnn.bin
+b5d5723390dd2679b22369739f48c36c66741d59e5281ceda2b8ea58621719ad  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/lm_head.ncnn.param
+659c54a1aee512b5976fa08436658ab7ee88a8604808131cfc97b4b70c8a6ea1  /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/lm_head.ncnn.bin

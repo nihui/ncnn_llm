@@ -1,0 +1,237 @@
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_patch_embed.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_patch_embed.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_patch_embed_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_patch_embed.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_patch_embed.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_patch_embed.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_patch_embed_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [196,588]f32
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [196,588]f32
+############# pass_level0
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 0
+fallback batch axis 233 for operand 1
+model inputshape = [196,588]f32
+FLOPS = 236.229M
+memory OPS = 919.088K
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_encoder.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_encoder.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_encoder_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_encoder.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_encoder.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_encoder.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_encoder_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [196,1024]f32,[196,128]f32,[196,128]f32
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [196,1024]f32,[196,128]f32,[196,128]f32
+############# pass_level0
+inline module = RMSNorm
+inline module = RMSNorm
+
+----------------
+
+inline module = RMSNorm
+
+----------------
+
+inline module = RMSNorm
+
+----------------
+
+inline module = RMSNorm
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 1
+fallback batch axis 233 for operand 2
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+unsqueeze batch dim 0 is not supported yet!
+model inputshape = [196,1024]f32,[196,128]f32,[196,128]f32
+FLOPS = 181.911G
+memory OPS = 1.025G
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_projector.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_projector.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_projector_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/vision_projector.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_projector.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_projector.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/vision_projector_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [196,1024]f32
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [196,1024]f32
+############# pass_level0
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 0
+fallback batch axis 233 for operand 1
+fallback batch axis 233 for operand 2
+fallback batch axis 233 for operand 3
+model inputshape = [196,1024]f32
+FLOPS = 2.471G
+memory OPS = 8.503M
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/embed.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/embed.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/embed_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/embed.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/embed.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/embed.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/embed_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [8]i64
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [8]i64
+############# pass_level0
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+force batch axis 233 for operand 0
+replace ncnn input torch.long type with torch.int
+model inputshape = [8]i64
+FLOPS = 0
+memory OPS = 32.776K
+pnnxparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/lm_head.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/lm_head.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/lm_head_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/_work/lm_head.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/lm_head.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/lm_head.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/penguin-vl-2b-ncnn-independent/lm_head_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,2048]f32
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+get inputshape from traced inputs
+inputshape = [1,2048]f32
+############# pass_level0
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 0
+fallback batch axis 233 for operand 1
+model inputshape = [1,2048]f32
+FLOPS = 622.33M
+memory OPS = 311.319M

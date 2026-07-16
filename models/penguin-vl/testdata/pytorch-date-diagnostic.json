@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "model": "tencent/Penguin-VL-2B",
+  "revision": "26ac2ceac1179ec3eda106cbb88e9eb909e68d4e",
+  "image": "models/penguin-vl/testdata/newspaper_top_square.png",
+  "image_sha256": "822e2c49b8f11461e1d7f3bba30a651877946d614374b8371ff7e224dcb1cd3f",
+  "prompt": "What is the date printed at the top? Answer with the date only.",
+  "min_tokens": 16,
+  "max_tokens": 196,
+  "max_new_tokens": 16,
+  "input_ids_shape": [
+    1,
+    224
+  ],
+  "pixel_values_shape": [
+    196,
+    588
+  ],
+  "grid_sizes": [
+    [
+      1,
+      14,
+      14
+    ]
+  ],
+  "output_token_ids": [
+    28427,
+    220,
+    19,
+    11,
+    220,
+    16,
+    22,
+    22,
+    21,
+    151645
+  ],
+  "text": "July 4, 1776",
+  "text_utf8_bytes": 12,
+  "text_sha256": "dbca1c010aca4b6408c7684a3dd17e7ac7b9d3720b770c09b7a9bcee04715983",
+  "torch_version": "2.11.0+cu130",
+  "transformers_version": "4.51.3",
+  "cuda_device": "NVIDIA RTX A5500 Laptop GPU",
+  "wall_seconds": 6.676860048999991,
+  "diagnostic_only": true,
+  "ncnn_observed_text": "1764",
+  "note": "Not a parity pass; retained to document pixel-interpolation sensitivity."
+}
