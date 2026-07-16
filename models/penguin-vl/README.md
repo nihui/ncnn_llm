@@ -10,6 +10,12 @@ The deployed `penguin_vl_main` executable depends on ncnn and the C++ standard
 library only. Python, PyTorch, Transformers and pnnx are conversion/reference
 dependencies and are not required at runtime.
 
+The converted runtime package is published at
+<https://huggingface.co/helloworldzzr/Penguin-VL-2B-ncnn>. All 15 files in
+`assets.json` were verified through anonymous Hub access against their recorded
+sizes and SHA-256 values at revision
+`37b77dbf2ca56b31e55f58c3c79627e09cf14809`.
+
 ## Fixed regression case
 
 - Source image: `assets/inputs/newspaper.png` from the official
