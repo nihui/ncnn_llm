@@ -1,0 +1,17 @@
+qwen3_tts_main.exe : [qwen3_tts_profile] runtime_construct_ms=463.190
+At line:2 char:151
++ ... +$env:Path; & 'C:\Users\zhangzherui\Desktop\Tencent\ncnn-builds\qwen3 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([qwen3_tts_prof...ruct_ms=463.190:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[qwen3_tts_profile] load_talker_ms=4778.301
+[qwen3_tts_profile] frontend_load_build_ms=618.345
+[qwen3_tts_profile] generate_codes_from_prompt frames=2 prefill_ms=221.778 codepred_total_ms=1026.213 codepred_body_ms=
+1005.431 codepred_head_ms=20.776 codepred_steps=30 talker_decode_ms=151.358 talker_decode_steps=1
+[qwen3_tts_profile] generate_codes_ms=1400.701
+[qwen3_tts_profile] codes_to_wav frames=2 codec_front_ms=1.612 speech_decoder_ms=24351.583 wav_samples=3840
+[qwen3_tts_profile] codes_to_wav_ms=24353.319
+[qwen3_tts_profile] total_ms=31687.560
+frontend prompt_len=21 text="Hello, welcome to Qwen text to speech." speaker=Ryan language=English
+generated frames=2 wav_samples=3840 sample_rate=24000 out=C:\Users\zhangzherui\Desktop\Tencent\ncnn-evidence\qwen3-tts\windows\ncnn-exact-2f.wav

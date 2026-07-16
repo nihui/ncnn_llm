@@ -1,0 +1,6 @@
+numpy
+safetensors
+torch==2.11.0
+torchaudio==2.11.0
+transformers==4.57.3
+qwen-tts @ git+https://github.com/QwenLM/Qwen3-TTS.git@022e286b98fbec7e1e916cb940cdf532cd9f488e

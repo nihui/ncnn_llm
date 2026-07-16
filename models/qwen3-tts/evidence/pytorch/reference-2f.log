@@ -1,0 +1,41 @@
+wsl.exe : /bin/sh: 1: sox: not found
+At line:2 char:64
++ ... erence-2f'; & wsl.exe /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (/bin/sh: 1: sox: not found:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+SoX could not be found!
+
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_V
+ERBOSITY=info` for more details.
+
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+
+generated_codes 2
+code_group_min [215, 117, 519, 1176, 350, 1543, 1636, 145, 883, 329, 293, 1347, 747, 344, 1008, 786]
+code_group_max [1995, 1782, 1114, 1723, 1443, 1573, 1751, 240, 1242, 455, 743, 1382, 1677, 2027, 1900, 803]
+{
+  "frames": 2,
+  "codes_shape": [
+    2,
+    16
+  ],
+  "wav_shape": [
+    3840
+  ],
+  "sample_rate": 24000,
+  "text": "Hello, welcome to Qwen text to speech.",
+  "language": "English",
+  "speaker": "Ryan",
+  "device": "cuda:0",
+  "prefix": "exact_2f"
+}

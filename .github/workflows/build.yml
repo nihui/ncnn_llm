@@ -1,118 +1,53 @@
-name: xmake-build
+name: cmake-build
 
 on:
   push:
-    branches: [ main, ci_test ]
-    tags: [ 'v*' ]
+    branches: [main, "infra/**", "model/**"]
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-    name: Build (${{ matrix.os }})
+  build-and-test:
+    name: ${{ matrix.os }} / CMake
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, windows-latest]
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup xmake
-      uses: xmake-io/github-action-setup-xmake@v1
-      with:
-        xmake-version: latest
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v6
 
-    - name: Cache xmake packages
-      uses: actions/cache@v4
-      id: xmake-cache
-      with:
-        path: ~/.xmake
-        key: xmake-${{ runner.os }}-${{ hashFiles('xmake.lua') }}
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure Project
-      run: xmake config -y -m release
+      - name: Configure
+        run: cmake --preset ci
 
-    - name: Build Project
-      run: xmake -y -v
+      - name: Build
+        run: cmake --build --preset ci --parallel 2
 
-    - name: Install to Distribution Directory
-      run: xmake install -o dist -y
+      - name: Test
+        run: ctest --preset ci
 
-    - name: Run Tests (Skipped for missing target)
-      shell: bash
-      run: |
-        echo "Skipping 'xmake run tests' as the target 'tests' is not defined."
+      - name: Install
+        run: cmake --install build/ci --prefix dist
 
-    - name: Package Binaries (Linux/macOS)
-      if: runner.os != 'Windows'
-      id: package_unix
-      run: |
-        if [ ! -d "dist" ]; then
-          echo "Error: dist directory not found. Did xmake install fail?"
-          exit 1
-        fi
-
-        echo "--- Debug: Contents of Dist Directory ---"
-        ls -lR dist
-        echo "-----------------------------------------"
-
-        ARCHIVE_NAME="ncnn_llm_${{ runner.os }}.zip"
-
-        cd dist
-        zip -r "../$ARCHIVE_NAME" .
-        cd ..
-
-        echo "archive_name=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
-
-    - name: Package Binaries (Windows)
-      if: runner.os == 'Windows'
-      id: package_windows
-      shell: powershell
-      run: |
-        if (-not (Test-Path "dist")) {
-            Write-Error "dist directory not found."
-            exit 1
-        }
-
-        Write-Host "--- Debug: Contents of Dist Directory ---"
-        Get-ChildItem -Recurse -Path dist | Format-Table Name, Length -AutoSize
-        Write-Host "-----------------------------------------"
-
-        $ARCHIVE_NAME = "ncnn_llm_Windows.zip"
-        
-        Compress-Archive -Path "dist\*" -DestinationPath $ARCHIVE_NAME -Force
-        
-        echo "archive_name=$ARCHIVE_NAME" >> $env:GITHUB_OUTPUT
-
-    - name: Upload Packaged Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
-        path: ${{ steps.package_unix.outputs.archive_name || steps.package_windows.outputs.archive_name }}
-        retention-days: 90
-
-  release:
-    name: Create GitHub Release
-    needs: [build]
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Download all platform artifacts
-        uses: actions/download-artifact@v4
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          path: artifacts 
-          
-      - name: Create Release and Upload Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          files: artifacts/**/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: cmake-${{ runner.os }}-logs
+          path: |
+            build/ci/Testing/Temporary/
+            build/ci/CMakeCache.txt
+          if-no-files-found: ignore
+          retention-days: 30

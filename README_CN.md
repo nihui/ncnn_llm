@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <img alt="Build" src="https://img.shields.io/badge/build-xmake-4c8eda">
+  <img alt="Build" src="https://img.shields.io/badge/build-CMake%20%7C%20xmake-4c8eda">
   <img alt="Backend" src="https://img.shields.io/badge/backend-ncnn-orange">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Android-lightgrey">
 </p>
@@ -69,7 +69,7 @@
 ### 2. 克隆仓库
 
 ```bash
-git clone https://github.com/futz12/ncnn_llm.git
+git clone https://github.com/nihui/ncnn_llm.git
 cd ncnn_llm
 ```
 
@@ -77,6 +77,15 @@ cd ncnn_llm
 
 ```bash
 xmake build
+```
+
+也可以使用可复现的 CMake preset；它会获取固定版本的依赖并运行跨平台
+单元测试与一致性工具测试：
+
+```bash
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
 ```
 
 只构建单个 target：

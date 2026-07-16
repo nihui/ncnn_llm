@@ -1,0 +1,18 @@
+platform=WSL-Ubuntu
+Linux DESKTOP-O4ENA9T 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+cmake version 3.28.3
+1.11.1
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+f2f29e41be164c788c36cc44bdbf2d0d4810477e
+13b6d5318c73be53bb386fa51e8067615d0eb7c1
+ninja: no work to do.
+Internal ctest changing into directory: /home/zhangzherui/builds/ncnn_llm-infra
+Test project /home/zhangzherui/builds/ncnn_llm-infra
+    Start 1: ncnn_llm_tests
+1/2 Test #1: ncnn_llm_tests ...................   Passed    0.01 sec
+    Start 2: ncnn_llm_tool_tests
+2/2 Test #2: ncnn_llm_tool_tests ..............   Passed    0.14 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.15 sec

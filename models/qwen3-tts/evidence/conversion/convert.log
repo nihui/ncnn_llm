@@ -1,0 +1,598 @@
+[resume] reference
+[resume] talker
+[resume] code predictor
++ /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm-qwen3-tts/models/qwen3-tts/export/export_qwen3_tts_decoder.py --model /home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice --codes /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/reference/talker_loop_25f_codes_ref.npy --out /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/decoder/speech_decoder_from_hidden_s325.pt --mode from-hidden --trace-seq-len 325 --device cuda:0 --dtype float32
+/bin/sh: 1: sox: not found
+SoX could not be found!
+
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+
+`loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.
+/mnt/c/Users/zhangzherui/Desktop/Tencent/official-model-forks/Qwen3-TTS/qwen_tts/core/tokenizer_12hz/modeling_qwen3_tts_tokenizer_v2.py:186: TracerWarning: Converting a tensor to a Python float might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  ideal_length = (math.ceil(n_frames) - 1) * self.stride + (self.kernel_size - self.padding)
+
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+
+saved /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/decoder/speech_decoder_from_hidden_s325.pt
+input_shape=(1, 325, 1024) dtype=torch.float32
+output_shape=(1, 1, 624000) dtype=torch.float32
++ /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx speech_decoder_from_hidden_s325.pt inputshape=[1,325,1024]f32 fp16=0
+pnnxparam = speech_decoder_from_hidden_s325.pnnx.param
+pnnxbin = speech_decoder_from_hidden_s325.pnnx.bin
+pnnxpy = speech_decoder_from_hidden_s325_pnnx.py
+pnnxonnx = speech_decoder_from_hidden_s325.pnnx.onnx
+ncnnparam = speech_decoder_from_hidden_s325.ncnn.param
+ncnnbin = speech_decoder_from_hidden_s325.ncnn.bin
+ncnnpy = speech_decoder_from_hidden_s325_ncnn.py
+fp16 = 0
+optlevel = 2
+device = cpu
+inputshape = [1,325,1024]f32
+inputshape2 =
+input =
+input2 =
+customop =
+moduleop =
+############# pass_level0
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalTransConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2ConvNeXtBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderAttention
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderResidualUnit
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderLayerScale
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderMlp
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRMSNorm
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRotatoryEmbedding
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerLayer
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerModel
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.SnakeBeta
+inline module = torch.nn.modules.linear.Identity
+inline module = transformers.activations.SiLUActivation
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalTransConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2ConvNeXtBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderAttention
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderResidualUnit
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderLayerScale
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderMlp
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRMSNorm
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRotatoryEmbedding
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerLayer
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerModel
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.SnakeBeta
+inline module = torch.nn.modules.linear.Identity
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2CausalTransConvNet
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2ConvNeXtBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderAttention
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderBlock
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderDecoderResidualUnit
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderLayerScale
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderMlp
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRMSNorm
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderRotatoryEmbedding
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerLayer
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.Qwen3TTSTokenizerV2DecoderTransformerModel
+inline module = qwen_tts.core.tokenizer_12hz.modeling_qwen3_tts_tokenizer_v2.SnakeBeta
+inline module = torch.nn.modules.linear.Identity
+inline module = transformers.activations.SiLUActivation
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+force batch axis 233 for operand 29
+force batch axis 233 for operand 37
+force batch axis 233 for operand 63
+force batch axis 233 for operand 71
+force batch axis 233 for operand 97
+force batch axis 233 for operand 105
+force batch axis 233 for operand 131
+force batch axis 233 for operand 139
+force batch axis 233 for operand 165
+force batch axis 233 for operand 173
+force batch axis 233 for operand 199
+force batch axis 233 for operand 207
+force batch axis 233 for operand 233
+force batch axis 233 for operand 241
+force batch axis 233 for operand 267
+force batch axis 233 for operand 275
+force batch axis 233 for operand 281
+force batch axis 233 for operand 293
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+binaryop broadcast across batch axis 233 and 0 is not supported
+model inputshape = [1,325,1024]f32
+FLOPS = 1.625T
+memory OPS = 5.907G
++ /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm-qwen3-tts/models/qwen3-tts/export/export_qwen3_tts_front_weights.py --safetensors /home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice/speech_tokenizer/model.safetensors --out-dir /home/zhangzherui/ncnn-models/qwen3-tts-0.6b-customvoice-ncnn-independent/front_weights
+/home/zhangzherui/ncnn-models/qwen3-tts-0.6b-customvoice-ncnn-independent/front_weights
++ /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm-qwen3-tts/models/qwen3-tts/export/export_qwen3_tts_frontend_nets.py --model /home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice --out-dir /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/frontend --pnnx /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx --device cuda:0
+/bin/sh: 1: sox: not found
+SoX could not be found!
+
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+
+
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+
+talker_text_embed: ref_shape=(7, 1024) pt=/home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/frontend/talker_text_embed.pt
+running: /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx talker_text_embed.pt inputshape=[7]i32 inputshape2=[97]i32 fp16=0
+talker_codec_embed: ref_shape=(7, 1024) pt=/home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice/frontend/talker_codec_embed.pt
+running: /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx talker_codec_embed.pt inputshape=[7]i32 inputshape2=[1]i32 fp16=0
++ /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm-qwen3-tts/models/qwen3-tts/export/export_qwen3_tts_tokenizer_txt.py --model /home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice --out /home/zhangzherui/ncnn-models/qwen3-tts-0.6b-customvoice-ncnn-independent/talker/tokenizer.txt
+wrote /home/zhangzherui/ncnn-models/qwen3-tts-0.6b-customvoice-ncnn-independent/talker/tokenizer.txt: vocab=151643 merges=151387 added=33
+{
+  "schema_version": 1,
+  "checkpoint": "/home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+  "pnnx": "/home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx",
+  "device": "cuda:0",
+  "test_case": {
+    "frames": 25,
+    "text": "Hello, welcome to Qwen text to speech.",
+    "language": "English",
+    "speaker": "Ryan"
+  },
+  "files": [
+    {
+      "path": "code_predictor/body/code_predictor_body_s02.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s03.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s04.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s05.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s06.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s07.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s08.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s09.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s10.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s11.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s12.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s13.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s14.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s15.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_s16.ncnn.param",
+      "size": 38581,
+      "sha256": "ef4e833cee7c9c032664735bd96c778082acc5083ed327ac1ad349db3b0846a9"
+    },
+    {
+      "path": "code_predictor/body/code_predictor_body_shared.ncnn.bin",
+      "size": 314623372,
+      "sha256": "ec144895aae2c9df166944407c65ea6a55abe2a3d9b38947717251f0bb410455"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_0.f32",
+      "size": 8388608,
+      "sha256": "07832c6ff003b134981a51a5eba4256403066c96cc556050e97a6a891f925673"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_1.f32",
+      "size": 8388608,
+      "sha256": "c4a9d3aab204a52fa8a7285fec50e95ea605b0b2ecba9f52ebc1eb1ddf7314f5"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_10.f32",
+      "size": 8388608,
+      "sha256": "89833f762fce2d797bb4e11f716ac80414af13707468292171576e45cfcc1dd2"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_11.f32",
+      "size": 8388608,
+      "sha256": "517db96534efaf22f812e7953098466cc3924d5a1c877c567435d2a4f07fc407"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_12.f32",
+      "size": 8388608,
+      "sha256": "b1e302040bc2f0618d223693cc2b459854e9cd7230c7e0c3e5296e2032428606"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_13.f32",
+      "size": 8388608,
+      "sha256": "08acd427fb5a0bf68d16937854646139884d8ced4f0180e3c69d68b5b0a3c7e1"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_14.f32",
+      "size": 8388608,
+      "sha256": "bdf481050d78fd0d2f786afd631188aab97d38228d5d2c3bc502bdb06d85ff22"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_2.f32",
+      "size": 8388608,
+      "sha256": "263ba85edac9ee2b93b861cef4631d5d1e6f503aa12da586de5077279eb06035"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_3.f32",
+      "size": 8388608,
+      "sha256": "06cff89d25f9c49298f8d03fa64e26909f958c63836f720df9c3796de5a45f54"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_4.f32",
+      "size": 8388608,
+      "sha256": "9b6073b5a9625fe19cffea231c1b7fbf597fa46663a15d443f76dbb9cbc21cdc"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_5.f32",
+      "size": 8388608,
+      "sha256": "c12e246a98718609ab43c84f1271edd8e4c54a66e6a6d9b4fb7ec9c93fbd177c"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_6.f32",
+      "size": 8388608,
+      "sha256": "2600b69f8a7c9c0ae0c42eddb47c3cdc260843adbadb6ccb65c3122c10be7798"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_7.f32",
+      "size": 8388608,
+      "sha256": "150a3200ce108e92616c403a5083ae7d6f32be3fe7c125d62954575c70267e96"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_8.f32",
+      "size": 8388608,
+      "sha256": "f9f058630835259b7a74d72067cbdab4487864a2f35413e30e16204bd6b2721f"
+    },
+    {
+      "path": "code_predictor/weights/codec_embedding_9.f32",
+      "size": 8388608,
+      "sha256": "5bb6dfc40a842148a84de47a997fbde5c2452995e79614f3bdd0125d3f97c189"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_0.f32",
+      "size": 8388608,
+      "sha256": "e909f3325ae58236a25103a54558c7be0fdc95818521a40c91c8fba91231bb9f"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_1.f32",
+      "size": 8388608,
+      "sha256": "fd6de9d1fd72ed398a136bc1dd21046345d92a2056ab907ca3aaa29fd7687bac"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_10.f32",
+      "size": 8388608,
+      "sha256": "f96ac081d8d0b962b98b60f9fca091713ee7520f032db2135ec33300ebfabe6a"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_11.f32",
+      "size": 8388608,
+      "sha256": "48a731a1c85c958d36fc4ba358a5ddfabbadf13a10325d0cae39352fc5f7a9cb"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_12.f32",
+      "size": 8388608,
+      "sha256": "1b20d15ec853be6f6eda4212c6715065a3f9ff43313ae1c2be9d8b722f641497"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_13.f32",
+      "size": 8388608,
+      "sha256": "9e8bbe5d0902e47d9f4818ca416d0e3fa54d09bd604ef046bb3d039d9ffe107f"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_14.f32",
+      "size": 8388608,
+      "sha256": "cb20ff8a97da798efe1afd2e6d60f84b63899405eb2fd963d4c25af9da2379dc"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_2.f32",
+      "size": 8388608,
+      "sha256": "f280163853f3d91399b1b0dde34fa26bbbf99efd48ada62cba31c7e88fd91923"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_3.f32",
+      "size": 8388608,
+      "sha256": "7bc0489ec524c53e3d6d75d22bd2ea6c02e93567644e3885da2b996b28aa247a"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_4.f32",
+      "size": 8388608,
+      "sha256": "582a2afb1b1336348450c7dc18a23239c960900cfda317294b94dfbf5ab58749"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_5.f32",
+      "size": 8388608,
+      "sha256": "7c4671bd5e1bc7934e07d4f21ef619349439a944dbe007028dc59b404ee575d9"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_6.f32",
+      "size": 8388608,
+      "sha256": "fb4253d9873805d613595a08e41f3bad1f43d6f230684b6ff9c5706eec97843e"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_7.f32",
+      "size": 8388608,
+      "sha256": "9c01320b049e013f56d3798baa2126d578bf6173bddce80da3841840cd6d01db"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_8.f32",
+      "size": 8388608,
+      "sha256": "286918f0985fabb67178891d37ba931c1321f814c996d4763db47a07f4a6a093"
+    },
+    {
+      "path": "code_predictor/weights/lm_head_9.f32",
+      "size": 8388608,
+      "sha256": "f75e0d12e4d147261efbf56b8881dfa5db8389772385304c8e45eef8a8b4cf9c"
+    },
+    {
+      "path": "code_predictor/weights/talker_codec_embedding.f32",
+      "size": 12582912,
+      "sha256": "19f6a65dbcab0749f1fbacb1bcfcce23c4cf24e0ed1dd13fd40814e76e509866"
+    },
+    {
+      "path": "decoder/speech_decoder_from_hidden_s325.ncnn.bin",
+      "size": 415803648,
+      "sha256": "8b5aa19a9db129e844f5e4d908483151e2b044bdc29d59f2398ac528628dfaa1"
+    },
+    {
+      "path": "decoder/speech_decoder_from_hidden_s325.ncnn.param",
+      "size": 44855,
+      "sha256": "516ebe03b3e9d60f5c8ed7d75c18af97da70cf3f760252bb4e0996d270b20d17"
+    },
+    {
+      "path": "front_weights/first_embedding.f32.bin",
+      "size": 2097152,
+      "sha256": "93baa86da5a795e9af705879be56353a3cb6fc8c0318dfd105d5b6998bc10ca3"
+    },
+    {
+      "path": "front_weights/first_output_proj_weight.f32.bin",
+      "size": 524288,
+      "sha256": "32a1189380f408b601fa7e61767dcb6d409684d0e22efabc2cc59f4b0faf50e1"
+    },
+    {
+      "path": "front_weights/manifest.json",
+      "size": 2767,
+      "sha256": "81c350a839413ae012fe76d9924138582d91269387ff0bb453c8acabc16c9ecc"
+    },
+    {
+      "path": "front_weights/pre_conv_bias.f32.bin",
+      "size": 4096,
+      "sha256": "1a29283082d0f44854de3eadf5928ab7c53d7f61a6b1c15188314e20fb28f925"
+    },
+    {
+      "path": "front_weights/pre_conv_weight.f32.bin",
+      "size": 6291456,
+      "sha256": "c3a4fb8efb17d98f60686f236880d9b8314b143fa29c4e7ea1aada6e33515513"
+    },
+    {
+      "path": "front_weights/rest_embedding_0.f32.bin",
+      "size": 2097152,
+      "sha256": "87f17cb4a49a8e848517eecc8bad31c86718c0debf00ed14db85fdebbd6902ec"
+    },
+    {
+      "path": "front_weights/rest_embedding_1.f32.bin",
+      "size": 2097152,
+      "sha256": "d5ee75573575b3128fad2f6467c9ebcf33ec63f1134878d559ab850f0916923f"
+    },
+    {
+      "path": "front_weights/rest_embedding_10.f32.bin",
+      "size": 2097152,
+      "sha256": "42edd09811c2d4997c998b0fd2d2b8c185c9c380efabd9e64a19e252b26fb5ee"
+    },
+    {
+      "path": "front_weights/rest_embedding_11.f32.bin",
+      "size": 2097152,
+      "sha256": "02df793d6c6cf74a85a18585af0412326186acf7f65a5d39802ec4ae17a20f6d"
+    },
+    {
+      "path": "front_weights/rest_embedding_12.f32.bin",
+      "size": 2097152,
+      "sha256": "9975eb77ca58dbbef72796de4e055e6f6f1e88b47c0f721907bc8cacd94e6ddb"
+    },
+    {
+      "path": "front_weights/rest_embedding_13.f32.bin",
+      "size": 2097152,
+      "sha256": "7e3deb18a8eed142eb66bf95fffdb34b8e6da429b29d58d0384081d185222ec4"
+    },
+    {
+      "path": "front_weights/rest_embedding_14.f32.bin",
+      "size": 2097152,
+      "sha256": "918a0c2b1899e700b62f6cf8c93f5d6c15a5828f1923567273bb05f2586344fb"
+    },
+    {
+      "path": "front_weights/rest_embedding_2.f32.bin",
+      "size": 2097152,
+      "sha256": "fe60193e5dfadc2a30df51b4d3868086268142c3cca41522947d7a09463b16ce"
+    },
+    {
+      "path": "front_weights/rest_embedding_3.f32.bin",
+      "size": 2097152,
+      "sha256": "c8569c89a0f16990968fc2685d050b5ccbf411c8ef28a7e0fd70039f56fba9ea"
+    },
+    {
+      "path": "front_weights/rest_embedding_4.f32.bin",
+      "size": 2097152,
+      "sha256": "36adae62f8def1f7866e7d05ef4a0de8a2f835380c72ab20fe08d11298f6a9a5"
+    },
+    {
+      "path": "front_weights/rest_embedding_5.f32.bin",
+      "size": 2097152,
+      "sha256": "7dbd363dad2e0a5609a8b993fb80f9fce706741496bc21f81c747ad9843e99c6"
+    },
+    {
+      "path": "front_weights/rest_embedding_6.f32.bin",
+      "size": 2097152,
+      "sha256": "fd1a81840de4047a5a103132d426dc25464d71668dbafc47fe6ee5fb2819343c"
+    },
+    {
+      "path": "front_weights/rest_embedding_7.f32.bin",
+      "size": 2097152,
+      "sha256": "f09a6f6d56932ff59c52f14f935792f6ff76ef2c9b9716a2a2c81a57a148d813"
+    },
+    {
+      "path": "front_weights/rest_embedding_8.f32.bin",
+      "size": 2097152,
+      "sha256": "6a78ab7400f00d8c1bc3dce72142138dd9242aecd3cdfbd75828e43fd5dae21a"
+    },
+    {
+      "path": "front_weights/rest_embedding_9.f32.bin",
+      "size": 2097152,
+      "sha256": "84dc9c06c959973eb391689483cdd2048ab3cacc627c684cb14da994efa2379e"
+    },
+    {
+      "path": "front_weights/rest_output_proj_weight.f32.bin",
+      "size": 524288,
+      "sha256": "73a5fe097a8e66fffb9acefd6ec21ec4ee367fa9c405698937d817cf72177453"
+    },
+    {
+      "path": "model.json",
+      "size": 1001,
+      "sha256": "e7fc01339e8138b4406f202c185306ae87d25eab8f815c3415b458fab32c2b26"
+    },
+    {
+      "path": "talker/talker.ncnn.bin",
+      "size": 1774453524,
+      "sha256": "40ba93082cb346e6cb7f5f4b94d23fb3a56da7ddfe56d71e47581adc74ec8727"
+    },
+    {
+      "path": "talker/talker_codec_embed.ncnn.bin",
+      "size": 12582916,
+      "sha256": "2539aa1eab8aefd4e7b2bb9061663c6038870b4904dcbb32766fff36c28993a6"
+    },
+    {
+      "path": "talker/talker_codec_embed.ncnn.param",
+      "size": 161,
+      "sha256": "36cfd695843966d9fc22fa0f2d175316402cab05738f01894c76ba9b00aaf453"
+    },
+    {
+      "path": "talker/talker_decode_s1_kv.ncnn.param",
+      "size": 71660,
+      "sha256": "a2e104dc98819e3b2b27deaf41a221a84988df09135abdbfd999d6f4e0b8df8a"
+    },
+    {
+      "path": "talker/talker_prefill_dynamic_kv.ncnn.param",
+      "size": 61210,
+      "sha256": "80a23cd5ea7fa1bdbdac7cc04f1512d991b799eee5e0927919b567fdf55c5f30"
+    },
+    {
+      "path": "talker/talker_text_embed.ncnn.bin",
+      "size": 1269837844,
+      "sha256": "f5179bd8e105cec864d38aa5370f7ad9004236fe910c4bc7b51159a28e183f6b"
+    },
+    {
+      "path": "talker/talker_text_embed.ncnn.param",
+      "size": 425,
+      "sha256": "a305165895eeeb0345a7c6783b834dcfdd7f8def59a67d0b8079b803fe9b7c71"
+    },
+    {
+      "path": "talker/tokenizer.txt",
+      "size": 3193691,
+      "sha256": "44a8055327b08da6e3b8b112d0ea0c9b03674e6caa6391b5a8fc82f6222d2c9e"
+    },
+    {
+      "path": "talker/tts_pad_embed_f32.bin",
+      "size": 4096,
+      "sha256": "a68537b6beb379a80f3a7eaacfc7afbb90e1a34fd6154be4603bd7e228e72d7f"
+    }
+  ]
+}
+	Command being timed: "/home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python models/qwen3-tts/convert.py --checkpoint /home/zhangzherui/hf-models/Qwen3-TTS-12Hz-0.6B-CustomVoice --output /home/zhangzherui/ncnn-models/qwen3-tts-0.6b-customvoice-ncnn-independent --work /home/zhangzherui/ncnn-work/qwen3-tts-0.6b-customvoice --pnnx /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx --device cuda:0 --frames 25 --language English --speaker Ryan --resume"
+	User time (seconds): 151.80
+	System time (seconds): 166.24
+	Percent of CPU this job got: 159%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:18.93
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 23880312
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 39098
+	Minor (reclaiming a frame) page faults: 15773316
+	Voluntary context switches: 307291
+	Involuntary context switches: 13105
+	Swaps: 0
+	File system inputs: 20980256
+	File system outputs: 16788664
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
