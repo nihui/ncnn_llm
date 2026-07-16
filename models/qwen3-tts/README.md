@@ -10,7 +10,7 @@ inference does not import Python, PyTorch, or Transformers.
 - Revision: `85e237c12c027371202489a0ec509ded67b5e4b5`
 - License: Apache-2.0
 - Per-file sizes and SHA-256 values: `checkpoint.json`
-- Converted package: `https://huggingface.co/March-77/Qwen3-TTS-0.6B-ncnn`
+- Converted package: `https://huggingface.co/helloworldzzr/Qwen3-TTS-0.6B-ncnn`
 - Download manifest: `assets.json`
 
 The converter produces a self-contained package with the talker prefill/decode
