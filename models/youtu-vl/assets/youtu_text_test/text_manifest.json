@@ -1,0 +1,14 @@
+{
+  "model": {
+    "hf_model_id": "tencent/Youtu-VL-4B-Instruct",
+    "local_dir": "assets/hf/Youtu-VL-4B-Instruct",
+    "revision": "8d30a0e49662a1d628a472b12df264dbcd768753"
+  },
+  "samples": [
+    {
+      "id": "en_short",
+      "purpose": "Short English reference for embedding, decoder and LM-head export.",
+      "text": "Briefly introduce the role of ncnn in on-device AI inference."
+    }
+  ]
+}

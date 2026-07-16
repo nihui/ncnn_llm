@@ -1,0 +1,841 @@
+[load] processor: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+[load] model: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:02<00:04,  2.15s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:05<00:02,  2.58s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:05<00:00,  1.57s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:05<00:00,  1.80s/it]
+[load] moving model to cuda:0
+[torch] dynamic encoder + merger image_embeds max_abs_vs_dump=2.6233272552490234
+[trace] /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pt
+[trace] /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pt
+[pnnx] /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pt inputshape=[432,768]f32,[432,1,72]f32,[432,1,72]f32,[1,432,432]f32,[1,432,432]f32 pnnxparam=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.param pnnxbin=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.bin pnnxpy=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic_pnnx.py pnnxonnx=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.onnx ncnnparam=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.param ncnnbin=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.bin ncnnpy=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic_ncnn.py fp16=1
+[pnnx] returncode=0 produced=7
+[pnnx:stderr]
+pnnxparam = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic_ncnn.py
+fp16 = 1
+optlevel = 2
+device = cpu
+inputshape = [432,768]f32,[432,1,72]f32,[432,1,72]f32,[1,432,432]f32,[1,432,432]f32
+inputshape2 = 
+input = 
+input2 = 
+customop = 
+moduleop = 
+############# pass_level0
+inline module = transformers.activations.GELUTanh
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2MLP
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2VisionEmbeddingsWoPos
+inline module = transformers.activations.GELUTanh
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2MLP
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2VisionEmbeddingsWoPos
+
+----------------
+
+inline module = transformers.activations.GELUTanh
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2MLP
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_siglip2.Siglip2VisionEmbeddingsWoPos
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 1
+fallback batch axis 233 for operand 2
+fallback batch axis 233 for operand 3
+fallback batch axis 233 for operand 4
+fallback batch axis 233 for operand 8
+fallback batch axis 233 for operand 10
+fallback batch axis 233 for operand 12
+fallback batch axis 233 for operand 14
+fallback batch axis 233 for operand 13
+fallback batch axis 233 for operand 16
+fallback batch axis 233 for operand 19
+fallback batch axis 233 for operand 18
+fallback batch axis 233 for operand 21
+fallback batch axis 233 for operand 23
+fallback batch axis 233 for operand 24
+fallback batch axis 233 for operand 25
+fallback batch axis 233 for operand 26
+fallback batch axis 233 for operand 28
+fallback batch axis 233 for operand 29
+fallback batch axis 233 for operand 30
+fallback batch axis 233 for operand 41
+fallback batch axis 233 for operand 43
+fallback batch axis 233 for operand 45
+fallback batch axis 233 for operand 47
+fallback batch axis 233 for operand 46
+fallback batch axis 233 for operand 49
+fallback batch axis 233 for operand 52
+fallback batch axis 233 for operand 51
+fallback batch axis 233 for operand 54
+fallback batch axis 233 for operand 56
+fallback batch axis 233 for operand 57
+fallback batch axis 233 for operand 58
+fallback batch axis 233 for operand 59
+fallback batch axis 233 for operand 61
+fallback batch axis 233 for operand 62
+fallback batch axis 233 for operand 63
+fallback batch axis 233 for operand 74
+fallback batch axis 233 for operand 76
+fallback batch axis 233 for operand 78
+fallback batch axis 233 for operand 80
+fallback batch axis 233 for operand 79
+fallback batch axis 233 for operand 82
+fallback batch axis 233 for operand 85
+fallback batch axis 233 for operand 84
+fallback batch axis 233 for operand 87
+fallback batch axis 233 for operand 89
+fallback batch axis 233 for operand 90
+fallback batch axis 233 for operand 91
+fallback batch axis 233 for operand 92
+fallback batch axis 233 for operand 94
+fallback batch axis 233 for operand 95
+fallback batch axis 233 for operand 96
+fallback batch axis 233 for operand 107
+fallback batch axis 233 for operand 109
+fallback batch axis 233 for operand 111
+fallback batch axis 233 for operand 113
+fallback batch axis 233 for operand 112
+fallback batch axis 233 for operand 115
+fallback batch axis 233 for operand 118
+fallback batch axis 233 for operand 117
+fallback batch axis 233 for operand 120
+fallback batch axis 233 for operand 122
+fallback batch axis 233 for operand 123
+fallback batch axis 233 for operand 124
+fallback batch axis 233 for operand 125
+fallback batch axis 233 for operand 127
+fallback batch axis 233 for operand 128
+fallback batch axis 233 for operand 129
+fallback batch axis 233 for operand 140
+fallback batch axis 233 for operand 142
+fallback batch axis 233 for operand 144
+fallback batch axis 233 for operand 146
+fallback batch axis 233 for operand 145
+fallback batch axis 233 for operand 148
+fallback batch axis 233 for operand 151
+fallback batch axis 233 for operand 150
+fallback batch axis 233 for operand 153
+fallback batch axis 233 for operand 155
+fallback batch axis 233 for operand 156
+fallback batch axis 233 for operand 157
+fallback batch axis 233 for operand 158
+fallback batch axis 233 for operand 160
+fallback batch axis 233 for operand 161
+fallback batch axis 233 for operand 162
+fallback batch axis 233 for operand 173
+fallback batch axis 233 for operand 175
+fallback batch axis 233 for operand 177
+fallback batch axis 233 for operand 179
+fallback batch axis 233 for operand 178
+fallback batch axis 233 for operand 181
+fallback batch axis 233 for operand 184
+fallback batch axis 233 for operand 183
+fallback batch axis 233 for operand 186
+fallback batch axis 233 for operand 188
+fallback batch axis 233 for operand 189
+fallback batch axis 233 for operand 190
+fallback batch axis 233 for operand 191
+fallback batch axis 233 for operand 193
+fallback batch axis 233 for operand 194
+fallback batch axis 233 for operand 195
+fallback batch axis 233 for operand 206
+fallback batch axis 233 for operand 208
+fallback batch axis 233 for operand 210
+fallback batch axis 233 for operand 212
+fallback batch axis 233 for operand 211
+fallback batch axis 233 for operand 214
+fallback batch axis 233 for operand 217
+fallback batch axis 233 for operand 216
+fallback batch axis 233 for operand 219
+fallback batch axis 233 for operand 221
+fallback batch axis 233 for operand 222
+fallback batch axis 233 for operand 223
+fallback batch axis 233 for operand 224
+fallback batch axis 233 for operand 226
+fallback batch axis 233 for operand 227
+fallback batch axis 233 for operand 228
+fallback batch axis 233 for operand 239
+fallback batch axis 233 for operand 241
+fallback batch axis 233 for operand 243
+fallback batch axis 233 for operand 245
+fallback batch axis 233 for operand 244
+fallback batch axis 233 for operand 247
+fallback batch axis 233 for operand 250
+fallback batch axis 233 for operand 249
+fallback batch axis 233 for operand 252
+fallback batch axis 233 for operand 254
+fallback batch axis 233 for operand 255
+fallback batch axis 233 for operand 256
+fallback batch axis 233 for operand 257
+fallback batch axis 233 for operand 259
+fallback batch axis 233 for operand 260
+fallback batch axis 233 for operand 261
+fallback batch axis 233 for operand 272
+fallback batch axis 233 for operand 274
+fallback batch axis 233 for operand 276
+fallback batch axis 233 for operand 278
+fallback batch axis 233 for operand 277
+fallback batch axis 233 for operand 280
+fallback batch axis 233 for operand 283
+fallback batch axis 233 for operand 282
+fallback batch axis 233 for operand 285
+fallback batch axis 233 for operand 287
+fallback batch axis 233 for operand 288
+fallback batch axis 233 for operand 289
+fallback batch axis 233 for operand 290
+fallback batch axis 233 for operand 292
+fallback batch axis 233 for operand 293
+fallback batch axis 233 for operand 294
+fallback batch axis 233 for operand 305
+fallback batch axis 233 for operand 307
+fallback batch axis 233 for operand 309
+fallback batch axis 233 for operand 311
+fallback batch axis 233 for operand 310
+fallback batch axis 233 for operand 313
+fallback batch axis 233 for operand 316
+fallback batch axis 233 for operand 315
+fallback batch axis 233 for operand 318
+fallback batch axis 233 for operand 320
+fallback batch axis 233 for operand 321
+fallback batch axis 233 for operand 322
+fallback batch axis 233 for operand 323
+fallback batch axis 233 for operand 325
+fallback batch axis 233 for operand 326
+fallback batch axis 233 for operand 327
+fallback batch axis 233 for operand 338
+fallback batch axis 233 for operand 340
+fallback batch axis 233 for operand 342
+fallback batch axis 233 for operand 344
+fallback batch axis 233 for operand 343
+fallback batch axis 233 for operand 346
+fallback batch axis 233 for operand 349
+fallback batch axis 233 for operand 348
+fallback batch axis 233 for operand 351
+fallback batch axis 233 for operand 353
+fallback batch axis 233 for operand 354
+fallback batch axis 233 for operand 355
+fallback batch axis 233 for operand 356
+fallback batch axis 233 for operand 358
+fallback batch axis 233 for operand 359
+fallback batch axis 233 for operand 360
+fallback batch axis 233 for operand 371
+fallback batch axis 233 for operand 373
+fallback batch axis 233 for operand 375
+fallback batch axis 233 for operand 377
+fallback batch axis 233 for operand 376
+fallback batch axis 233 for operand 379
+fallback batch axis 233 for operand 382
+fallback batch axis 233 for operand 381
+fallback batch axis 233 for operand 384
+fallback batch axis 233 for operand 386
+fallback batch axis 233 for operand 387
+fallback batch axis 233 for operand 388
+fallback batch axis 233 for operand 389
+fallback batch axis 233 for operand 391
+fallback batch axis 233 for operand 392
+fallback batch axis 233 for operand 393
+fallback batch axis 233 for operand 404
+fallback batch axis 233 for operand 406
+fallback batch axis 233 for operand 408
+fallback batch axis 233 for operand 410
+fallback batch axis 233 for operand 409
+fallback batch axis 233 for operand 412
+fallback batch axis 233 for operand 415
+fallback batch axis 233 for operand 414
+fallback batch axis 233 for operand 417
+fallback batch axis 233 for operand 419
+fallback batch axis 233 for operand 420
+fallback batch axis 233 for operand 421
+fallback batch axis 233 for operand 422
+fallback batch axis 233 for operand 424
+fallback batch axis 233 for operand 425
+fallback batch axis 233 for operand 426
+fallback batch axis 233 for operand 437
+fallback batch axis 233 for operand 439
+fallback batch axis 233 for operand 441
+fallback batch axis 233 for operand 443
+fallback batch axis 233 for operand 442
+fallback batch axis 233 for operand 445
+fallback batch axis 233 for operand 448
+fallback batch axis 233 for operand 447
+fallback batch axis 233 for operand 450
+fallback batch axis 233 for operand 452
+fallback batch axis 233 for operand 453
+fallback batch axis 233 for operand 454
+fallback batch axis 233 for operand 455
+fallback batch axis 233 for operand 457
+fallback batch axis 233 for operand 458
+fallback batch axis 233 for operand 459
+fallback batch axis 233 for operand 470
+fallback batch axis 233 for operand 472
+fallback batch axis 233 for operand 474
+fallback batch axis 233 for operand 476
+fallback batch axis 233 for operand 475
+fallback batch axis 233 for operand 478
+fallback batch axis 233 for operand 481
+fallback batch axis 233 for operand 480
+fallback batch axis 233 for operand 483
+fallback batch axis 233 for operand 485
+fallback batch axis 233 for operand 486
+fallback batch axis 233 for operand 487
+fallback batch axis 233 for operand 488
+fallback batch axis 233 for operand 490
+fallback batch axis 233 for operand 491
+fallback batch axis 233 for operand 492
+fallback batch axis 233 for operand 503
+fallback batch axis 233 for operand 505
+fallback batch axis 233 for operand 507
+fallback batch axis 233 for operand 509
+fallback batch axis 233 for operand 508
+fallback batch axis 233 for operand 511
+fallback batch axis 233 for operand 514
+fallback batch axis 233 for operand 513
+fallback batch axis 233 for operand 516
+fallback batch axis 233 for operand 518
+fallback batch axis 233 for operand 519
+fallback batch axis 233 for operand 520
+fallback batch axis 233 for operand 521
+fallback batch axis 233 for operand 523
+fallback batch axis 233 for operand 524
+fallback batch axis 233 for operand 525
+fallback batch axis 233 for operand 536
+fallback batch axis 233 for operand 538
+fallback batch axis 233 for operand 540
+fallback batch axis 233 for operand 542
+fallback batch axis 233 for operand 541
+fallback batch axis 233 for operand 544
+fallback batch axis 233 for operand 547
+fallback batch axis 233 for operand 546
+fallback batch axis 233 for operand 549
+fallback batch axis 233 for operand 551
+fallback batch axis 233 for operand 552
+fallback batch axis 233 for operand 553
+fallback batch axis 233 for operand 554
+fallback batch axis 233 for operand 556
+fallback batch axis 233 for operand 557
+fallback batch axis 233 for operand 558
+fallback batch axis 233 for operand 569
+fallback batch axis 233 for operand 571
+fallback batch axis 233 for operand 573
+fallback batch axis 233 for operand 575
+fallback batch axis 233 for operand 574
+fallback batch axis 233 for operand 577
+fallback batch axis 233 for operand 580
+fallback batch axis 233 for operand 579
+fallback batch axis 233 for operand 582
+fallback batch axis 233 for operand 584
+fallback batch axis 233 for operand 585
+fallback batch axis 233 for operand 586
+fallback batch axis 233 for operand 587
+fallback batch axis 233 for operand 589
+fallback batch axis 233 for operand 590
+fallback batch axis 233 for operand 591
+fallback batch axis 233 for operand 602
+fallback batch axis 233 for operand 604
+fallback batch axis 233 for operand 606
+fallback batch axis 233 for operand 608
+fallback batch axis 233 for operand 607
+fallback batch axis 233 for operand 610
+fallback batch axis 233 for operand 613
+fallback batch axis 233 for operand 612
+fallback batch axis 233 for operand 615
+fallback batch axis 233 for operand 617
+fallback batch axis 233 for operand 618
+fallback batch axis 233 for operand 619
+fallback batch axis 233 for operand 620
+fallback batch axis 233 for operand 622
+fallback batch axis 233 for operand 623
+fallback batch axis 233 for operand 624
+fallback batch axis 233 for operand 635
+fallback batch axis 233 for operand 637
+fallback batch axis 233 for operand 639
+fallback batch axis 233 for operand 641
+fallback batch axis 233 for operand 640
+fallback batch axis 233 for operand 643
+fallback batch axis 233 for operand 646
+fallback batch axis 233 for operand 645
+fallback batch axis 233 for operand 648
+fallback batch axis 233 for operand 650
+fallback batch axis 233 for operand 651
+fallback batch axis 233 for operand 652
+fallback batch axis 233 for operand 653
+fallback batch axis 233 for operand 655
+fallback batch axis 233 for operand 656
+fallback batch axis 233 for operand 657
+fallback batch axis 233 for operand 668
+fallback batch axis 233 for operand 670
+fallback batch axis 233 for operand 672
+fallback batch axis 233 for operand 674
+fallback batch axis 233 for operand 673
+fallback batch axis 233 for operand 676
+fallback batch axis 233 for operand 679
+fallback batch axis 233 for operand 678
+fallback batch axis 233 for operand 681
+fallback batch axis 233 for operand 683
+fallback batch axis 233 for operand 684
+fallback batch axis 233 for operand 685
+fallback batch axis 233 for operand 686
+fallback batch axis 233 for operand 688
+fallback batch axis 233 for operand 689
+fallback batch axis 233 for operand 690
+fallback batch axis 233 for operand 701
+fallback batch axis 233 for operand 703
+fallback batch axis 233 for operand 705
+fallback batch axis 233 for operand 707
+fallback batch axis 233 for operand 706
+fallback batch axis 233 for operand 709
+fallback batch axis 233 for operand 712
+fallback batch axis 233 for operand 711
+fallback batch axis 233 for operand 714
+fallback batch axis 233 for operand 716
+fallback batch axis 233 for operand 717
+fallback batch axis 233 for operand 718
+fallback batch axis 233 for operand 719
+fallback batch axis 233 for operand 721
+fallback batch axis 233 for operand 722
+fallback batch axis 233 for operand 723
+fallback batch axis 233 for operand 734
+fallback batch axis 233 for operand 736
+fallback batch axis 233 for operand 738
+fallback batch axis 233 for operand 740
+fallback batch axis 233 for operand 739
+fallback batch axis 233 for operand 742
+fallback batch axis 233 for operand 745
+fallback batch axis 233 for operand 744
+fallback batch axis 233 for operand 747
+fallback batch axis 233 for operand 749
+fallback batch axis 233 for operand 750
+fallback batch axis 233 for operand 751
+fallback batch axis 233 for operand 752
+fallback batch axis 233 for operand 754
+fallback batch axis 233 for operand 755
+fallback batch axis 233 for operand 756
+fallback batch axis 233 for operand 767
+fallback batch axis 233 for operand 769
+fallback batch axis 233 for operand 771
+fallback batch axis 233 for operand 773
+fallback batch axis 233 for operand 772
+fallback batch axis 233 for operand 775
+fallback batch axis 233 for operand 778
+fallback batch axis 233 for operand 777
+fallback batch axis 233 for operand 780
+fallback batch axis 233 for operand 782
+fallback batch axis 233 for operand 783
+fallback batch axis 233 for operand 784
+fallback batch axis 233 for operand 785
+fallback batch axis 233 for operand 787
+fallback batch axis 233 for operand 788
+fallback batch axis 233 for operand 789
+fallback batch axis 233 for operand 800
+fallback batch axis 233 for operand 802
+fallback batch axis 233 for operand 804
+fallback batch axis 233 for operand 806
+fallback batch axis 233 for operand 805
+fallback batch axis 233 for operand 808
+fallback batch axis 233 for operand 811
+fallback batch axis 233 for operand 810
+fallback batch axis 233 for operand 813
+fallback batch axis 233 for operand 815
+fallback batch axis 233 for operand 816
+fallback batch axis 233 for operand 817
+fallback batch axis 233 for operand 818
+fallback batch axis 233 for operand 820
+fallback batch axis 233 for operand 821
+fallback batch axis 233 for operand 822
+fallback batch axis 233 for operand 833
+fallback batch axis 233 for operand 835
+fallback batch axis 233 for operand 837
+fallback batch axis 233 for operand 839
+fallback batch axis 233 for operand 838
+fallback batch axis 233 for operand 841
+fallback batch axis 233 for operand 844
+fallback batch axis 233 for operand 843
+fallback batch axis 233 for operand 846
+fallback batch axis 233 for operand 848
+fallback batch axis 233 for operand 849
+fallback batch axis 233 for operand 850
+fallback batch axis 233 for operand 851
+fallback batch axis 233 for operand 853
+fallback batch axis 233 for operand 854
+fallback batch axis 233 for operand 855
+fallback batch axis 233 for operand 866
+fallback batch axis 233 for operand 868
+fallback batch axis 233 for operand 870
+fallback batch axis 233 for operand 872
+fallback batch axis 233 for operand 871
+fallback batch axis 233 for operand 874
+fallback batch axis 233 for operand 877
+fallback batch axis 233 for operand 876
+fallback batch axis 233 for operand 879
+fallback batch axis 233 for operand 881
+fallback batch axis 233 for operand 882
+fallback batch axis 233 for operand 883
+fallback batch axis 233 for operand 884
+fallback batch axis 233 for operand 886
+fallback batch axis 233 for operand 887
+fallback batch axis 233 for operand 888
+fallback batch axis 233 for operand pnnx_expr_1866_neg(14)
+fallback batch axis 233 for operand pnnx_expr_1859_mul(16,2)
+fallback batch axis 233 for operand pnnx_expr_1859_mul(8,1)
+fallback batch axis 233 for operand pnnx_expr_1859_add(mul(8,1),mul(16,2))
+fallback batch axis 233 for operand pnnx_expr_1848_neg(19)
+fallback batch axis 233 for operand pnnx_expr_1841_mul(21,2)
+fallback batch axis 233 for operand pnnx_expr_1841_mul(10,1)
+fallback batch axis 233 for operand pnnx_expr_1841_add(mul(10,1),mul(21,2))
+fallback batch axis 233 for operand pnnx_expr_1829_div(26,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1829_add(div(26,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1797_neg(47)
+fallback batch axis 233 for operand pnnx_expr_1790_mul(49,2)
+fallback batch axis 233 for operand pnnx_expr_1790_mul(41,1)
+fallback batch axis 233 for operand pnnx_expr_1790_add(mul(41,1),mul(49,2))
+fallback batch axis 233 for operand pnnx_expr_1779_neg(52)
+fallback batch axis 233 for operand pnnx_expr_1772_mul(54,2)
+fallback batch axis 233 for operand pnnx_expr_1772_mul(43,1)
+fallback batch axis 233 for operand pnnx_expr_1772_add(mul(43,1),mul(54,2))
+fallback batch axis 233 for operand pnnx_expr_1759_div(59,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1759_add(div(59,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1727_neg(80)
+fallback batch axis 233 for operand pnnx_expr_1720_mul(82,2)
+fallback batch axis 233 for operand pnnx_expr_1720_mul(74,1)
+fallback batch axis 233 for operand pnnx_expr_1720_add(mul(74,1),mul(82,2))
+fallback batch axis 233 for operand pnnx_expr_1709_neg(85)
+fallback batch axis 233 for operand pnnx_expr_1702_mul(87,2)
+fallback batch axis 233 for operand pnnx_expr_1702_mul(76,1)
+fallback batch axis 233 for operand pnnx_expr_1702_add(mul(76,1),mul(87,2))
+fallback batch axis 233 for operand pnnx_expr_1689_div(92,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1689_add(div(92,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1657_neg(113)
+fallback batch axis 233 for operand pnnx_expr_1650_mul(115,2)
+fallback batch axis 233 for operand pnnx_expr_1650_mul(107,1)
+fallback batch axis 233 for operand pnnx_expr_1650_add(mul(107,1),mul(115,2))
+fallback batch axis 233 for operand pnnx_expr_1639_neg(118)
+fallback batch axis 233 for operand pnnx_expr_1632_mul(120,2)
+fallback batch axis 233 for operand pnnx_expr_1632_mul(109,1)
+fallback batch axis 233 for operand pnnx_expr_1632_add(mul(109,1),mul(120,2))
+fallback batch axis 233 for operand pnnx_expr_1619_div(125,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1619_add(div(125,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1587_neg(146)
+fallback batch axis 233 for operand pnnx_expr_1580_mul(148,2)
+fallback batch axis 233 for operand pnnx_expr_1580_mul(140,1)
+fallback batch axis 233 for operand pnnx_expr_1580_add(mul(140,1),mul(148,2))
+fallback batch axis 233 for operand pnnx_expr_1569_neg(151)
+fallback batch axis 233 for operand pnnx_expr_1562_mul(153,2)
+fallback batch axis 233 for operand pnnx_expr_1562_mul(142,1)
+fallback batch axis 233 for operand pnnx_expr_1562_add(mul(142,1),mul(153,2))
+fallback batch axis 233 for operand pnnx_expr_1549_div(158,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1549_add(div(158,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1517_neg(179)
+fallback batch axis 233 for operand pnnx_expr_1510_mul(181,2)
+fallback batch axis 233 for operand pnnx_expr_1510_mul(173,1)
+fallback batch axis 233 for operand pnnx_expr_1510_add(mul(173,1),mul(181,2))
+fallback batch axis 233 for operand pnnx_expr_1499_neg(184)
+fallback batch axis 233 for operand pnnx_expr_1492_mul(186,2)
+fallback batch axis 233 for operand pnnx_expr_1492_mul(175,1)
+fallback batch axis 233 for operand pnnx_expr_1492_add(mul(175,1),mul(186,2))
+fallback batch axis 233 for operand pnnx_expr_1479_div(191,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1479_add(div(191,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1447_neg(212)
+fallback batch axis 233 for operand pnnx_expr_1440_mul(214,2)
+fallback batch axis 233 for operand pnnx_expr_1440_mul(206,1)
+fallback batch axis 233 for operand pnnx_expr_1440_add(mul(206,1),mul(214,2))
+fallback batch axis 233 for operand pnnx_expr_1429_neg(217)
+fallback batch axis 233 for operand pnnx_expr_1422_mul(219,2)
+fallback batch axis 233 for operand pnnx_expr_1422_mul(208,1)
+fallback batch axis 233 for operand pnnx_expr_1422_add(mul(208,1),mul(219,2))
+fallback batch axis 233 for operand pnnx_expr_1409_div(224,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1409_add(div(224,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1377_neg(245)
+fallback batch axis 233 for operand pnnx_expr_1370_mul(247,2)
+fallback batch axis 233 for operand pnnx_expr_1370_mul(239,1)
+fallback batch axis 233 for operand pnnx_expr_1370_add(mul(239,1),mul(247,2))
+fallback batch axis 233 for operand pnnx_expr_1359_neg(250)
+fallback batch axis 233 for operand pnnx_expr_1352_mul(252,2)
+fallback batch axis 233 for operand pnnx_expr_1352_mul(241,1)
+fallback batch axis 233 for operand pnnx_expr_1352_add(mul(241,1),mul(252,2))
+fallback batch axis 233 for operand pnnx_expr_1339_div(257,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1339_add(div(257,8.48528099),4)
+fallback batch axis 233 for operand pnnx_expr_1307_neg(278)
+fallback batch axis 233 for operand pnnx_expr_1300_mul(280,2)
+fallback batch axis 233 for operand pnnx_expr_1300_mul(272,1)
+fallback batch axis 233 for operand pnnx_expr_1300_add(mul(272,1),mul(280,2))
+fallback batch axis 233 for operand pnnx_expr_1289_neg(283)
+fallback batch axis 233 for operand pnnx_expr_1282_mul(285,2)
+fallback batch axis 233 for operand pnnx_expr_1282_mul(274,1)
+fallback batch axis 233 for operand pnnx_expr_1282_add(mul(274,1),mul(285,2))
+fallback batch axis 233 for operand pnnx_expr_1269_div(290,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1269_add(div(290,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1237_neg(311)
+fallback batch axis 233 for operand pnnx_expr_1230_mul(313,2)
+fallback batch axis 233 for operand pnnx_expr_1230_mul(305,1)
+fallback batch axis 233 for operand pnnx_expr_1230_add(mul(305,1),mul(313,2))
+fallback batch axis 233 for operand pnnx_expr_1219_neg(316)
+fallback batch axis 233 for operand pnnx_expr_1212_mul(318,2)
+fallback batch axis 233 for operand pnnx_expr_1212_mul(307,1)
+fallback batch axis 233 for operand pnnx_expr_1212_add(mul(307,1),mul(318,2))
+fallback batch axis 233 for operand pnnx_expr_1199_div(323,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1199_add(div(323,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1167_neg(344)
+fallback batch axis 233 for operand pnnx_expr_1160_mul(346,2)
+fallback batch axis 233 for operand pnnx_expr_1160_mul(338,1)
+fallback batch axis 233 for operand pnnx_expr_1160_add(mul(338,1),mul(346,2))
+fallback batch axis 233 for operand pnnx_expr_1149_neg(349)
+fallback batch axis 233 for operand pnnx_expr_1142_mul(351,2)
+fallback batch axis 233 for operand pnnx_expr_1142_mul(340,1)
+fallback batch axis 233 for operand pnnx_expr_1142_add(mul(340,1),mul(351,2))
+fallback batch axis 233 for operand pnnx_expr_1129_div(356,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1129_add(div(356,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1097_neg(377)
+fallback batch axis 233 for operand pnnx_expr_1090_mul(379,2)
+fallback batch axis 233 for operand pnnx_expr_1090_mul(371,1)
+fallback batch axis 233 for operand pnnx_expr_1090_add(mul(371,1),mul(379,2))
+fallback batch axis 233 for operand pnnx_expr_1079_neg(382)
+fallback batch axis 233 for operand pnnx_expr_1072_mul(384,2)
+fallback batch axis 233 for operand pnnx_expr_1072_mul(373,1)
+fallback batch axis 233 for operand pnnx_expr_1072_add(mul(373,1),mul(384,2))
+fallback batch axis 233 for operand pnnx_expr_1059_div(389,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_1059_add(div(389,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_1027_neg(410)
+fallback batch axis 233 for operand pnnx_expr_1020_mul(412,2)
+fallback batch axis 233 for operand pnnx_expr_1020_mul(404,1)
+fallback batch axis 233 for operand pnnx_expr_1020_add(mul(404,1),mul(412,2))
+fallback batch axis 233 for operand pnnx_expr_1009_neg(415)
+fallback batch axis 233 for operand pnnx_expr_1002_mul(417,2)
+fallback batch axis 233 for operand pnnx_expr_1002_mul(406,1)
+fallback batch axis 233 for operand pnnx_expr_1002_add(mul(406,1),mul(417,2))
+fallback batch axis 233 for operand pnnx_expr_989_div(422,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_989_add(div(422,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_957_neg(443)
+fallback batch axis 233 for operand pnnx_expr_950_mul(445,2)
+fallback batch axis 233 for operand pnnx_expr_950_mul(437,1)
+fallback batch axis 233 for operand pnnx_expr_950_add(mul(437,1),mul(445,2))
+fallback batch axis 233 for operand pnnx_expr_939_neg(448)
+fallback batch axis 233 for operand pnnx_expr_932_mul(450,2)
+fallback batch axis 233 for operand pnnx_expr_932_mul(439,1)
+fallback batch axis 233 for operand pnnx_expr_932_add(mul(439,1),mul(450,2))
+fallback batch axis 233 for operand pnnx_expr_919_div(455,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_919_add(div(455,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_887_neg(476)
+fallback batch axis 233 for operand pnnx_expr_880_mul(478,2)
+fallback batch axis 233 for operand pnnx_expr_880_mul(470,1)
+fallback batch axis 233 for operand pnnx_expr_880_add(mul(470,1),mul(478,2))
+fallback batch axis 233 for operand pnnx_expr_869_neg(481)
+fallback batch axis 233 for operand pnnx_expr_862_mul(483,2)
+fallback batch axis 233 for operand pnnx_expr_862_mul(472,1)
+fallback batch axis 233 for operand pnnx_expr_862_add(mul(472,1),mul(483,2))
+fallback batch axis 233 for operand pnnx_expr_849_div(488,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_849_add(div(488,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_817_neg(509)
+fallback batch axis 233 for operand pnnx_expr_810_mul(511,2)
+fallback batch axis 233 for operand pnnx_expr_810_mul(503,1)
+fallback batch axis 233 for operand pnnx_expr_810_add(mul(503,1),mul(511,2))
+fallback batch axis 233 for operand pnnx_expr_799_neg(514)
+fallback batch axis 233 for operand pnnx_expr_792_mul(516,2)
+fallback batch axis 233 for operand pnnx_expr_792_mul(505,1)
+fallback batch axis 233 for operand pnnx_expr_792_add(mul(505,1),mul(516,2))
+fallback batch axis 233 for operand pnnx_expr_779_div(521,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_779_add(div(521,8.48528099),4)
+fallback batch axis 233 for operand pnnx_expr_747_neg(542)
+fallback batch axis 233 for operand pnnx_expr_740_mul(544,2)
+fallback batch axis 233 for operand pnnx_expr_740_mul(536,1)
+fallback batch axis 233 for operand pnnx_expr_740_add(mul(536,1),mul(544,2))
+fallback batch axis 233 for operand pnnx_expr_729_neg(547)
+fallback batch axis 233 for operand pnnx_expr_722_mul(549,2)
+fallback batch axis 233 for operand pnnx_expr_722_mul(538,1)
+fallback batch axis 233 for operand pnnx_expr_722_add(mul(538,1),mul(549,2))
+fallback batch axis 233 for operand pnnx_expr_709_div(554,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_709_add(div(554,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_677_neg(575)
+fallback batch axis 233 for operand pnnx_expr_670_mul(577,2)
+fallback batch axis 233 for operand pnnx_expr_670_mul(569,1)
+fallback batch axis 233 for operand pnnx_expr_670_add(mul(569,1),mul(577,2))
+fallback batch axis 233 for operand pnnx_expr_659_neg(580)
+fallback batch axis 233 for operand pnnx_expr_652_mul(582,2)
+fallback batch axis 233 for operand pnnx_expr_652_mul(571,1)
+fallback batch axis 233 for operand pnnx_expr_652_add(mul(571,1),mul(582,2))
+fallback batch axis 233 for operand pnnx_expr_639_div(587,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_639_add(div(587,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_607_neg(608)
+fallback batch axis 233 for operand pnnx_expr_600_mul(610,2)
+fallback batch axis 233 for operand pnnx_expr_600_mul(602,1)
+fallback batch axis 233 for operand pnnx_expr_600_add(mul(602,1),mul(610,2))
+fallback batch axis 233 for operand pnnx_expr_589_neg(613)
+fallback batch axis 233 for operand pnnx_expr_582_mul(615,2)
+fallback batch axis 233 for operand pnnx_expr_582_mul(604,1)
+fallback batch axis 233 for operand pnnx_expr_582_add(mul(604,1),mul(615,2))
+fallback batch axis 233 for operand pnnx_expr_569_div(620,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_569_add(div(620,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_537_neg(641)
+fallback batch axis 233 for operand pnnx_expr_530_mul(643,2)
+fallback batch axis 233 for operand pnnx_expr_530_mul(635,1)
+fallback batch axis 233 for operand pnnx_expr_530_add(mul(635,1),mul(643,2))
+fallback batch axis 233 for operand pnnx_expr_519_neg(646)
+fallback batch axis 233 for operand pnnx_expr_512_mul(648,2)
+fallback batch axis 233 for operand pnnx_expr_512_mul(637,1)
+fallback batch axis 233 for operand pnnx_expr_512_add(mul(637,1),mul(648,2))
+fallback batch axis 233 for operand pnnx_expr_499_div(653,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_499_add(div(653,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_467_neg(674)
+fallback batch axis 233 for operand pnnx_expr_460_mul(676,2)
+fallback batch axis 233 for operand pnnx_expr_460_mul(668,1)
+fallback batch axis 233 for operand pnnx_expr_460_add(mul(668,1),mul(676,2))
+fallback batch axis 233 for operand pnnx_expr_449_neg(679)
+fallback batch axis 233 for operand pnnx_expr_442_mul(681,2)
+fallback batch axis 233 for operand pnnx_expr_442_mul(670,1)
+fallback batch axis 233 for operand pnnx_expr_442_add(mul(670,1),mul(681,2))
+fallback batch axis 233 for operand pnnx_expr_429_div(686,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_429_add(div(686,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_397_neg(707)
+fallback batch axis 233 for operand pnnx_expr_390_mul(709,2)
+fallback batch axis 233 for operand pnnx_expr_390_mul(701,1)
+fallback batch axis 233 for operand pnnx_expr_390_add(mul(701,1),mul(709,2))
+fallback batch axis 233 for operand pnnx_expr_379_neg(712)
+fallback batch axis 233 for operand pnnx_expr_372_mul(714,2)
+fallback batch axis 233 for operand pnnx_expr_372_mul(703,1)
+fallback batch axis 233 for operand pnnx_expr_372_add(mul(703,1),mul(714,2))
+fallback batch axis 233 for operand pnnx_expr_359_div(719,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_359_add(div(719,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_327_neg(740)
+fallback batch axis 233 for operand pnnx_expr_320_mul(742,2)
+fallback batch axis 233 for operand pnnx_expr_320_mul(734,1)
+fallback batch axis 233 for operand pnnx_expr_320_add(mul(734,1),mul(742,2))
+fallback batch axis 233 for operand pnnx_expr_309_neg(745)
+fallback batch axis 233 for operand pnnx_expr_302_mul(747,2)
+fallback batch axis 233 for operand pnnx_expr_302_mul(736,1)
+fallback batch axis 233 for operand pnnx_expr_302_add(mul(736,1),mul(747,2))
+fallback batch axis 233 for operand pnnx_expr_289_div(752,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_289_add(div(752,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_257_neg(773)
+fallback batch axis 233 for operand pnnx_expr_250_mul(775,2)
+fallback batch axis 233 for operand pnnx_expr_250_mul(767,1)
+fallback batch axis 233 for operand pnnx_expr_250_add(mul(767,1),mul(775,2))
+fallback batch axis 233 for operand pnnx_expr_239_neg(778)
+fallback batch axis 233 for operand pnnx_expr_232_mul(780,2)
+fallback batch axis 233 for operand pnnx_expr_232_mul(769,1)
+fallback batch axis 233 for operand pnnx_expr_232_add(mul(769,1),mul(780,2))
+fallback batch axis 233 for operand pnnx_expr_219_div(785,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_219_add(div(785,8.48528099),4)
+fallback batch axis 233 for operand pnnx_expr_187_neg(806)
+fallback batch axis 233 for operand pnnx_expr_180_mul(808,2)
+fallback batch axis 233 for operand pnnx_expr_180_mul(800,1)
+fallback batch axis 233 for operand pnnx_expr_180_add(mul(800,1),mul(808,2))
+fallback batch axis 233 for operand pnnx_expr_169_neg(811)
+fallback batch axis 233 for operand pnnx_expr_162_mul(813,2)
+fallback batch axis 233 for operand pnnx_expr_162_mul(802,1)
+fallback batch axis 233 for operand pnnx_expr_162_add(mul(802,1),mul(813,2))
+fallback batch axis 233 for operand pnnx_expr_149_div(818,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_149_add(div(818,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_117_neg(839)
+fallback batch axis 233 for operand pnnx_expr_110_mul(841,2)
+fallback batch axis 233 for operand pnnx_expr_110_mul(833,1)
+fallback batch axis 233 for operand pnnx_expr_110_add(mul(833,1),mul(841,2))
+fallback batch axis 233 for operand pnnx_expr_99_neg(844)
+fallback batch axis 233 for operand pnnx_expr_92_mul(846,2)
+fallback batch axis 233 for operand pnnx_expr_92_mul(835,1)
+fallback batch axis 233 for operand pnnx_expr_92_add(mul(835,1),mul(846,2))
+fallback batch axis 233 for operand pnnx_expr_79_div(851,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_79_add(div(851,8.48528099),3)
+fallback batch axis 233 for operand pnnx_expr_47_neg(872)
+fallback batch axis 233 for operand pnnx_expr_40_mul(874,2)
+fallback batch axis 233 for operand pnnx_expr_40_mul(866,1)
+fallback batch axis 233 for operand pnnx_expr_40_add(mul(866,1),mul(874,2))
+fallback batch axis 233 for operand pnnx_expr_29_neg(877)
+fallback batch axis 233 for operand pnnx_expr_22_mul(879,2)
+fallback batch axis 233 for operand pnnx_expr_22_mul(868,1)
+fallback batch axis 233 for operand pnnx_expr_22_add(mul(868,1),mul(879,2))
+fallback batch axis 233 for operand pnnx_expr_9_div(884,8.48528099)
+fallback batch axis 233 for operand pnnx_expr_9_add(div(884,8.48528099),4)
+model inputshape = [432,768]f32,[432,1,72]f32,[432,1,72]f32,[1,432,432]f32,[1,432,432]f32
+FLOPS = 380.695G
+memory OPS = 1.59G
+[patch] removed Tensor.to layers: 0
+[patch] inserted helper layers: 0
+[patch] fixed cache concat axes: 271
+[patch] replaced aten::addcmul layers: 0
+[patch] wrote: /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.dynamic.patched.param
+[patch] removed Tensor.to layers: 0
+[patch] inserted helper layers: 0
+[patch] fixed cache concat axes: 0
+[patch] replaced aten::addcmul layers: 0
+[patch] wrote: /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.dynamic.seq.patched.param
+[patch] removed Tensor.to layers: 0
+[patch] inserted helper layers: 0
+[patch] fixed cache concat axes: 3
+[patch] replaced aten::addcmul layers: 0
+[patch] wrote: /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.dynamic.patched.param
+
+[pnnx] /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pt inputshape=[432,1152]f32 pnnxparam=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.param pnnxbin=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.bin pnnxpy=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic_pnnx.py pnnxonnx=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.onnx ncnnparam=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.param ncnnbin=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.bin ncnnpy=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic_ncnn.py fp16=1
+[pnnx:post_merger] returncode=0 produced=7
+[pnnx:post_merger:stderr]
+pnnxparam = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.param
+pnnxbin = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.bin
+pnnxpy = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic_pnnx.py
+pnnxonnx = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.pnnx.onnx
+ncnnparam = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.param
+ncnnbin = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.bin
+ncnnpy = /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic_ncnn.py
+fp16 = 1
+optlevel = 2
+device = cpu
+inputshape = [432,1152]f32
+inputshape2 = 
+input = 
+input2 = 
+customop = 
+moduleop = 
+############# pass_level0
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_youtu_vl.VLPatchMerger
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_youtu_vl.YoutuRMSNorm
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_youtu_vl.VLPatchMerger
+inline module = transformers_modules.Youtu_hyphen_VL_hyphen_4B_hyphen_Instruct.modeling_youtu_vl.YoutuRMSNorm
+
+----------------
+
+############# pass_level1
+############# pass_level2
+############# pass_level3
+############# pass_level4
+############# pass_level5
+############# pass_ncnn
+fallback batch axis 233 for operand 3
+fallback batch axis 233 for operand 4
+fallback batch axis 233 for operand 5
+fallback batch axis 233 for operand 6
+model inputshape = [432,1152]f32
+FLOPS = 7.148G
+memory OPS = 37.796M
+
+[patch] /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/export/patch_ncnn_param.py --dynamic-seq-len 432 /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.param /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.ncnn.dynamic.patched.param
+[patch] /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/export/patch_ncnn_param.py --dynamic-seq-len 432 /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.param /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.dynamic.seq.patched.param
+[patch] /home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/export/patch_ncnn_param.py --dynamic-seq-len 108 /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.dynamic.seq.patched.param /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_post_merger_dynamic.ncnn.dynamic.patched.param
+[write] /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision/youtu_vl_siglip2_encoder_dynamic.manifest.json
+	Command being timed: "/home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/export/youtu_vl_vision_dynamic_export.py --manifest /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/assets/youtu_vl_test/image_manifest.json --model /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct --input-npz /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-dumps/coco_cats_describe.npz --output-dir /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/vision --precision fp16 --device cuda:0 --device-map none --attn-implementation eager --trace --check-trace --run-pnnx --pnnx /home/zhangzherui/.venvs/hunyuan-ocr/bin/pnnx --patch-param"
+	User time (seconds): 99.75
+	System time (seconds): 63.37
+	Percent of CPU this job got: 157%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:43.59
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 23455056
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 57584
+	Minor (reclaiming a frame) page faults: 9573756
+	Voluntary context switches: 69058
+	Involuntary context switches: 2038
+	Swaps: 0
+	File system inputs: 23113152
+	File system outputs: 10442168
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

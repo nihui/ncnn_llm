@@ -1,0 +1,14 @@
+[data] sample=en_short npz=/home/zhangzherui/ncnn-work/youtu-vl-4b/text-dumps/en_short.npz
+[load] decoder param=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/text/youtu_decoder_full_manual_kv_sdpa_ncnn.ncnn.patched.param
+[load] decoder bin=/home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent/models/text/youtu_decoder_full_manual_kv_sdpa_ncnn.ncnn.bin
+[decoder] hidden=[1, 1, 2560] cache_layers=40
+[PASS] cache.layer00.key: shape=[32, 34, 192] max_abs=0.0452719 mean_abs=5.95812e-05 rms=0.000979653
+[PASS] cache.layer00.value: shape=[32, 34, 128] max_abs=0.000203222 mean_abs=6.73889e-07 rms=5.34288e-06
+[PASS] cache.layer01.key: shape=[32, 34, 192] max_abs=0.0202732 mean_abs=4.83442e-05 rms=0.000657558
+[PASS] cache.layer01.value: shape=[32, 34, 128] max_abs=0.000283441 mean_abs=1.43445e-06 rms=1.06469e-05
+[PASS] cache_all max_abs=0.0599163 worst=layer36_value
+[PASS] head.final_hidden_state: shape=[1, 1, 2560] max_abs=0.0704184 mean_abs=0.014715 rms=0.0184359
+[PASS] head.logits_step0: shape=[1, 283386] max_abs=0.192526 mean_abs=0.0187296 rms=0.0264646
+[PASS] head.logits_step0.top1 actual=[[124869]] expected=[[124869]]
+[FAIL] head.logits_step0.top10_id_set actual=[[124869, 3458, 11079, 58753, 8171, 124845, 7608, 82575, 7529, 66]] expected=[[124869, 3458, 11079, 58753, 8171, 124845, 82575, 7608, 7529, 123097]]
+[info] head.logits_step0.top10_values actual=[[20.270736694335938, 18.69151496887207, 15.532346725463867, 14.594884872436523, 14.196486473083496, 13.452435493469238, 12.925146102905273, 12.898537635803223, 12.58073902130127, 12.512444496154785]] expected=[[20.25, 18.75, 15.5, 14.5625, 14.125, 13.4375, 12.9375, 12.875, 12.5625, 12.5625]]

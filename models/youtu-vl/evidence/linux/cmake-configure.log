@@ -1,0 +1,11 @@
+-- CMAKE_INSTALL_PREFIX = /usr/local
+-- NCNN_VERSION_STRING = 1.0.20260716
+CMake Warning at /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn/CMakeLists.txt:724 (message):
+  The compiler does not support avx vnni int16 extension.  NCNN_AVXVNNIINT16
+  will be OFF.
+
+
+-- Target arch: x86 64bit
+-- Configuring done (5.3s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/zhangzherui/ncnn-build/youtu-linux

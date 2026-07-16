@@ -1,0 +1,21 @@
+{
+  "model": {
+    "hf_model_id": "tencent/Youtu-VL-4B-Instruct",
+    "local_dir": "assets/hf/Youtu-VL-4B-Instruct",
+    "revision": "8d30a0e49662a1d628a472b12df264dbcd768753"
+  },
+  "images": [
+    {
+      "id": "coco_cats",
+      "filename": "../../testdata/coco_cats.jpg",
+      "url": "",
+      "sha256": "dea9e7ef97386345f7cff32f9055da4982da5471c48d575146c796ab4563b04e",
+      "prompts": [
+        {
+          "id": "describe",
+          "text": "Describe this image in one sentence."
+        }
+      ]
+    }
+  ]
+}

@@ -35,8 +35,9 @@ else()
 endif()
 
 find_package(nlohmann_json CONFIG QUIET)
+find_package(ZLIB QUIET)
 
-if(NCNN_LLM_FETCH_DEPS AND (NOT TARGET ncnn OR NOT TARGET nlohmann_json::nlohmann_json))
+if(NCNN_LLM_FETCH_DEPS AND (NOT TARGET ncnn OR NOT TARGET nlohmann_json::nlohmann_json OR NOT TARGET ZLIB::ZLIB))
     include(FetchContent)
 
     if(NOT TARGET ncnn)
@@ -55,8 +56,25 @@ if(NCNN_LLM_FETCH_DEPS AND (NOT TARGET ncnn OR NOT TARGET nlohmann_json::nlohman
             nlohmann_json
             URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
             URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         )
         FetchContent_MakeAvailable(nlohmann_json)
+    endif()
+
+    if(NOT TARGET ZLIB::ZLIB)
+        set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+        FetchContent_Declare(
+            zlib
+            URL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
+            URL_HASH SHA256=9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        )
+        FetchContent_MakeAvailable(zlib)
+        if(TARGET zlibstatic)
+            add_library(ZLIB::ZLIB ALIAS zlibstatic)
+        elseif(TARGET zlib)
+            add_library(ZLIB::ZLIB ALIAS zlib)
+        endif()
     endif()
 endif()
 
@@ -86,18 +104,44 @@ add_library(ncnn_llm STATIC
     src/ncnn_text_runtime.cpp
     src/nllb_600m.cpp
     src/sampling.cpp
+    src/youtu/youtu_app.cpp
+    src/youtu/youtu_cli.cpp
+    src/youtu/youtu_generation.cpp
+    src/youtu/youtu_model_paths.cpp
+    src/youtu/youtu_runner_common.cpp
+    src/youtu/youtu_tokenizer.cpp
+    src/youtu/youtu_vision.cpp
     src/utils/gdr.cpp
     src/utils/image_utils.cpp
     src/utils/prompt.cpp
     src/utils/rope_embed.cpp
     src/utils/vision_rope.cpp
 )
-target_include_directories(ncnn_llm PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(ncnn_llm PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/youtu"
+)
+if(NCNN_SOURCE_DIR AND EXISTS "${NCNN_SOURCE_DIR}/src/stb_image.h")
+    target_include_directories(ncnn_llm PRIVATE "${NCNN_SOURCE_DIR}/src")
+else()
+    find_path(NCNN_LLM_STB_IMAGE_INCLUDE_DIR stb_image.h)
+    if(NOT NCNN_LLM_STB_IMAGE_INCLUDE_DIR)
+        message(FATAL_ERROR "stb_image.h is required for Youtu-VL image decoding")
+    endif()
+    target_include_directories(ncnn_llm PRIVATE "${NCNN_LLM_STB_IMAGE_INCLUDE_DIR}")
+endif()
+
+if(NOT TARGET ZLIB::ZLIB)
+    message(FATAL_ERROR
+        "zlib was not found. Install its CMake package or configure "
+        "with -DNCNN_LLM_FETCH_DEPS=ON.")
+endif()
 target_link_libraries(ncnn_llm
     PUBLIC
         ncnn
         ncnn_tokenizer
         nlohmann_json::nlohmann_json
+        ZLIB::ZLIB
 )
 
 if(NCNN_LLM_BUILD_EXAMPLES)
@@ -120,6 +164,9 @@ if(NCNN_LLM_BUILD_EXAMPLES)
     target_include_directories(asr_main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/examples")
     target_link_libraries(asr_main PRIVATE ncnn_llm)
 
+    add_executable(youtu_vl_main examples/youtu_vl_main.cpp)
+    target_link_libraries(youtu_vl_main PRIVATE ncnn_llm)
+
     add_executable(nllb_main examples/nllb_main.cpp)
     target_link_libraries(nllb_main PRIVATE ncnn_llm)
 
@@ -139,6 +186,7 @@ if(NCNN_LLM_BUILD_EXAMPLES)
         target_link_libraries(llm_ncnn_run PRIVATE shell32)
         target_link_libraries(ocr_main PRIVATE shell32)
         target_link_libraries(asr_main PRIVATE shell32)
+        target_link_libraries(youtu_vl_main PRIVATE shell32)
     endif()
 endif()
 
@@ -149,7 +197,7 @@ install(TARGETS ncnn_llm ncnn_tokenizer
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 if(NCNN_LLM_BUILD_EXAMPLES)
-    install(TARGETS llm_ncnn_run ocr_main asr_main nllb_main embedding_main clip_main
+    install(TARGETS llm_ncnn_run ocr_main asr_main youtu_vl_main nllb_main embedding_main clip_main
         bytelevelbpe_main unigram_main
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
@@ -165,6 +213,10 @@ if(NCNN_LLM_BUILD_TESTS)
         set_tests_properties(ncnn_llm_tests PROPERTIES
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         )
+
+        if(NCNN_LLM_BUILD_EXAMPLES)
+            add_test(NAME youtu_vl_help COMMAND youtu_vl_main --help)
+        endif()
 
         find_package(Python3 COMPONENTS Interpreter QUIET)
         if(Python3_Interpreter_FOUND)

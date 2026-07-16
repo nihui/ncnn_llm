@@ -1,0 +1,31 @@
+[load] processor: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+[load] model: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:11<00:22, 11.13s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:27<00:14, 14.10s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:31<00:00,  9.66s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:31<00:00, 10.56s/it]
+[load] moving model to cuda:0
+[sample] coco_cats:describe
+[write] /home/zhangzherui/ncnn-evidence/youtu/reference/coco_cats_describe.npz
+[text] 'Two tabby'
+[write] /home/zhangzherui/ncnn-evidence/youtu/reference/metadata.json
+	Command being timed: "/home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python models/youtu-vl/export/youtu_vl_reference.py --manifest /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/assets/youtu_vl_test/image_manifest.json --model /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct --output-dir /home/zhangzherui/ncnn-evidence/youtu/reference --max-new-tokens 3 --dtype fp32 --device-map none --device cuda:0 --attn-implementation eager --max-image-patches 512 --capture-vision-last-hidden"
+	User time (seconds): 144.43
+	System time (seconds): 218.33
+	Percent of CPU this job got: 313%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:55.66
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 23673520
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 24554
+	Minor (reclaiming a frame) page faults: 6133071
+	Voluntary context switches: 107853
+	Involuntary context switches: 2982
+	Swaps: 0
+	File system inputs: 11204352
+	File system outputs: 13208
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

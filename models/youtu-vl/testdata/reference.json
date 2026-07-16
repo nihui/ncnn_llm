@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "checkpoint": "tencent/Youtu-VL-4B-Instruct@8d30a0e49662a1d628a472b12df264dbcd768753",
+  "image": "coco_cats.jpg",
+  "image_sha256": "dea9e7ef97386345f7cff32f9055da4982da5471c48d575146c796ab4563b04e",
+  "prompt": "Describe this image in one sentence.",
+  "pytorch": {
+    "prompt_tokens": 136,
+    "image_tokens": 108,
+    "generated_ids": [10392, 5240, 1896],
+    "text": "Two tabby"
+  },
+  "ncnn_linux": {
+    "generated_ids": [10392, 5240, 1896],
+    "text": "Two tabby",
+    "vision_max_abs": 0.0132732,
+    "vision_mean_abs": 0.0000959808,
+    "prefill_mode": "tokenwise_decode_graph"
+  },
+  "ncnn_windows": {
+    "generated_ids": [10392, 5240, 1896],
+    "text": "Two tabby",
+    "vision_max_abs": 0.0132427,
+    "vision_mean_abs": 0.0000960921,
+    "prefill_mode": "tokenwise_decode_graph",
+    "exit_code": 0
+  }
+}

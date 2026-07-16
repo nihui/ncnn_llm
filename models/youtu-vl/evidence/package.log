@@ -1,0 +1,6 @@
+[command] python models/youtu-vl/package_runtime.py --conversion-output /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent --output /home/zhangzherui/ncnn-models/Youtu-VL-4B-Instruct-ncnn --refresh
+[package] /home/zhangzherui/ncnn-models/Youtu-VL-4B-Instruct-ncnn
+[files] 22
+[bytes] 12177556868
+[manifest_created_at] 2026-07-16T14:26:35.044808+00:00
+[manifest_verify] PASS (22 entries, 12177556868 bytes; every size and SHA-256 recomputed)

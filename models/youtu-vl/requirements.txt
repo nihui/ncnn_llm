@@ -1,0 +1,12 @@
+accelerate
+huggingface_hub
+ncnn
+numpy
+opencv-python-headless
+pillow
+pnnx
+safetensors
+tokenizers
+torch
+torchvision
+transformers==4.57.1
