@@ -11,12 +11,15 @@ decoder graph.
 - Source: `tencent/Youtu-VL-4B-Instruct`
 - Revision: `8d30a0e49662a1d628a472b12df264dbcd768753`
 - Source hashes: [`checkpoint.json`](checkpoint.json)
-- Runtime package (pending upload and public verification):
-  <https://huggingface.co/March-77/Youtu-VL-4B-Instruct-ncnn>
+- Runtime package (public; anonymously verified at revision
+  `d6aa66ab46c1db97607ad1401ba5e67f381848b8`):
+  <https://huggingface.co/helloworldzzr/Youtu-VL-4B-Instruct-ncnn>
 
 The runtime package is assembled by `package_runtime.py`, contains only ncnn
 graphs, tokenizer data and the pinned test fixture, and carries a SHA-256
-manifest.  The executable does not load PyTorch, Python, Transformers or the
+manifest. All 22 manifest payloads (12,177,556,868 bytes before
+`manifest.json`) were checked against the public package by file size and
+SHA-256. The executable does not load PyTorch, Python, Transformers or the
 original safetensors.
 
 ## Reproduce conversion
