@@ -1,0 +1,31 @@
+[load] processor: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+[load] model: /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:02<00:04,  2.00s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:04<00:02,  2.46s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:05<00:00,  1.48s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:05<00:00,  1.70s/it]
+[load] moving model to cuda:0
+[sample] coco_cats:describe
+[write] /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-embeds/coco_cats_describe.npz
+[shape] image_embeds=[108, 2560] merged_inputs_embeds=[1, 136, 2560]
+[write] /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-embeds/metadata.json
+	Command being timed: "/home/zhangzherui/.venvs/hunyuan-ocr-v1-gpu/bin/python /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/export/youtu_vl_vision_embed_probe.py --manifest /mnt/c/Users/zhangzherui/Desktop/Tencent/ncnn-final/ncnn_llm/models/youtu-vl/assets/youtu_vl_test/image_manifest.json --model /home/zhangzherui/hf-models/Youtu-VL-4B-Instruct --output-dir /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-embeds --only coco_cats:describe --max-image-patches 512 --dtype fp32 --device cuda:0 --device-map none --attn-implementation eager"
+	User time (seconds): 44.52
+	System time (seconds): 52.68
+	Percent of CPU this job got: 240%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:40.48
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 23429280
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 56014
+	Minor (reclaiming a frame) page faults: 5776771
+	Voluntary context switches: 34454
+	Involuntary context switches: 1580
+	Swaps: 0
+	File system inputs: 22776880
+	File system outputs: 8960
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

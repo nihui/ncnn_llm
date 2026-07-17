@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "model": "tencent/Youtu-VL-4B-Instruct",
+  "revision": "8d30a0e49662a1d628a472b12df264dbcd768753",
+  "modelscope_mirror": "Tencent-YouTu-Research/Youtu-VL-4B-Instruct",
+  "license": "Youtu-VL",
+  "url": "https://huggingface.co/tencent/Youtu-VL-4B-Instruct/tree/8d30a0e49662a1d628a472b12df264dbcd768753",
+  "files": [
+    {
+      "path": "config.json",
+      "size": 2361,
+      "sha256": "8f6115914aa33b7b48c92efb077c0976bec71407db65c4daa39961793ac4009a"
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "size": 85596,
+      "sha256": "8617dad368bb394a9de5f24f08b5b0ecdd8a68b2b8588d2baf2cc8f2bc5b6b7c"
+    },
+    {
+      "path": "model-00001-of-00003.safetensors",
+      "size": 4968257712,
+      "sha256": "107939f0c4aaf5fdc7c5d9f4ad741546e4ebaef32fcd93d36a462f1e5ea04d0b"
+    },
+    {
+      "path": "model-00002-of-00003.safetensors",
+      "size": 4999465960,
+      "sha256": "f7898bdeb9c5cbc996c0a2789c7b3495c3faa179c9690cb2c01bad65b615250e"
+    },
+    {
+      "path": "model-00003-of-00003.safetensors",
+      "size": 713493632,
+      "sha256": "548ebf9f8deea536596d6dffc3fed769a60f15e414e6fb9f735a7bb7fa627340"
+    }
+  ]
+}

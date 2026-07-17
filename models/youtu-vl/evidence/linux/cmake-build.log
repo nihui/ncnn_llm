@@ -1,0 +1,17 @@
+[1/17] Building CXX object CMakeFiles/youtu_vl_main.dir/examples/youtu_vl_main.cpp.o
+[2/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_model_paths.cpp.o
+[3/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_cli.cpp.o
+[4/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_tokenizer.cpp.o
+[5/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_generation.cpp.o
+[6/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_app.cpp.o
+[7/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_runner_common.cpp.o
+[8/17] Building CXX object CMakeFiles/ncnn_llm.dir/src/youtu/youtu_vision.cpp.o
+[9/17] Linking CXX static library libncnn_llm.a
+[10/17] Linking CXX executable nllb_main
+[11/17] Linking CXX executable asr_main
+[12/17] Linking CXX executable llm_ncnn_run
+[13/17] Linking CXX executable clip_main
+[14/17] Linking CXX executable youtu_vl_main
+[15/17] Linking CXX executable embedding_main
+[16/17] Linking CXX executable ocr_main
+[17/17] Linking CXX executable ncnn_llm_tests

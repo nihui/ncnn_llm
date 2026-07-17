@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "model": "Youtu-VL-4B-Instruct",
+  "checkpoint": "tencent/Youtu-VL-4B-Instruct@8d30a0e49662a1d628a472b12df264dbcd768753",
+  "pnnx_version": "20260526",
+  "working_directory": ".",
+  "command": [
+    "python",
+    "models/youtu-vl/convert.py",
+    "--checkpoint",
+    "build/checkpoints/Youtu-VL-4B-Instruct",
+    "--output",
+    "build/models/youtu-vl-4b-ncnn",
+    "--work",
+    "build/conversion/youtu-vl",
+    "--pnnx",
+    "pnnx"
+  ]
+}

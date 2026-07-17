@@ -1,0 +1,2 @@
+# Keep tool-emitted whitespace in evidence logs out of source whitespace checks.
+models/youtu-vl/evidence/**/*.log whitespace=-blank-at-eol,-blank-at-eof

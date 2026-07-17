@@ -1,0 +1,27 @@
+[vision] ncnn image_embeds=[108, 2560] ms=3173.53
+[PASS] vision.image_embeds: max_abs=0.0132732 mean_abs=9.59808e-05 rms=0.000143167
+[PASS] vision.merged_inputs_embeds: max_abs=0.0132732 mean_abs=7.622e-05 rms=0.00012758
+[vision] completed without loading the text decoder
+	Command being timed: "/home/zhangzherui/ncnn-build/youtu-linux/youtu_vl_main --root /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent --precision fp16 --vision-npz /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-embeds/coco_cats_describe.npz --vision-only --threads 8 --logits-atol 5"
+	User time (seconds): 16.98
+	System time (seconds): 2.93
+	Percent of CPU this job got: 556%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2440400
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1206403
+	Voluntary context switches: 705
+	Involuntary context switches: 31
+	Swaps: 0
+	File system inputs: 1827016
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

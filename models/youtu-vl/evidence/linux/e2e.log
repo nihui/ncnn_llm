@@ -1,0 +1,33 @@
+[vision] ncnn image_embeds=[108, 2560] ms=2999.11
+[PASS] vision.image_embeds: max_abs=0.0132732 mean_abs=9.59808e-05 rms=0.000143167
+[PASS] vision.merged_inputs_embeds: max_abs=0.0132732 mean_abs=7.622e-05 rms=0.00012758
+[prefill] external_merged_inputs_embeds tokens=136 mode=tokenwise_decode_graph ms=85691.1
+[decode] step=0 token_id=10392 text="Two"
+[decode] step=1 token_id=5240 text=" tab"
+[decode] step=2 token_id=1896 text="by"
+[ids] prompt=[128000, 12864, 198, 2836, 516, 261, 7787, 21136, 13, 128001, 198, 128000, 1178, 198, 128262, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128264, 128263, 42546, 469, 2870, 305, 857, 16044, 13, 128001, 198, 128000, 122596, 198]
+[ids] generated=[10392, 5240, 1896]
+[text] Two tabby
+	Command being timed: "/home/zhangzherui/ncnn-build/youtu-linux/youtu_vl_main --root /home/zhangzherui/ncnn-models/youtu-vl-4b-ncnn-independent --precision fp16 --vision-npz /home/zhangzherui/ncnn-work/youtu-vl-4b/vision-embeds/coco_cats_describe.npz --full-decoder-ncnn --max-new-tokens 3 --threads 8 --topk 1"
+	User time (seconds): 546.04
+	System time (seconds): 44.09
+	Percent of CPU this job got: 544%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:48.45
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 22908812
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 114
+	Minor (reclaiming a frame) page faults: 22488280
+	Voluntary context switches: 303673
+	Involuntary context switches: 1532
+	Swaps: 0
+	File system inputs: 24860200
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
